@@ -67,8 +67,8 @@ export const HERO_CONFIG = {
     { icon: "CheckCircle2" as FeatureIcon, label: "Regulatory compliant" },
   ],
   cta: {
-    primary: { text: "Get started" },
-    secondary: { variant: "outline" as const, text: "Learn more" },
+    primary: { text: "Get started", href: "/products" },
+    secondary: { variant: "outline" as const, text: "Learn more", href: "/about" },
   },
 };
 

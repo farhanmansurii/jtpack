@@ -22,6 +22,19 @@ export default function Navbar() {
   }, []);
 
   const scrollToSection = (href: string) => {
+    if (href.startsWith("#")) {
+      const element = document.querySelector(href);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+        setIsOpen(false);
+        return;
+      }
+    }
+    if (href.startsWith("/")) {
+      window.location.href = href;
+      setIsOpen(false);
+      return;
+    }
     const element = document.querySelector(href);
     if (element) {
       element.scrollIntoView({ behavior: "smooth" });

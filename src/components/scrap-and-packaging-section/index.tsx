@@ -3,6 +3,7 @@ import { Separator } from "@/components/ui/separator";
 import { Container } from "@/components/ui/container";
 import { FileText, Recycle, Package, Shield, Globe, Snowflake, Layers } from "lucide-react";
 import ProductCard from "./product-card";
+import Link from "next/link";
 import { SCRAP_AND_PACKAGING_CONFIG } from "@/lib/config";
 
 type Product = {
@@ -163,18 +164,20 @@ export default function ScrapAndPackagingSections(): JSX.Element {
         </div>
 
         <div className="mt-12 flex flex-wrap justify-center gap-4">
-          <button
+          <Link
             aria-label={`View all ${SCRAP_AND_PACKAGING_CONFIG.scrapMaterials.badge.text}`}
             className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg font-medium transition-colors duration-200"
+            href="/products/scrap"
           >
             {SCRAP_AND_PACKAGING_CONFIG.scrapMaterials.cta.primary}
-          </button>
-          <button
+          </Link>
+          <Link
             aria-label={`Request bulk quote for ${SCRAP_AND_PACKAGING_CONFIG.scrapMaterials.badge.text}`}
             className="bg-white hover:bg-gray-50 text-gray-900 border border-gray-300 px-8 py-3 rounded-lg font-medium transition-colors duration-200"
+            href="/contact"
           >
             {SCRAP_AND_PACKAGING_CONFIG.scrapMaterials.cta.secondary}
-          </button>
+          </Link>
         </div>
       </Container>
 
@@ -202,18 +205,20 @@ export default function ScrapAndPackagingSections(): JSX.Element {
         </div>
 
         <div className="mt-12 flex flex-wrap justify-center gap-4">
-          <button
+          <Link
             aria-label={`View all ${SCRAP_AND_PACKAGING_CONFIG.packagingProducts.badge.text}`}
             className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-medium transition-colors duration-200"
+            href="/products/packaging"
           >
             {SCRAP_AND_PACKAGING_CONFIG.packagingProducts.cta.primary}
-          </button>
-          <button
+          </Link>
+          <Link
             aria-label={`Request bulk quote for ${SCRAP_AND_PACKAGING_CONFIG.packagingProducts.badge.text}`}
             className="bg-white hover:bg-gray-50 text-gray-900 border border-gray-300 px-8 py-3 rounded-lg font-medium transition-colors duration-200"
+            href="/contact"
           >
             {SCRAP_AND_PACKAGING_CONFIG.packagingProducts.cta.secondary}
-          </button>
+          </Link>
         </div>
       </Container>
     </section>

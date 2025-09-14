@@ -5,6 +5,8 @@ import { Separator } from "@/components/ui/separator";
 import { Card } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import { ABOUT_US_CONFIG } from "@/lib/config";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function AboutUsSection(): JSX.Element {
   return (
@@ -49,6 +51,11 @@ export default function AboutUsSection(): JSX.Element {
                 );
               })}
             </ul>
+            <div className="mt-8">
+              <Button asChild>
+                <Link href="/about">Learn more</Link>
+              </Button>
+            </div>
           </div>
 
           {/* Right Column */}
