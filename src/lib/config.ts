@@ -10,6 +10,8 @@ export type FeatureIcon =
   | "Globe"
   | "Layers";
 
+export type SocialIcon = "Facebook" | "Twitter" | "Instagram" | "Linkedin";
+
 export type Product = {
   category: string;
   title: string;
@@ -38,7 +40,7 @@ export type ContactInfo = {
 };
 
 export type SocialLink = {
-  icon: FeatureIcon;
+  icon: SocialIcon;
   label: string;
 };
 
@@ -301,10 +303,10 @@ export const FOOTER_CONFIG = {
     address: "123 Business District, City, State 12345",
   },
   socialLinks: [
-    { icon: "Facebook" as FeatureIcon, label: "Facebook" },
-    { icon: "Twitter" as FeatureIcon, label: "Twitter" },
-    { icon: "Instagram" as FeatureIcon, label: "Instagram" },
-    { icon: "Linkedin" as FeatureIcon, label: "LinkedIn" },
+    { icon: "Facebook" as SocialIcon, label: "Facebook" },
+    { icon: "Twitter" as SocialIcon, label: "Twitter" },
+    { icon: "Instagram" as SocialIcon, label: "Instagram" },
+    { icon: "Linkedin" as SocialIcon, label: "LinkedIn" },
   ],
   legal: ["Privacy Policy", "Terms of Service"],
 };

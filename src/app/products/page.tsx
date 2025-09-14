@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import React from "react";
+import React, { Suspense } from "react";
 import Navbar from "@/components/navbar";
 import FooterSection from "@/components/footer-section";
 import { Container } from "@/components/ui/container";
@@ -30,7 +30,7 @@ function getIcon(name: string) {
   }
 }
 
-export default function ProductsPage() {
+function ProductsContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -117,46 +117,62 @@ export default function ProductsPage() {
   }, [tab]);
 
   return (
+    <section className="py-16 lg:py-24">
+      <Container>
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold">{heading}</h1>
+        <p className="mt-3 text-muted-foreground">{subheading}</p>
+
+        {/* Search + Tabs */}
+        <div className="mt-6 flex flex-col gap-4">
+          <div className="relative max-w-xl">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search products, categories…"
+              className="pl-9"
+              aria-label="Search products"
+            />
+          </div>
+
+          <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)}>
+            <TabsList className="flex-wrap">
+              <TabsTrigger value="all">All</TabsTrigger>
+              <TabsTrigger value="recycling">Recycling</TabsTrigger>
+              <TabsTrigger value="packaging">Packaging</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="all" className="mt-6">
+              <Grid items={items} />
+            </TabsContent>
+            <TabsContent value="recycling" className="mt-6">
+              <Grid items={items} colorScheme="green" />
+            </TabsContent>
+            <TabsContent value="packaging" className="mt-6">
+              <Grid items={items} colorScheme="blue" />
+            </TabsContent>
+          </Tabs>
+        </div>
+      </Container>
+    </section>
+  );
+}
+
+export default function ProductsPage() {
+  return (
     <div>
       <Navbar />
-      <section className="py-16 lg:py-24">
-        <Container>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold">{heading}</h1>
-          <p className="mt-3 text-muted-foreground">{subheading}</p>
-
-          {/* Search + Tabs */}
-          <div className="mt-6 flex flex-col gap-4">
-            <div className="relative max-w-xl">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search products, categories…"
-                className="pl-9"
-                aria-label="Search products"
-              />
-            </div>
-
-            <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)}>
-              <TabsList className="flex-wrap">
-                <TabsTrigger value="all">All</TabsTrigger>
-                <TabsTrigger value="recycling">Recycling</TabsTrigger>
-                <TabsTrigger value="packaging">Packaging</TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="all" className="mt-6">
-                <Grid items={items} />
-              </TabsContent>
-              <TabsContent value="recycling" className="mt-6">
-                <Grid items={items} colorScheme="green" />
-              </TabsContent>
-              <TabsContent value="packaging" className="mt-6">
-                <Grid items={items} colorScheme="blue" />
-              </TabsContent>
-            </Tabs>
+      <Suspense
+        fallback={
+          <div className="py-16 lg:py-24">
+            <Container>
+              <div className="animate-pulse">Loading...</div>
+            </Container>
           </div>
-        </Container>
-      </section>
+        }
+      >
+        <ProductsContent />
+      </Suspense>
       <FooterSection />
     </div>
   );

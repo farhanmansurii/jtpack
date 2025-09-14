@@ -112,14 +112,15 @@ export default function FooterSection() {
           {/* Social Links */}
           <div className="flex space-x-2">
             {FOOTER_CONFIG.socialLinks.map(({ icon, label }) => {
-              const IconComponent =
-                icon === "Facebook"
-                  ? Facebook
-                  : icon === "Twitter"
-                  ? Twitter
-                  : icon === "Instagram"
-                  ? Instagram
-                  : Linkedin;
+              const iconMap = {
+                Facebook,
+                Twitter,
+                Instagram,
+                Linkedin,
+              } as const;
+
+              const IconComponent = iconMap[icon as keyof typeof iconMap];
+
               return (
                 <Button
                   key={label}

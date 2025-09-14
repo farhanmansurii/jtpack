@@ -11,8 +11,12 @@ import { QuoteRequest } from "@/components/quote-request";
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const isHomePage = window && window?.location.pathname === "/";
+  const [isHomePage, setIsHomePage] = useState(false);
+
   useEffect(() => {
+    // Check if we're on the home page
+    setIsHomePage(window?.location.pathname === "/");
+
     const handleScroll = () => {
       setScrolled(window.scrollY > 10);
     };

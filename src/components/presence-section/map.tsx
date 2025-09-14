@@ -76,14 +76,20 @@ export function PresenceMap({
   zoomScale = 2,
 }: PresenceMapProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [isClient, setIsClient] = useState(false);
   const active = locations.find((l) => l.id === activeId) ?? null;
 
   // Container for the map viewport (the element with fixed aspect ratio)
   const viewportRef = useRef<HTMLDivElement | null>(null);
 
+  // Set client-side flag
+  useLayoutEffect(() => {
+    setIsClient(true);
+  }, []);
+
   // Compute transform to center the active location and zoom.
   const transformStyle = useMemo(() => {
-    if (!active || !viewportRef.current) {
+    if (!active || !viewportRef.current || !isClient) {
       return {
         transform: "translate3d(0,0,0) scale(1)",
       } as React.CSSProperties;
@@ -116,17 +122,19 @@ export function PresenceMap({
     return {
       transform: `translate3d(${tx}px, ${ty}px, 0) scale(${s})`,
     } as React.CSSProperties;
-  }, [active, zoomScale]);
+  }, [active, zoomScale, isClient]);
 
   // Ensure transform recalculates on resize
   useLayoutEffect(() => {
+    if (!isClient) return;
+
     const onResize = () => {
       // Trigger recompute by updating state via a no-op (force re-render)
       setActiveId((prev) => (prev === null ? null : prev));
     };
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
-  }, []);
+  }, [isClient]);
 
   const toggleActive = (id: string) => setActiveId((prev) => (prev === id ? null : id));
 
