@@ -6,6 +6,7 @@ import ProductCard from "./product-card";
 import Link from "next/link";
 import { SCRAP_AND_PACKAGING_CONFIG } from "@/lib/config";
 import { Button } from "../ui/button";
+import { SectionHeader } from "@/components/ui/section-header";
 
 type Product = {
   category: string;
@@ -82,22 +83,15 @@ export default function ScrapAndPackagingSections(): JSX.Element {
   return (
     <section id="products" className="py-16 lg:py-24">
       <Container>
-        <div className="text-center mb-12">
-          <span
-            className={`inline-flex items-center rounded-full ${SCRAP_AND_PACKAGING_CONFIG.scrapMaterials.badge.className} px-3 py-1 text-xs font-medium`}
-          >
-            {SCRAP_AND_PACKAGING_CONFIG.scrapMaterials.badge.text}
-          </span>
-          <h2
-            id="scrap-materials-trading-heading"
-            className="mt-4 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl lg:text-5xl"
-          >
-            {SCRAP_AND_PACKAGING_CONFIG.scrapMaterials.title}
-          </h2>
-          <p className="mt-4 max-w-3xl mx-auto text-lg text-gray-600">
-            {SCRAP_AND_PACKAGING_CONFIG.scrapMaterials.description}
-          </p>
-        </div>
+        <SectionHeader
+          badge={{
+            text: SCRAP_AND_PACKAGING_CONFIG.scrapMaterials.badge.text,
+            className: SCRAP_AND_PACKAGING_CONFIG.scrapMaterials.badge.className,
+          }}
+          title={SCRAP_AND_PACKAGING_CONFIG.scrapMaterials.title}
+          description={SCRAP_AND_PACKAGING_CONFIG.scrapMaterials.description}
+          className="mb-12"
+        />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {scrapMaterials.slice(0, 3).map((product, index) => (
@@ -116,7 +110,7 @@ export default function ScrapAndPackagingSections(): JSX.Element {
           </Link>
           <Link
             aria-label={`Request bulk quote for ${SCRAP_AND_PACKAGING_CONFIG.scrapMaterials.badge.text}`}
-            href="/contact"
+            href="#contact"
           >
             <Button className={`${colors.green.buttonSecondary} h-12  `}>
               <span>{SCRAP_AND_PACKAGING_CONFIG.scrapMaterials.cta.secondary}</span>
@@ -127,22 +121,15 @@ export default function ScrapAndPackagingSections(): JSX.Element {
 
       <div className="my-48" />
       <Container>
-        <div className="text-center mb-12">
-          <span
-            className={`inline-flex items-center rounded-full ${SCRAP_AND_PACKAGING_CONFIG.packagingProducts.badge.className} px-3 py-1 text-xs font-medium`}
-          >
-            {SCRAP_AND_PACKAGING_CONFIG.packagingProducts.badge.text}
-          </span>
-          <h2
-            id="packaging-manufacturing-heading"
-            className="mt-4 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl lg:text-5xl"
-          >
-            {SCRAP_AND_PACKAGING_CONFIG.packagingProducts.title}
-          </h2>
-          <p className="mt-4 max-w-3xl mx-auto text-lg text-gray-600">
-            {SCRAP_AND_PACKAGING_CONFIG.packagingProducts.description}
-          </p>
-        </div>
+        <SectionHeader
+          badge={{
+            text: SCRAP_AND_PACKAGING_CONFIG.packagingProducts.badge.text,
+            className: SCRAP_AND_PACKAGING_CONFIG.packagingProducts.badge.className,
+          }}
+          title={SCRAP_AND_PACKAGING_CONFIG.packagingProducts.title}
+          description={SCRAP_AND_PACKAGING_CONFIG.packagingProducts.description}
+          className="mb-12"
+        />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {packagingProducts.slice(0, 3).map((product, index) => (
@@ -162,7 +149,7 @@ export default function ScrapAndPackagingSections(): JSX.Element {
             </Link>
             <Link
               aria-label={`Request bulk quote for ${SCRAP_AND_PACKAGING_CONFIG.packagingProducts.badge.text}`}
-              href="/contact"
+              href="#contact"
             >
               <Button className={`${colors.blue.buttonSecondary} h-12  `}>
                 <span>{SCRAP_AND_PACKAGING_CONFIG.packagingProducts.cta.secondary}</span>

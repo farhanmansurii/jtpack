@@ -320,10 +320,8 @@ export const NAVBAR_CONFIG = {
     { name: "About", href: "/about" },
     { name: "Services", href: "#services" },
     { name: "Products", href: "/products" },
-    { name: "Contact", href: "#contact" },
   ],
   cta: {
-    primary: { text: "Get Started", href: "#services" },
-    secondary: { text: "Contact", href: "#contact" },
+    primary: { text: "Get a Quote", href: "#contact" },
   },
 };

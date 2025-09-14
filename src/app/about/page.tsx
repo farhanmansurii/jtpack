@@ -298,7 +298,7 @@ export default function AboutPage() {
           </p>
           <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
             <Button asChild>
-              <a href="/contact">Contact Our Team</a>
+              <a href="#contact">Contact Our Team</a>
             </Button>
             <Button variant="outline" asChild>
               <a href="/products">Explore Products</a>

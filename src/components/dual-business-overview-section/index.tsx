@@ -4,110 +4,122 @@ import Link from "next/link";
 import { Recycle, Package } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { DUAL_BUSINESS_CONFIG } from "@/lib/config";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { QuoteRequest } from "@/components/quote-request";
+import { FeatureIcon } from "@/lib/config";
+import {
+  Recycle as RecycleIcon,
+  Package as PackageIcon,
+  Shield,
+  Zap,
+  Globe,
+  Award,
+  TrendingUp,
+  Users,
+} from "lucide-react";
+
+// Icon mapping function
+function getIconComponent(icon: FeatureIcon) {
+  const icons = {
+    Recycle,
+    Package,
+    Shield,
+    Zap,
+    Globe,
+    Award,
+    TrendingUp,
+    Users,
+  } as const;
+  const IconComponent = icons[icon as keyof typeof icons];
+  return IconComponent ? <IconComponent className="h-8 w-8" /> : <Package className="h-8 w-8" />;
+}
 
 export default function DualBusinessOverview() {
   const businesses = DUAL_BUSINESS_CONFIG.businesses.map((business) => ({
     ...business,
-    icon: business.icon === "Recycle" ? Recycle : Package,
+    icon: getIconComponent(business.icon),
   }));
 
   return (
-    <section id="services" className="py-16 lg:py-24">
+    <section id="expertise" className="py-16 lg:py-24 bg-gray-50">
       <Container>
-        <div className="mb-12 text-center">
-          <span
-            className={`inline-flex items-center rounded-full ${DUAL_BUSINESS_CONFIG.badge.className} px-3 py-1 text-xs font-medium`}
-          >
+        {/* Header */}
+        <div className="text-center mb-16">
+          <Badge className={DUAL_BUSINESS_CONFIG.badge.className}>
             {DUAL_BUSINESS_CONFIG.badge.text}
-          </span>
-          <h2
-            id="business-overview-heading"
-            className="mt-4 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl lg:text-5xl"
-          >
+          </Badge>
+          <h2 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
             {DUAL_BUSINESS_CONFIG.title}
           </h2>
-          <p className="mt-4 max-w-2xl mx-auto text-lg text-gray-600">
+          <p className="mt-4 max-w-3xl mx-auto text-lg text-gray-600">
             {DUAL_BUSINESS_CONFIG.description}
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {businesses.map((biz, index) => (
-            <div
-              key={biz.title}
-              className={`relative overflow-hidden rounded-2xl shadow-xl bg-gradient-to-br ${biz.gradient} border border-gray-200 hover:shadow-2xl transition-all duration-300 hover:scale-[1.02]`}
+        {/* Business Cards */}
+        <div className="grid lg:grid-cols-2 gap-8 mb-16">
+          {businesses.map((business, index) => (
+            <Card
+              key={index}
+              className={`relative overflow-hidden bg-gradient-to-br ${business.gradient} border-0 shadow-lg hover:shadow-xl transition-all duration-300`}
             >
-              {/* Header */}
-              <div className="p-6 pb-0">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
+              <CardContent className="p-8">
+                <div className="flex items-start gap-4 mb-6">
+                  <div className="flex-shrink-0">
                     <div
-                      className={`p-2 rounded-lg ${index === 0 ? "bg-green-100" : "bg-blue-100"}`}
+                      className={`w-12 h-12 rounded-lg ${
+                        business.badge === "Recycling"
+                          ? "bg-green-100 text-green-600"
+                          : "bg-blue-100 text-blue-600"
+                      } flex items-center justify-center`}
                     >
-                      <biz.icon
-                        className={`h-6 w-6 ${index === 0 ? "text-green-600" : "text-blue-600"}`}
-                        aria-hidden="true"
-                      />
+                      {business.icon}
                     </div>
-                    <h3 className="text-xl font-semibold text-gray-900">{biz.title}</h3>
                   </div>
-                  <span
-                    className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${
-                      index === 0 ? "bg-green-100 text-green-800" : "bg-blue-100 text-blue-800"
-                    }`}
-                  >
-                    {biz.badge}
-                  </span>
+                  <div className="flex-1">
+                    <Badge
+                      variant="secondary"
+                      className={
+                        business.badge === "Recycling"
+                          ? "bg-green-100 text-green-800"
+                          : "bg-blue-100 text-blue-800"
+                      }
+                    >
+                      {business.badge}
+                    </Badge>
+                    <h3 className="text-xl font-bold text-gray-900 mt-2 mb-3">{business.title}</h3>
+                    <p className="text-gray-600 leading-relaxed">{business.description}</p>
+                  </div>
                 </div>
-              </div>
 
-              {/* Image */}
-              <div className="px-6 pb-4">
-                <div className="relative w-full h-48 rounded-lg overflow-hidden bg-gray-200">
+                {/* Highlights */}
+                <div className="mb-6">
+                  <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-2">
+                    {business.highlights.map((highlight, i) => (
+                      <li key={i} className="flex items-center gap-2 text-sm text-gray-700">
+                        <div
+                          className={`w-1.5 h-1.5 rounded-full ${
+                            business.badge === "Recycling" ? "bg-green-500" : "bg-blue-500"
+                          }`}
+                        />
+                        <span>{highlight}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Business Image */}
+                <div className="rounded-lg overflow-hidden mb-4">
                   <img
-                    src={biz.image}
-                    alt={`${biz.title} operations`}
-                    className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                    loading="lazy"
+                    src={business.image}
+                    alt={business.title}
+                    className="w-full h-40 object-cover"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
                 </div>
-              </div>
-
-              {/* Content */}
-              <div className="p-6 pt-0">
-                <p className="text-sm text-gray-600 mb-4 leading-relaxed">{biz.description}</p>
-
-                <div className="w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent mb-4"></div>
-
-                <ul className="space-y-3">
-                  {biz.highlights.map((highlight) => (
-                    <li key={highlight} className="text-sm text-gray-700 flex items-center gap-3">
-                      <span
-                        className={`inline-block h-2 w-2 rounded-full ${
-                          index === 0 ? "bg-green-500" : "bg-blue-500"
-                        }`}
-                      ></span>
-                      <span className="font-medium">{highlight}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                {/* Call to Action */}
-                <div className="mt-6 pt-4 border-t border-gray-100">
-                  <Link
-                    href={index === 0 ? "/products/scrap" : "/products/packaging"}
-                    className={`w-full block text-center py-3 px-4 rounded-lg font-medium text-sm transition-all duration-200 ${
-                      index === 0
-                        ? "bg-green-600 hover:bg-green-700 text-white hover:shadow-lg"
-                        : "bg-blue-600 hover:bg-blue-700 text-white hover:shadow-lg"
-                    }`}
-                  >
-                    Learn More About {biz.badge}
-                  </Link>
-                </div>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           ))}
         </div>
 
@@ -122,17 +134,21 @@ export default function DualBusinessOverview() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               {DUAL_BUSINESS_CONFIG.cta.buttons.map((button, index) => (
-                <Link
+                <QuoteRequest
                   key={index}
-                  href={button.variant === "green" ? "/products/scrap" : "/products/packaging"}
-                  className={`${
-                    button.variant === "green"
-                      ? "bg-green-600 hover:bg-green-700"
-                      : "bg-blue-600 hover:bg-blue-700"
-                  } text-white px-8 py-3 rounded-lg font-medium transition-colors duration-200`}
+                  product={button.variant === "green" ? "paper-scrap" : "cfc-packaging"}
+                  colorScheme={button.variant as "green" | "blue"}
                 >
-                  {button.text}
-                </Link>
+                  <Button
+                    className={`${
+                      button.variant === "green"
+                        ? "bg-green-600 hover:bg-green-700"
+                        : "bg-blue-600 hover:bg-blue-700"
+                    } text-white px-8 py-3 rounded-lg font-medium transition-colors duration-200`}
+                  >
+                    {button.text}
+                  </Button>
+                </QuoteRequest>
               ))}
             </div>
           </div>

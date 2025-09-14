@@ -3,15 +3,15 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
-import { Badge } from "@/components/ui/badge";
-import { Menu, X, ChevronDown } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NAVBAR_CONFIG } from "@/lib/config";
+import { QuoteRequest } from "@/components/quote-request";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-
+  const isHomePage = window && window?.location.pathname === "/";
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 10);
@@ -46,24 +46,38 @@ export default function Navbar() {
     <nav
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        scrolled ? "bg-background/95 backdrop-blur-sm border-b shadow-sm" : "bg-transparent",
+        scrolled || !isHomePage
+          ? "bg-background/95 backdrop-blur-sm border-b shadow-sm"
+          : "bg-transparent",
       )}
     >
       <Container>
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <div className="flex items-center space-x-2">
-            <div className="text-xl font-bold text-primary">{NAVBAR_CONFIG.logo.text}</div>
+            <div
+              className={cn(
+                "text-xl font-bold transition-colors duration-300",
+                scrolled || !isHomePage ? "text-primary" : "text-white",
+              )}
+            >
+              {NAVBAR_CONFIG.logo.text}
+            </div>
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center space-x-4">
             {NAVBAR_CONFIG.navigation.map((item) => (
               <Button
                 key={item.name}
-                variant="ghost"
+                variant="link"
                 onClick={() => scrollToSection(item.href)}
-                className="text-foreground hover:text-primary transition-colors"
+                className={cn(
+                  "transition-colors duration-300",
+                  scrolled || !isHomePage
+                    ? "text-foreground hover:text-primary"
+                    : "text-white hover:text-white/80",
+                )}
               >
                 {item.name}
               </Button>
@@ -72,16 +86,17 @@ export default function Navbar() {
 
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center space-x-3">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => scrollToSection(NAVBAR_CONFIG.cta.secondary.href)}
-            >
-              {NAVBAR_CONFIG.cta.secondary.text}
-            </Button>
-            <Button size="sm" onClick={() => scrollToSection(NAVBAR_CONFIG.cta.primary.href)}>
-              {NAVBAR_CONFIG.cta.primary.text}
-            </Button>
+            <QuoteRequest colorScheme="blue">
+              <Button
+                size="sm"
+                className={cn(
+                  "transition-colors duration-300",
+                  scrolled || !isHomePage ? "" : "bg-white text-black hover:bg-white/90",
+                )}
+              >
+                {NAVBAR_CONFIG.cta.primary.text}
+              </Button>
+            </QuoteRequest>
           </div>
 
           {/* Mobile menu button */}
@@ -90,7 +105,10 @@ export default function Navbar() {
               variant="ghost"
               size="icon"
               onClick={() => setIsOpen(!isOpen)}
-              className="text-foreground"
+              className={cn(
+                "transition-colors duration-300",
+                scrolled || !isHomePage ? "text-foreground" : "text-white",
+              )}
             >
               {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </Button>
@@ -100,33 +118,41 @@ export default function Navbar() {
         {/* Mobile Navigation */}
         {isOpen && (
           <div className="md:hidden">
-            <div className="px-2 pt-2 pb-3 space-y-1 bg-background/95 backdrop-blur-sm border-t">
+            <div
+              className={cn(
+                "px-2 pt-2 pb-3 space-y-1 border-t transition-colors duration-300",
+                scrolled || !isHomePage
+                  ? "bg-background/95 backdrop-blur-sm"
+                  : "bg-black/95 backdrop-blur-sm",
+              )}
+            >
               {NAVBAR_CONFIG.navigation.map((item) => (
                 <Button
                   key={item.name}
                   variant="ghost"
                   onClick={() => scrollToSection(item.href)}
-                  className="w-full justify-start text-foreground hover:text-primary"
+                  className={cn(
+                    "w-full justify-start transition-colors duration-300",
+                    scrolled
+                      ? "text-foreground hover:text-primary"
+                      : "text-white hover:text-white/80",
+                  )}
                 >
                   {item.name}
                 </Button>
               ))}
               <div className="pt-4 space-y-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => scrollToSection(NAVBAR_CONFIG.cta.secondary.href)}
-                  className="w-full justify-start"
-                >
-                  {NAVBAR_CONFIG.cta.secondary.text}
-                </Button>
-                <Button
-                  size="sm"
-                  onClick={() => scrollToSection(NAVBAR_CONFIG.cta.primary.href)}
-                  className="w-full"
-                >
-                  {NAVBAR_CONFIG.cta.primary.text}
-                </Button>
+                <QuoteRequest colorScheme="blue">
+                  <Button
+                    size="sm"
+                    className={cn(
+                      "w-full transition-colors duration-300",
+                      scrolled || !isHomePage ? "" : "bg-white text-black hover:bg-white/90",
+                    )}
+                  >
+                    {NAVBAR_CONFIG.cta.primary.text}
+                  </Button>
+                </QuoteRequest>
               </div>
             </div>
           </div>

@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Card } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
+import { SectionHeader } from "@/components/ui/section-header";
 import { ABOUT_US_CONFIG } from "@/lib/config";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -19,18 +20,16 @@ export default function AboutUsSection(): JSX.Element {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-y-12 gap-x-16 items-center">
           {/* Left Column */}
           <div className="lg:col-span-6">
-            <Badge
-              variant={ABOUT_US_CONFIG.badge.variant}
-              className="rounded-full px-3 py-1 text-xs mb-4"
-            >
-              {ABOUT_US_CONFIG.badge.text}
-            </Badge>
-            <h2
-              id="about-heading"
-              className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl"
-            >
-              {ABOUT_US_CONFIG.title}
-            </h2>
+            <SectionHeader
+              badge={{
+                text: ABOUT_US_CONFIG.badge.text,
+                variant: ABOUT_US_CONFIG.badge.variant,
+              }}
+              title={ABOUT_US_CONFIG.title}
+              variant="left"
+              className="mb-6"
+            />
+
             <p className="mt-6 text-muted-foreground max-w-prose">
               {ABOUT_US_CONFIG.description.first}
             </p>

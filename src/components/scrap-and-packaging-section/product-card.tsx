@@ -1,8 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
 import React, { JSX } from "react";
-import Link from "next/link";
 import { Package, CheckCircle, ArrowRight } from "lucide-react";
 import { Button } from "../ui/button";
+import { QuoteRequest } from "../quote-request";
 
 type ColorScheme = "blue" | "green";
 
@@ -45,6 +45,19 @@ const ProductCard = ({
   };
 
   const colorClass = colors[colorScheme];
+
+  // Map category to product value for the quote form
+  const getProductValue = (category: string) => {
+    const categoryMap: Record<string, string> = {
+      "Paper Scrap": "paper-scrap",
+      "Plastic Scrap": "plastic-scrap",
+      "Metal Scrap": "metal-scrap",
+      "CFC Packaging": "cfc-packaging",
+      "Thermal Packaging": "thermal-packaging",
+      "Custom Packaging": "custom-packaging",
+    };
+    return categoryMap[category] || "other";
+  };
 
   return (
     <div className="group w-full bg-white border border-gray-200 rounded-xl hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden">
@@ -91,12 +104,16 @@ const ProductCard = ({
       </div>
 
       <div className="p-6 pt-0">
-        <Link href="/contact">
+        <QuoteRequest
+          product={getProductValue(category)}
+          colorScheme={colorScheme}
+          className="w-full"
+        >
           <Button className={`w-full group/btn ${colorClass.button}`}>
             <span>{ctaText}</span>
             <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
           </Button>
-        </Link>
+        </QuoteRequest>
       </div>
     </div>
   );
