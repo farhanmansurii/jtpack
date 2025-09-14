@@ -3,7 +3,9 @@ import { Separator } from "@/components/ui/separator";
 import { Container } from "@/components/ui/container";
 import { FileText, Recycle, Package, Shield, Globe, Snowflake, Layers } from "lucide-react";
 import ProductCard from "./product-card";
+import Link from "next/link";
 import { SCRAP_AND_PACKAGING_CONFIG } from "@/lib/config";
+import { Button } from "../ui/button";
 
 type Product = {
   category: string;
@@ -63,76 +65,17 @@ const packagingProducts: Product[] = SCRAP_AND_PACKAGING_CONFIG.packagingProduct
   }),
 );
 
-const SectionGrid = ({
-  id,
-  heading,
-  badge,
-  description,
-  items,
-  viewAllLabel,
-  bulkQuoteLabel,
-  colorScheme = "blue",
-}: SectionGridProps) => {
-  const colors = {
-    blue: {
-      badge: "bg-blue-100 text-blue-800",
-      button: "bg-blue-600 hover:bg-blue-700",
-      buttonSecondary: "bg-white hover:bg-gray-50 text-gray-900 border border-gray-300",
-    },
-    green: {
-      badge: "bg-green-100 text-green-800",
-      button: "bg-green-600 hover:bg-green-700",
-      buttonSecondary: "bg-white hover:bg-gray-50 text-gray-900 border border-gray-300",
-    },
-  };
-
-  const colorClass = colors[colorScheme];
-
-  return (
-    <section
-      id={id}
-      aria-labelledby={`${id}-heading`}
-      className="bg-gray-50 py-16 sm:py-24 lg:py-28"
-    >
-      <Container>
-        <div className="text-center mb-12">
-          <span
-            className={`inline-flex items-center rounded-full ${colorClass.badge} px-3 py-1 text-xs font-medium`}
-          >
-            {badge}
-          </span>
-          <h2
-            id={`${id}-heading`}
-            className="mt-4 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl lg:text-5xl"
-          >
-            {heading}
-          </h2>
-          <p className="mt-4 max-w-3xl mx-auto text-lg text-gray-600">{description}</p>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {items.slice(0, 3).map((product, index) => (
-            <ProductCard key={index} {...product} colorScheme={colorScheme} />
-          ))}
-        </div>
-
-        <div className="mt-12 flex flex-wrap justify-center gap-4">
-          <button
-            aria-label={`View all ${badge.toLowerCase()}`}
-            className={`${colorClass.button} text-white px-8 py-3 rounded-lg font-medium transition-colors duration-200`}
-          >
-            {viewAllLabel}
-          </button>
-          <button
-            aria-label={`Request bulk quote for ${badge.toLowerCase()}`}
-            className={`${colorClass.buttonSecondary} px-8 py-3 rounded-lg font-medium transition-colors duration-200`}
-          >
-            {bulkQuoteLabel}
-          </button>
-        </div>
-      </Container>
-    </section>
-  );
+const colors = {
+  blue: {
+    badge: "bg-blue-100 text-blue-800",
+    button: "bg-blue-600 hover:bg-blue-700",
+    buttonSecondary: "bg-white hover:bg-gray-50 text-gray-900 border border-gray-300",
+  },
+  green: {
+    badge: "bg-green-100 text-green-800",
+    button: "bg-green-600 hover:bg-green-700",
+    buttonSecondary: "bg-white hover:bg-gray-50 text-gray-900 border border-gray-300",
+  },
 };
 
 export default function ScrapAndPackagingSections(): JSX.Element {
@@ -163,25 +106,31 @@ export default function ScrapAndPackagingSections(): JSX.Element {
         </div>
 
         <div className="mt-12 flex flex-wrap justify-center gap-4">
-          <button
+          <Link
             aria-label={`View all ${SCRAP_AND_PACKAGING_CONFIG.scrapMaterials.badge.text}`}
-            className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg font-medium transition-colors duration-200"
+            href="/products?tab=recycling"
           >
-            {SCRAP_AND_PACKAGING_CONFIG.scrapMaterials.cta.primary}
-          </button>
-          <button
+            <Button className={`${colors.green.button} h-12  `}>
+              <span>{SCRAP_AND_PACKAGING_CONFIG.scrapMaterials.cta.primary}</span>
+            </Button>
+          </Link>
+          <Link
             aria-label={`Request bulk quote for ${SCRAP_AND_PACKAGING_CONFIG.scrapMaterials.badge.text}`}
-            className="bg-white hover:bg-gray-50 text-gray-900 border border-gray-300 px-8 py-3 rounded-lg font-medium transition-colors duration-200"
+            href="/contact"
           >
-            {SCRAP_AND_PACKAGING_CONFIG.scrapMaterials.cta.secondary}
-          </button>
+            <Button className={`${colors.green.buttonSecondary} h-12  `}>
+              <span>{SCRAP_AND_PACKAGING_CONFIG.scrapMaterials.cta.secondary}</span>
+            </Button>
+          </Link>
         </div>
       </Container>
 
-      <Separator />
+      <div className="my-48" />
       <Container>
         <div className="text-center mb-12">
-          <span className={`inline-flex items-center rounded-full ${SCRAP_AND_PACKAGING_CONFIG.packagingProducts.badge.className} px-3 py-1 text-xs font-medium`}>
+          <span
+            className={`inline-flex items-center rounded-full ${SCRAP_AND_PACKAGING_CONFIG.packagingProducts.badge.className} px-3 py-1 text-xs font-medium`}
+          >
             {SCRAP_AND_PACKAGING_CONFIG.packagingProducts.badge.text}
           </span>
           <h2
@@ -202,18 +151,24 @@ export default function ScrapAndPackagingSections(): JSX.Element {
         </div>
 
         <div className="mt-12 flex flex-wrap justify-center gap-4">
-          <button
-            aria-label={`View all ${SCRAP_AND_PACKAGING_CONFIG.packagingProducts.badge.text}`}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-medium transition-colors duration-200"
-          >
-            {SCRAP_AND_PACKAGING_CONFIG.packagingProducts.cta.primary}
-          </button>
-          <button
-            aria-label={`Request bulk quote for ${SCRAP_AND_PACKAGING_CONFIG.packagingProducts.badge.text}`}
-            className="bg-white hover:bg-gray-50 text-gray-900 border border-gray-300 px-8 py-3 rounded-lg font-medium transition-colors duration-200"
-          >
-            {SCRAP_AND_PACKAGING_CONFIG.packagingProducts.cta.secondary}
-          </button>
+          <div className="mt-12 flex flex-wrap justify-center gap-4">
+            <Link
+              aria-label={`View all ${SCRAP_AND_PACKAGING_CONFIG.packagingProducts.badge.text}`}
+              href="/products?tab=packaging"
+            >
+              <Button className={`${colors.blue.button} h-12  `}>
+                <span>{SCRAP_AND_PACKAGING_CONFIG.packagingProducts.cta.primary}</span>
+              </Button>
+            </Link>
+            <Link
+              aria-label={`Request bulk quote for ${SCRAP_AND_PACKAGING_CONFIG.packagingProducts.badge.text}`}
+              href="/contact"
+            >
+              <Button className={`${colors.blue.buttonSecondary} h-12  `}>
+                <span>{SCRAP_AND_PACKAGING_CONFIG.packagingProducts.cta.secondary}</span>
+              </Button>
+            </Link>
+          </div>
         </div>
       </Container>
     </section>

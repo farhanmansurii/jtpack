@@ -6,8 +6,6 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -42,41 +40,63 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
 }
-
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+
+  /* Base colors */
+  --background: oklch(0.98 0.002 106.99); /* Subtle warm white */
+  --foreground: oklch(0.15 0.004 285.82); /* Deep navy text */
+
+  /* Card colors */
+  --card: oklch(1 0 0); /* Pure white */
+  --card-foreground: oklch(0.15 0.004 285.82);
+
+  /* Popover colors */
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.15 0.004 285.82);
+
+  /* Primary - Green for recycling/sustainability */
+  --primary: oklch(0.45 0.15 142.5); /* Forest green */
+  --primary-foreground: oklch(0.98 0.002 106.99);
+
+  /* Secondary - Blue for manufacturing/packaging */
+  --secondary: oklch(0.92 0.02 220); /* Light blue-gray */
+  --secondary-foreground: oklch(0.25 0.08 220); /* Navy blue */
+
+  /* Muted colors */
+  --muted: oklch(0.95 0.01 106.99); /* Warm gray */
+  --muted-foreground: oklch(0.5 0.02 285.82); /* Medium gray */
+
+  /* Accent - Orange for industrial/energy */
+  --accent: oklch(0.93 0.04 75); /* Light orange tint */
+  --accent-foreground: oklch(0.35 0.12 65); /* Deep orange */
+
+  /* Destructive - Red for warnings */
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+
+  /* Border and input */
+  --border: oklch(0.88 0.01 106.99); /* Subtle warm border */
+  --input: oklch(0.96 0.01 106.99); /* Input background */
+  --ring: oklch(0.45 0.15 142.5); /* Green focus ring */
+
+  /* Chart colors - Industrial palette */
+  --chart-1: oklch(0.55 0.18 142.5); /* Green */
+  --chart-2: oklch(0.5 0.15 220); /* Blue */
+  --chart-3: oklch(0.45 0.12 65); /* Orange */
+  --chart-4: oklch(0.4 0.1 285); /* Purple */
+  --chart-5: oklch(0.6 0.08 180); /* Teal */
+
+  /* Sidebar colors */
+  --sidebar: oklch(0.96 0.01 106.99);
+  --sidebar-foreground: oklch(0.15 0.004 285.82);
+  --sidebar-primary: oklch(0.45 0.15 142.5);
+  --sidebar-primary-foreground: oklch(0.98 0.002 106.99);
+  --sidebar-accent: oklch(0.92 0.02 220);
+  --sidebar-accent-foreground: oklch(0.25 0.08 220);
+  --sidebar-border: oklch(0.88 0.01 106.99);
+  --sidebar-ring: oklch(0.45 0.15 142.5);
 }
+
 
 .dark {
   --background: oklch(0.145 0 0);
@@ -118,5 +138,8 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading), var(--font-sans);
   }
 }

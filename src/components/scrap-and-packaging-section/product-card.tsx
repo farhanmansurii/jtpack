@@ -1,6 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
 import React, { JSX } from "react";
+import Link from "next/link";
 import { Package, CheckCircle, ArrowRight } from "lucide-react";
+import { Button } from "../ui/button";
 
 type ColorScheme = "blue" | "green";
 
@@ -89,12 +91,12 @@ const ProductCard = ({
       </div>
 
       <div className="p-6 pt-0">
-        <button
-          className={`w-full group/btn ${colorClass.button} text-white py-3 px-4 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center gap-2`}
-        >
-          <span>{ctaText}</span>
-          <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
-        </button>
+        <Link href="/contact">
+          <Button className={`w-full group/btn ${colorClass.button}`}>
+            <span>{ctaText}</span>
+            <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
+          </Button>
+        </Link>
       </div>
     </div>
   );

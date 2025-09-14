@@ -67,8 +67,8 @@ export const HERO_CONFIG = {
     { icon: "CheckCircle2" as FeatureIcon, label: "Regulatory compliant" },
   ],
   cta: {
-    primary: { text: "Get started" },
-    secondary: { variant: "outline" as const, text: "Learn more" },
+    primary: { text: "Get started", href: "/products" },
+    secondary: { variant: "outline" as const, text: "Learn more", href: "/about" },
   },
 };
 
@@ -316,10 +316,10 @@ export const NAVBAR_CONFIG = {
     badge: "Trusted",
   },
   navigation: [
-    { name: "Home", href: "#home" },
-    { name: "About", href: "#about" },
+    { name: "Home", href: "/" },
+    { name: "About", href: "/about" },
     { name: "Services", href: "#services" },
-    { name: "Products", href: "#products" },
+    { name: "Products", href: "/products" },
     { name: "Contact", href: "#contact" },
   ],
   cta: {

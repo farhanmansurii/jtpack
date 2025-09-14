@@ -22,6 +22,19 @@ export default function Navbar() {
   }, []);
 
   const scrollToSection = (href: string) => {
+    if (href.startsWith("#")) {
+      const element = document.querySelector(href);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+        setIsOpen(false);
+        return;
+      }
+    }
+    if (href.startsWith("/")) {
+      window.location.href = href;
+      setIsOpen(false);
+      return;
+    }
     const element = document.querySelector(href);
     if (element) {
       element.scrollIntoView({ behavior: "smooth" });
@@ -41,9 +54,6 @@ export default function Navbar() {
           {/* Logo */}
           <div className="flex items-center space-x-2">
             <div className="text-xl font-bold text-primary">{NAVBAR_CONFIG.logo.text}</div>
-            <Badge variant="secondary" className="text-xs">
-              {NAVBAR_CONFIG.logo.badge}
-            </Badge>
           </div>
 
           {/* Desktop Navigation */}
