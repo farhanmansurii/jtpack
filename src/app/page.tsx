@@ -6,7 +6,7 @@ import TestimonialsSection from "@/components/testimonials-section";
 import ContactSection from "@/components/contact-section";
 import FooterSection from "@/components/footer-section";
 import Navbar from "@/components/navbar";
-import IndiaPresenceMap from "@/components/presence-section/map";
+import PresencePage from "@/components/presence-section/map";
 
 export default function Home() {
   return (
@@ -17,7 +17,7 @@ export default function Home() {
       <DualBusinessOverview />
       <ScrapAndPackagingSections />
       <TestimonialsSection />
-      <IndiaPresenceMap />
+      <PresencePage />
       <ContactSection />
       <FooterSection />
     </div>
