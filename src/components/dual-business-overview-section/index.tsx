@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import React from "react";
+import Link from "next/link";
 import { Recycle, Package } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { DUAL_BUSINESS_CONFIG } from "@/lib/config";
@@ -94,15 +95,16 @@ export default function DualBusinessOverview() {
 
                 {/* Call to Action */}
                 <div className="mt-6 pt-4 border-t border-gray-100">
-                  <button
-                    className={`w-full py-3 px-4 rounded-lg font-medium text-sm transition-all duration-200 ${
+                  <Link
+                    href={index === 0 ? "/products/scrap" : "/products/packaging"}
+                    className={`w-full block text-center py-3 px-4 rounded-lg font-medium text-sm transition-all duration-200 ${
                       index === 0
                         ? "bg-green-600 hover:bg-green-700 text-white hover:shadow-lg"
                         : "bg-blue-600 hover:bg-blue-700 text-white hover:shadow-lg"
                     }`}
                   >
                     Learn More About {biz.badge}
-                  </button>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -120,8 +122,9 @@ export default function DualBusinessOverview() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               {DUAL_BUSINESS_CONFIG.cta.buttons.map((button, index) => (
-                <button
+                <Link
                   key={index}
+                  href={button.variant === "green" ? "/products/scrap" : "/products/packaging"}
                   className={`${
                     button.variant === "green"
                       ? "bg-green-600 hover:bg-green-700"
@@ -129,7 +132,7 @@ export default function DualBusinessOverview() {
                   } text-white px-8 py-3 rounded-lg font-medium transition-colors duration-200`}
                 >
                   {button.text}
-                </button>
+                </Link>
               ))}
             </div>
           </div>

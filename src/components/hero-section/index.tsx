@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Container } from "@/components/ui/container";
 import { CheckCircle2, Leaf, Recycle, PackageSearch } from "lucide-react";
@@ -68,11 +69,17 @@ export default function HeroSection({
             })}
           </ul>
           <div className="mt-8 flex flex-wrap items-center gap-3">
-            <Button size={"lg"} variant={"secondary"}>
-              {HERO_CONFIG.cta.primary.text}
+            <Button size={"lg"} variant={"secondary"} asChild>
+              <Link href={HERO_CONFIG.cta.primary.href || "#services"}>
+                {HERO_CONFIG.cta.primary.text}
+              </Link>
             </Button>
 
-            <Button size={"lg"}>{HERO_CONFIG.cta.secondary.text}</Button>
+            <Button size={"lg"} asChild>
+              <Link href={HERO_CONFIG.cta.secondary.href || "#about"}>
+                {HERO_CONFIG.cta.secondary.text}
+              </Link>
+            </Button>
           </div>
           {/* Spacer for visual balance on tall screens */}
           <div className="h-8 sm:h-10" />
