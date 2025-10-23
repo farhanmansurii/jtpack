@@ -59,13 +59,6 @@ const scrapMaterials: Product[] = SCRAP_AND_PACKAGING_CONFIG.scrapMaterials.prod
   }),
 );
 
-const packagingProducts: Product[] = SCRAP_AND_PACKAGING_CONFIG.packagingProducts.products.map(
-  (product) => ({
-    ...product,
-    icon: getIconComponent(product.icon),
-  }),
-);
-
 const colors = {
   blue: {
     badge: "bg-blue-100 text-blue-800",
@@ -89,7 +82,7 @@ export default function ScrapAndPackagingSections(): JSX.Element {
             className: SCRAP_AND_PACKAGING_CONFIG.scrapMaterials.badge.className,
           }}
           title={SCRAP_AND_PACKAGING_CONFIG.scrapMaterials.title}
-          description={SCRAP_AND_PACKAGING_CONFIG.scrapMaterials.description}
+          description={SCRAP_AND_PACKAGING_CONFIG.scrapMaterials.description ?? undefined}
           className="mb-12"
         />
 
@@ -116,46 +109,6 @@ export default function ScrapAndPackagingSections(): JSX.Element {
               <span>{SCRAP_AND_PACKAGING_CONFIG.scrapMaterials.cta.secondary}</span>
             </Button>
           </Link>
-        </div>
-      </Container>
-
-      <div className="my-48" />
-      <Container>
-        <SectionHeader
-          badge={{
-            text: SCRAP_AND_PACKAGING_CONFIG.packagingProducts.badge.text,
-            className: SCRAP_AND_PACKAGING_CONFIG.packagingProducts.badge.className,
-          }}
-          title={SCRAP_AND_PACKAGING_CONFIG.packagingProducts.title}
-          description={SCRAP_AND_PACKAGING_CONFIG.packagingProducts.description}
-          className="mb-12"
-        />
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {packagingProducts.slice(0, 3).map((product, index) => (
-            <ProductCard key={index} {...product} colorScheme="blue" />
-          ))}
-        </div>
-
-        <div className="mt-12 flex flex-wrap justify-center gap-4">
-          <div className="mt-12 flex flex-wrap justify-center gap-4">
-            <Link
-              aria-label={`View all ${SCRAP_AND_PACKAGING_CONFIG.packagingProducts.badge.text}`}
-              href="/products?tab=packaging"
-            >
-              <Button className={`${colors.blue.button} h-12  `}>
-                <span>{SCRAP_AND_PACKAGING_CONFIG.packagingProducts.cta.primary}</span>
-              </Button>
-            </Link>
-            <Link
-              aria-label={`Request bulk quote for ${SCRAP_AND_PACKAGING_CONFIG.packagingProducts.badge.text}`}
-              href="#contact"
-            >
-              <Button className={`${colors.blue.buttonSecondary} h-12  `}>
-                <span>{SCRAP_AND_PACKAGING_CONFIG.packagingProducts.cta.secondary}</span>
-              </Button>
-            </Link>
-          </div>
         </div>
       </Container>
     </section>

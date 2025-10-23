@@ -16,7 +16,6 @@ export default function Home() {
       <AboutUsSection />
       <DualBusinessOverview />
       <ScrapAndPackagingSections />
-      <TestimonialsSection />
       <PresencePage />
       <ContactSection />
       <FooterSection />

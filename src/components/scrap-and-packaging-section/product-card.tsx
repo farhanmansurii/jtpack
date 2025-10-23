@@ -1,122 +1,175 @@
 /* eslint-disable @next/next/no-img-element */
-import React, { JSX } from "react";
-import { Package, CheckCircle, ArrowRight } from "lucide-react";
-import { Button } from "../ui/button";
+'use client';
+import React, { useState } from "react";
+import { CheckCircle, ChevronDown, ChevronUp, Sparkles } from "lucide-react";
 import { QuoteRequest } from "../quote-request";
 
-type ColorScheme = "blue" | "green";
+type ColorScheme = "blue" | "green" | "purple" | "orange";
 
 type ProductCardProps = {
   category: string;
   title: string;
-  subtitle: string;
+  subtitle?: string;
   image: string;
   features: string[];
-  applications: string[];
-  icon: JSX.Element;
+  icon?: React.ReactNode;
   ctaText: string;
   colorScheme?: ColorScheme;
 };
 
-const ProductCard = ({
+export default function ProductCard({
   category,
   title,
   subtitle,
   image,
   features,
-  applications,
   icon,
   ctaText,
   colorScheme = "blue",
-}: ProductCardProps) => {
-  const colors = {
-    blue: {
-      badge: "bg-blue-50 text-blue-700",
-      iconText: "text-blue-600",
-      button: "bg-blue-600 hover:bg-blue-700",
-      accent: "text-blue-600",
-    },
-    green: {
-      badge: "bg-green-50 text-green-700",
-      iconText: "text-green-600",
-      button: "bg-green-600 hover:bg-green-700",
-      accent: "text-green-600",
-    },
-  };
+}: ProductCardProps) {
+  const [expanded, setExpanded] = useState(false);
 
-  const colorClass = colors[colorScheme];
-
-  // Map category to product value for the quote form
-  const getProductValue = (category: string) => {
-    const categoryMap: Record<string, string> = {
+  const getProductValue = (c: string) =>
+    ({
       "Paper Scrap": "paper-scrap",
       "Plastic Scrap": "plastic-scrap",
       "Metal Scrap": "metal-scrap",
       "CFC Packaging": "cfc-packaging",
       "Thermal Packaging": "thermal-packaging",
       "Custom Packaging": "custom-packaging",
-    };
-    return categoryMap[category] || "other";
-  };
+    }[c] || "other");
+
+  const colors = {
+    blue: {
+      gradient: "from-blue-500/10 via-blue-400/5 to-transparent",
+      badge: "bg-gradient-to-r from-blue-500 to-blue-600",
+      checkIcon: "text-blue-600",
+      button: "bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800",
+      glow: "group-hover:shadow-blue-500/20",
+      border: "border-blue-200/50",
+    },
+    green: {
+      gradient: "from-green-500/10 via-green-400/5 to-transparent",
+      badge: "bg-gradient-to-r from-green-500 to-green-600",
+      checkIcon: "text-green-600",
+      button: "bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800",
+      glow: "group-hover:shadow-green-500/20",
+      border: "border-green-200/50",
+    },
+    purple: {
+      gradient: "from-purple-500/10 via-purple-400/5 to-transparent",
+      badge: "bg-gradient-to-r from-purple-500 to-purple-600",
+      checkIcon: "text-purple-600",
+      button: "bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800",
+      glow: "group-hover:shadow-purple-500/20",
+      border: "border-purple-200/50",
+    },
+    orange: {
+      gradient: "from-orange-500/10 via-orange-400/5 to-transparent",
+      badge: "bg-gradient-to-r from-orange-500 to-orange-600",
+      checkIcon: "text-orange-600",
+      button: "bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800",
+      glow: "group-hover:shadow-orange-500/20",
+      border: "border-orange-200/50",
+    },
+  }[colorScheme];
+
+  const visibleFeatures = expanded ? features : features.slice(0, 3);
+  const hasMoreFeatures = features.length > 3;
 
   return (
-    <div className="group w-full bg-white border border-gray-200 rounded-xl hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden">
-      <div className="p-6 space-y-4">
-        <div className="flex items-center justify-between">
-          <span
-            className={`flex items-center gap-2 ${colorClass.badge} px-3 py-1 rounded-full text-sm font-medium`}
-          >
-            {icon}
-            <span>{category}</span>
-          </span>
-        </div>
+    <>
+      <div
+        className={`group relative flex flex-col rounded-3xl border ${colors.border} bg-white overflow-hidden shadow-lg hover:shadow-2xl ${colors.glow} transition-all duration-500 hover:-translate-y-2`}
+      >
+        <div className={`absolute inset-0 bg-gradient-to-br ${colors.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none`} />
 
-        <div className="aspect-video w-full relative overflow-hidden rounded-lg bg-gray-100">
+        <div className="relative aspect-[16/10] w-full overflow-hidden bg-gradient-to-br from-gray-100 to-gray-50">
           <img
             src={image}
             alt={title}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-            loading="lazy"
+            className="h-full w-full object-cover transition-all duration-700 group-hover:scale-110 group-hover:rotate-1"
           />
+
+          <div className="absolute top-4 left-4">
+            <span
+              className={`inline-flex items-center gap-2 ${colors.badge} text-white px-4 py-2 rounded-full text-xs font-semibold shadow-lg backdrop-blur-sm`}
+            >
+              {icon || <Sparkles className="w-3.5 h-3.5" />}
+              {category}
+            </span>
+          </div>
         </div>
 
-        <div className="space-y-2">
-          <h3 className="text-xl font-semibold text-gray-900 leading-tight">{title}</h3>
-          <p className="text-sm text-gray-600">{subtitle}</p>
+        <div className="relative flex flex-col flex-1 p-6">
+          <div className="mb-4">
+            <h3 className="text-xl font-bold text-gray-900 mb-1 leading-tight group-hover:text-gray-800 transition-colors">
+              {title}
+            </h3>
+            {subtitle && (
+              <p className="text-sm text-gray-500 leading-relaxed">{subtitle}</p>
+            )}
+          </div>
+
+          <div className="flex-1 mb-4">
+            <div className={`space-y-2 transition-all duration-300 ${expanded ? 'max-h-96' : 'max-h-32'} overflow-hidden`}>
+              {visibleFeatures.map((feature, index) => (
+                <div
+                  key={index}
+                  className="flex items-start gap-2.5 opacity-0 animate-fadeIn"
+                  style={{ animationDelay: `${index * 50}ms`, animationFillMode: 'forwards' }}
+                >
+                  <CheckCircle className={`w-4 h-4 mt-0.5 flex-shrink-0 ${colors.checkIcon}`} />
+                  <span className="text-sm text-gray-700 leading-relaxed">{feature}</span>
+                </div>
+              ))}
+            </div>
+
+            {hasMoreFeatures && (
+              <button
+                onClick={() => setExpanded(!expanded)}
+                className="mt-3 text-xs font-medium text-gray-600 hover:text-gray-900 flex items-center gap-1.5 transition-all duration-200 hover:gap-2"
+              >
+                {expanded ? (
+                  <>
+                    Show less <ChevronUp className="w-3.5 h-3.5" />
+                  </>
+                ) : (
+                  <>
+                    {features.length - 3} more features <ChevronDown className="w-3.5 h-3.5" />
+                  </>
+                )}
+              </button>
+            )}
+          </div>
+
+          <QuoteRequest product={getProductValue(category)} colorScheme={colorScheme as "green" | "blue"}>
+            <button
+              className={`w-full ${colors.button} text-white font-semibold rounded-xl py-3.5 shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]`}
+            >
+              {ctaText}
+            </button>
+          </QuoteRequest>
         </div>
       </div>
 
-      <div className="px-6 pb-4 space-y-4">
-        <div className="space-y-3">
-          <h4 className={`text-sm font-medium text-gray-900 flex items-center gap-2`}>
-            <Package className={`w-4 h-4 ${colorClass.iconText}`} />
-            Key Features
-          </h4>
-          <ul className="space-y-2">
-            {features.map((feature, index) => (
-              <li key={index} className="flex items-start gap-2 text-sm text-gray-600">
-                <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                <span>{feature}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
+      <style jsx>{`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
 
-      <div className="p-6 pt-0">
-        <QuoteRequest
-          product={getProductValue(category)}
-          colorScheme={colorScheme}
-          className="w-full"
-        >
-          <Button className={`w-full group/btn ${colorClass.button}`}>
-            <span>{ctaText}</span>
-            <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
-          </Button>
-        </QuoteRequest>
-      </div>
-    </div>
+        .animate-fadeIn {
+          animation: fadeIn 0.3s ease-out;
+        }
+      `}</style>
+    </>
   );
-};
+}
 
-export default ProductCard;

@@ -116,39 +116,41 @@ export const ABOUT_US_CONFIG = {
 export const DUAL_BUSINESS_CONFIG = {
   badge: {
     text: "Our Expertise",
-    className: "bg-blue-100 text-blue-800",
+    className: "bg-green-100 text-green-800",
   },
   title: "Dual Business Strengths",
   description:
     "Combining end-to-end recycling operations with industry-leading CFC packaging manufacturing to deliver sustainable, high-performance solutions.",
   businesses: [
     {
-      title: "Sustainable Scrap Trading",
+      title: "Granule Manufacturing",
       icon: "Recycle" as FeatureIcon,
       description:
-        "We trade high-quality scrap materials including paper, plastic, and metal. Our operations prioritize sustainability, traceability, and efficiency, contributing to India's circular economy.",
-      highlights: ["Paper / Plastic / Metal", "Pan-India Sourcing", "Over 60% recycled input"],
-      badge: "Recycling",
+        "Our LD Polyester and LD Coating Granules are the go-to solution for packaging, lamination, textiles, and industrial use. Consistency and sustainability.",
+      highlights: [
+        "High-strength polyester granules",
+        "Adhesive-grade coating granules",
+        "Eco-friendly production process",
+        "Consistent melt-flow quality",
+        "Custom additive formulations",
+      ],
+      badge: "Polymer Manufacturing",
       gradient: "from-green-500/10 via-white to-green-500/5",
-      image:
-        "https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=800&h=400&fit=crop&auto=format",
+      image: "/products/granules.png",
     },
     {
-      title: "Controlled Foam Core (CFC) Packaging",
+      title: "Corrugated Fibreboard Carton (CFC) Packaging",
       icon: "Package" as FeatureIcon,
       description:
-        "We manufacture premium CFC boxes engineered for insulation, durability, and sustainability. Our export-grade packaging meets stringent industry standards across multiple sectors.",
-      highlights: [
-        "Thermal R-Value R3.2–R5.0",
-        "Export-grade durability",
-        "Custom sizes & finishes",
-      ],
+"Our CFC boxes deliver unmatched protection with 3, 5, and 7 PLY options. Designed with eco-conscious precision, they’re trusted across industries",
+      highlights: ["3 PLY", "5 PLY", "7 PLY"],
       badge: "CFC Packaging",
       gradient: "from-blue-500/10 via-white to-blue-500/5",
       image:
         "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=800&h=400&fit=crop&auto=format",
     },
   ],
+
   cta: {
     title: "Ready to Partner with Us?",
     description:
@@ -167,49 +169,47 @@ export const SCRAP_AND_PACKAGING_CONFIG = {
       text: "Recycling Division",
       className: "bg-green-100 text-green-800",
     },
-    title: "Scrap Materials Trading",
-    description:
-      "Bulk procurement and resale of quality scrap materials sourced across India, enabling a more efficient and eco-friendly recycling industry.",
+    title: "Waste Materials Trading",
+    description: null,
     products: [
       {
         category: "Paper Scrap",
-        title: "Premium Paper Recycling",
+        title: "Recycled Plastic Trading",
         subtitle: "High-quality paper waste processing and trading solutions",
         image:
           "https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=400&h=300&fit=crop&auto=format",
-        features: [
-          "Kraft Waste Processing",
-          "Newspaper Collection",
-          "Cardboard Recycling",
-          "Mixed Paper Sorting",
-        ],
+        features: ["Pure LD", "LD Coating", "LD Lamination", "PP Coating 2-3 Layers"],
         applications: ["Industrial Use", "Export Ready", "Quality Assured"],
         icon: "FileText" as FeatureIcon,
         ctaText: "Get Quote",
       },
       {
-        category: "Plastic Scrap",
-        title: "Advanced Plastic Processing",
+        category: "Plastic Trading",
+        title: "Waste Paper Trading",
         subtitle: "Specialized plastic waste management and recycling services",
         image:
           "https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?w=400&h=300&fit=crop&auto=format",
         features: [
-          "LD Plastic Processing",
-          "HD Plastic Sorting",
-          "FBBD Boards",
-          "Post-Shred Materials",
+          "Duplex",
+          "LCC",
+          "Cyber XL",
+          "Pulp Board",
+          "Pasting Kraft",
+          "Lamination",
+          "Kraft",
+          "...and many more",
         ],
         applications: ["Manufacturing", "Export Trade", "Eco-Friendly"],
         icon: "Recycle" as FeatureIcon,
         ctaText: "Get Quote",
       },
       {
-        category: "Metal Scrap",
-        title: "Metal Recycling Solutions",
+        category: "Alloy Trading",
+        title: "Alloy  Trading",
         subtitle: "Comprehensive metal scrap collection and processing",
         image:
           "https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=400&h=300&fit=crop&auto=format",
-        features: ["Metal Off-cuts", "LCC Grades", "Aluminum Processing", "Quality Control"],
+        features: ["Aluminium", "Copper", "SS Steel", "Metal", "Brass"],
         applications: ["Industrial Supply", "Export Ready", "Certified Quality"],
         icon: "Shield" as FeatureIcon,
         ctaText: "Get Quote",

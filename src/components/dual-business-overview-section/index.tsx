@@ -1,17 +1,13 @@
 /* eslint-disable @next/next/no-img-element */
 import React from "react";
-import Link from "next/link";
-import { Recycle, Package } from "lucide-react";
-import { Container } from "@/components/ui/container";
 import { DUAL_BUSINESS_CONFIG } from "@/lib/config";
+import { Container } from "@/components/ui/container";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { QuoteRequest } from "@/components/quote-request";
-import { FeatureIcon } from "@/lib/config";
 import {
-  Recycle as RecycleIcon,
-  Package as PackageIcon,
+  Recycle,
+  Package,
   Shield,
   Zap,
   Globe,
@@ -20,131 +16,147 @@ import {
   Users,
 } from "lucide-react";
 
-// Icon mapping function
+type FeatureIcon =
+  | "Recycle"
+  | "Package"
+  | "Shield"
+  | "Zap"
+  | "Globe"
+  | "Award"
+  | "TrendingUp"
+  | "Users";
+
 function getIconComponent(icon: FeatureIcon) {
-  const icons = {
-    Recycle,
-    Package,
-    Shield,
-    Zap,
-    Globe,
-    Award,
-    TrendingUp,
-    Users,
-  } as const;
-  const IconComponent = icons[icon as keyof typeof icons];
-  return IconComponent ? <IconComponent className="h-8 w-8" /> : <Package className="h-8 w-8" />;
+  const icons = { Recycle, Package, Shield, Zap, Globe, Award, TrendingUp, Users } as const;
+  const Icon = icons[icon];
+  return Icon ? <Icon className="h-6 w-6" /> : <Package className="h-6 w-6" />;
 }
 
 export default function DualBusinessOverview() {
-  const businesses = DUAL_BUSINESS_CONFIG.businesses.map((business) => ({
-    ...business,
-    icon: getIconComponent(business.icon),
+  const businesses = DUAL_BUSINESS_CONFIG.businesses.map((b) => ({
+    ...b,
+    icon: getIconComponent(b.icon),
   }));
 
   return (
-    <section id="expertise" className="py-16 lg:py-24 bg-gray-50">
+    <section
+      id="expertise"
+      className="relative overflow-hidden bg-gradient-to-b from-gray-50 via-white to-gray-50 py-24"
+    >
+
+
       <Container>
-        {/* Header */}
-        <div className="text-center mb-16">
-          <Badge className={DUAL_BUSINESS_CONFIG.badge.className}>
+        {/* HEADER */}
+        <div className="relative mx-auto mb-24 text-center max-w-3xl">
+          <Badge className="mb-4 px-4 py-1 text-sm tracking-wide backdrop-blur border border-gray-200">
             {DUAL_BUSINESS_CONFIG.badge.text}
           </Badge>
-          <h2 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
+          <h2 className="text-4xl font-semibold tracking-tight text-gray-900 sm:text-5xl lg:text-6xl">
             {DUAL_BUSINESS_CONFIG.title}
           </h2>
-          <p className="mt-4 max-w-3xl mx-auto text-lg text-gray-600">
+          <p className="mt-4 text-lg text-gray-600 leading-relaxed">
             {DUAL_BUSINESS_CONFIG.description}
           </p>
         </div>
 
-        {/* Business Cards */}
-        <div className="grid lg:grid-cols-2 gap-8 mb-16">
-          {businesses.map((business, index) => (
-            <Card
-              key={index}
-              className={`relative overflow-hidden bg-gradient-to-br ${business.gradient} border-0 shadow-lg hover:shadow-xl transition-all duration-300`}
+        {/* GRID */}
+        <div className="grid gap-10 lg:grid-cols-2 relative z-10">
+          {businesses.map((b, i) => (
+            <div
+              key={i}
+              className={`group relative flex flex-col overflow-hidden rounded-3xl border border-gray-200 shadow-md transition-all duration-500 hover:shadow-xl`}
+              style={{
+                background:
+                  b.badge === "Polymer Manufacturing"
+                    ? "linear-gradient(145deg, #ecfdf5 0%, #d1fae5 100%)"
+                    : "linear-gradient(145deg, #eff6ff 0%, #dbeafe 100%)",
+              }}
             >
-              <CardContent className="p-8">
-                <div className="flex items-start gap-4 mb-6">
-                  <div className="flex-shrink-0">
-                    <div
-                      className={`w-12 h-12 rounded-lg ${
-                        business.badge === "Recycling"
-                          ? "bg-green-100 text-green-600"
-                          : "bg-blue-100 text-blue-600"
-                      } flex items-center justify-center`}
-                    >
-                      {business.icon}
-                    </div>
+              {/* Inner glow overlay */}
+              <div className="absolute inset-0 bg-white/60 backdrop-blur-[1px] opacity-70 group-hover:opacity-50 transition-opacity duration-500" />
+
+              <div className="relative z-10 p-10 flex flex-col flex-1">
+                <div className="flex items-center gap-3 mb-2">
+                  <div
+                    className={`p-3 rounded-xl ${
+                      b.badge === "Polymer Manufacturing"
+                        ? "bg-green-100 text-green-600"
+                        : "bg-blue-100 text-blue-600"
+                    }`}
+                  >
+                    {b.icon}
                   </div>
-                  <div className="flex-1">
-                    <Badge
-                      variant="secondary"
-                      className={
-                        business.badge === "Recycling"
-                          ? "bg-green-100 text-green-800"
-                          : "bg-blue-100 text-blue-800"
-                      }
-                    >
-                      {business.badge}
-                    </Badge>
-                    <h3 className="text-xl font-bold text-gray-900 mt-2 mb-3">{business.title}</h3>
-                    <p className="text-gray-600 leading-relaxed">{business.description}</p>
-                  </div>
+                  <Badge
+                    variant="secondary"
+                    className={`text-sm ${
+                      b.badge === "Polymer Manufacturing"
+                        ? "bg-green-100 text-green-800"
+                        : "bg-blue-100 text-blue-800"
+                    }`}
+                  >
+                    {b.badge}
+                  </Badge>
                 </div>
 
-                {/* Highlights */}
-                <div className="mb-6">
-                  <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-2">
-                    {business.highlights.map((highlight, i) => (
-                      <li key={i} className="flex items-center gap-2 text-sm text-gray-700">
-                        <div
-                          className={`w-1.5 h-1.5 rounded-full ${
-                            business.badge === "Recycling" ? "bg-green-500" : "bg-blue-500"
-                          }`}
-                        />
-                        <span>{highlight}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                <h3 className="text-2xl font-semibold text-gray-900 mb-2">
+                  {b.title}
+                </h3>
+                <p className="text-gray-700 leading-relaxed mb-4">
+                  {b.description}
+                </p>
 
-                {/* Business Image */}
-                <div className="rounded-lg overflow-hidden mb-4">
+                <ul className="grid sm:grid-cols-2 gap-2 mb-8">
+                  {b.highlights.map((h: string, j: number) => (
+                    <li key={j} className="flex items-center gap-2 text-sm text-gray-700">
+                      <div
+                        className={`w-1.5 h-1.5 rounded-full ${
+                          b.badge === "Polymer Manufacturing"
+                            ? "bg-green-500"
+                            : "bg-blue-500"
+                        }`}
+                      />
+                      {h}
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="relative overflow-hidden rounded-2xl border border-white/40 shadow-inner">
                   <img
-                    src={business.image}
-                    alt={business.title}
-                    className="w-full h-40 object-cover"
+                    src={b.image}
+                    alt={b.title}
+                    className="h-60 w-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent" />
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           ))}
         </div>
 
-        {/* Bottom CTA Section */}
-        <div className="mt-16 text-center">
-          <div className="bg-white rounded-2xl shadow-lg p-8 max-w-4xl mx-auto">
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">
+        {/* CTA */}
+        <div className="relative mt-32">
+          <div className="mx-auto max-w-4xl rounded-3xl border border-gray-200 bg-white/70 backdrop-blur-lg p-14 text-center shadow-lg transition-all hover:shadow-xl">
+            <h3 className="text-3xl font-semibold text-gray-900 mb-3">
               {DUAL_BUSINESS_CONFIG.cta.title}
             </h3>
-            <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+            <p className="text-gray-600 mb-8 leading-relaxed max-w-2xl mx-auto">
               {DUAL_BUSINESS_CONFIG.cta.description}
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              {DUAL_BUSINESS_CONFIG.cta.buttons.map((button, index) => (
+
+            <div className="flex flex-col sm:flex-row justify-center gap-5">
+              {DUAL_BUSINESS_CONFIG.cta.buttons.map((button, i) => (
                 <QuoteRequest
-                  key={index}
+                  key={i}
                   product={button.variant === "green" ? "paper-scrap" : "cfc-packaging"}
                   colorScheme={button.variant as "green" | "blue"}
                 >
                   <Button
-                    className={`${
+                    size="lg"
+                    className={`font-medium px-10 py-3.5 text-white rounded-xl shadow-md transition-all ${
                       button.variant === "green"
                         ? "bg-green-600 hover:bg-green-700"
                         : "bg-blue-600 hover:bg-blue-700"
-                    } text-white px-8 py-3 rounded-lg font-medium transition-colors duration-200`}
+                    }`}
                   >
                     {button.text}
                   </Button>
