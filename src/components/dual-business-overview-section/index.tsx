@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @next/next/no-img-element */
 import React from "react";
 import { DUAL_BUSINESS_CONFIG } from "@/lib/config";
@@ -14,23 +15,32 @@ import {
   Award,
   TrendingUp,
   Users,
+  PackageSearch,
+  Leaf,
+  CheckCircle2,FileText
 } from "lucide-react";
 
-type FeatureIcon =
-  | "Recycle"
-  | "Package"
-  | "Shield"
-  | "Zap"
-  | "Globe"
-  | "Award"
-  | "TrendingUp"
-  | "Users";
+function getIconComponent(icon: string) {
+  const icons = {
+    Recycle,
+    Package,
+    Shield,
+    Zap,
+    Globe,
+    Award,
+    TrendingUp,
+    Users,
+    PackageSearch,
+    Leaf,
+    CheckCircle2,
+    FileText,
+  } as const;
 
-function getIconComponent(icon: FeatureIcon) {
-  const icons = { Recycle, Package, Shield, Zap, Globe, Award, TrendingUp, Users } as const;
-  const Icon = icons[icon];
-  return Icon ? <Icon className="h-6 w-6" /> : <Package className="h-6 w-6" />;
+  const Icon = (icons as Record<string, any>)[icon] ?? Package;
+  return <Icon className="h-6 w-6" />;
 }
+
+
 
 export default function DualBusinessOverview() {
   const businesses = DUAL_BUSINESS_CONFIG.businesses.map((b) => ({

@@ -1,7 +1,6 @@
 import React, { JSX } from "react";
-import { Separator } from "@/components/ui/separator";
 import { Container } from "@/components/ui/container";
-import { FileText, Recycle, Package, Shield, Globe, Snowflake, Layers } from "lucide-react";
+import { FileText, Recycle, Package, Shield, Globe, Snowflake,  } from "lucide-react";
 import ProductCard from "./product-card";
 import Link from "next/link";
 import { SCRAP_AND_PACKAGING_CONFIG } from "@/lib/config";
@@ -19,20 +18,9 @@ type Product = {
   ctaText: string;
 };
 
-type ColorScheme = "blue" | "green";
 
-type SectionGridProps = {
-  id: string;
-  heading: string;
-  badge: string;
-  description: string;
-  items: Product[];
-  viewAllLabel: string;
-  bulkQuoteLabel: string;
-  colorScheme?: ColorScheme;
-};
 
-// Helper function to get icon component
+
 const getIconComponent = (iconName: string) => {
   switch (iconName) {
     case "FileText":
