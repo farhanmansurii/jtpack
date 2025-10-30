@@ -19,6 +19,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { ArrowRight, Loader2 } from "lucide-react";
+import { SCRAP_AND_PACKAGING_CONFIG, FOOTER_CONFIG } from "@/lib/config";
 
 interface QuoteRequestProps {
   children: React.ReactNode;
@@ -26,6 +27,7 @@ interface QuoteRequestProps {
   colorScheme?: "green" | "blue";
   className?: string;
   useModal?: boolean; // new prop
+  mode?: "submit" | "whatsapp";
 }
 
 interface QuoteFormData {
@@ -36,15 +38,13 @@ interface QuoteFormData {
   notes: string;
 }
 
-const PRODUCT_OPTIONS = [
-  { value: "paper-scrap", label: "Paper Scrap Recycling" },
-  { value: "plastic-scrap", label: "Plastic Scrap Recycling" },
-  { value: "metal-scrap", label: "Metal Scrap Recycling" },
-  { value: "cfc-packaging", label: "CFC Packaging Solutions" },
-  { value: "thermal-packaging", label: "Thermal Packaging" },
-  { value: "custom-packaging", label: "Custom Packaging Solutions" },
-  { value: "other", label: "Other" },
-];
+type ProductOption = { value: string; label: string };
+const PRODUCT_OPTIONS: ProductOption[] = (
+  [
+    ...SCRAP_AND_PACKAGING_CONFIG.scrapMaterials.products,
+    ...SCRAP_AND_PACKAGING_CONFIG.packagingProducts.products,
+  ] as Array<{ title: string; slug?: string }>
+).map((p) => ({ value: p.slug || p.title, label: p.title }));
 
 export function QuoteRequest({
   children,
@@ -52,6 +52,7 @@ export function QuoteRequest({
   colorScheme = "blue",
   className,
   useModal = true,
+  mode = "whatsapp",
 }: QuoteRequestProps) {
   const [isOpen, setIsOpen] = React.useState(false);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
@@ -88,15 +89,24 @@ export function QuoteRequest({
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("/api/quote-request", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+      if (mode === "whatsapp") {
+        const toNumber = FOOTER_CONFIG.contact.phone.replace(/[^0-9]/g, "");
+        const message = [
+          "*New Quote Request*",
+          "",
+          `*Name:* ${formData.name}`,
+          `*Preferred Contact Method:* ${formData.contactMethod}`,
+          `*Contact:* ${formData.contact}`,
+          `*Product:* ${PRODUCT_OPTIONS.find(p => p.value === formData.product)?.label || formData.product}`,
+          `*Additional Notes:* ${formData.notes || "-"}`,
+        ]
+          .join("%0A")
+          .replace(/\*/g, "%2A")
+          .replace(/_/g, "%5F");
 
-      if (response.ok) {
+        const url = `https://wa.me/${toNumber}?text=${message}`;
+        window.open(url, "_blank", "noopener,noreferrer");
+
         setIsSubmitted(true);
         setTimeout(() => {
           setIsOpen(false);
@@ -108,9 +118,33 @@ export function QuoteRequest({
             product: product || "",
             notes: "",
           });
-        }, 2000);
-      } else {
-        throw new Error("Failed to submit quote request");
+        }, 1500);
+      }
+       else {
+        const response = await fetch("/api/quote-request", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        });
+
+        if (response.ok) {
+          setIsSubmitted(true);
+          setTimeout(() => {
+            setIsOpen(false);
+            setIsSubmitted(false);
+            setFormData({
+              name: "",
+              contactMethod: "phone",
+              contact: "",
+              product: product || "",
+              notes: "",
+            });
+          }, 2000);
+        } else {
+          throw new Error("Failed to submit quote request");
+        }
       }
     } catch (error) {
       console.error("Error submitting quote request:", error);
@@ -229,11 +263,11 @@ export function QuoteRequest({
           {isSubmitting ? (
             <>
               <Loader2 className="w-4 h-4 animate-spin" />
-              Submitting...
+              {mode === "whatsapp" ? "Opening WhatsApp..." : "Submitting..."}
             </>
           ) : (
             <>
-              Submit Request
+              {mode === "whatsapp" ? "Send on WhatsApp" : "Submit Request"}
               <ArrowRight className="w-4 h-4" />
             </>
           )}

@@ -41,6 +41,7 @@ function ProductsContent() {
         ...p,
         icon: getIcon(p.icon),
         division: "recycling" as const,
+        slug: p.slug,
       })),
     [],
   );
@@ -51,6 +52,7 @@ function ProductsContent() {
         ...p,
         icon: getIcon(p.icon),
         division: "packaging" as const,
+        slug: p.slug,
       })),
     [],
   );
@@ -194,6 +196,7 @@ function Grid({ items, colorScheme }: { items: any[]; colorScheme?: "green" | "b
           key={`${product?.id ?? product?.title}-${i}`}
           {...product}
           colorScheme={colorScheme || (product.division === "recycling" ? "green" : "blue")}
+          href={product.slug ? `/products/${product.division === "recycling" ? "scrap" : "packaging"}/${product.slug}` : undefined}
         />
       ))}
     </div>

@@ -25,6 +25,7 @@ export type Product = {
   applications: string[];
   icon: FeatureIcon;
   ctaText: string;
+  slug?: string;
 };
 
 export type Business = {
@@ -229,6 +230,7 @@ export const SCRAP_AND_PACKAGING_CONFIG = {
         applications: ["Industrial Use", "Export Ready", "Quality Assured"],
         icon: "FileText" as FeatureIcon,
         ctaText: "Get Quote",
+        slug: "hdpe-scrap",
       },
       {
         category: "Plastic Trading",
@@ -249,6 +251,7 @@ export const SCRAP_AND_PACKAGING_CONFIG = {
         applications: ["Manufacturing", "Export Trade", "Eco-Friendly"],
         icon: "Recycle" as FeatureIcon,
         ctaText: "Get Quote",
+        slug: "ldpe-scrap",
       },
       {
         category: "Alloy Trading",
@@ -260,6 +263,7 @@ export const SCRAP_AND_PACKAGING_CONFIG = {
         applications: ["Industrial Supply", "Export Ready", "Certified Quality"],
         icon: "Shield" as FeatureIcon,
         ctaText: "Get Quote",
+        slug: "hdpe-scrap",
       },
     ],
     cta: {
@@ -291,6 +295,7 @@ export const SCRAP_AND_PACKAGING_CONFIG = {
         applications: ["Industrial Packaging", "Export Ready", "Custom Sizing"],
         icon: "Package" as FeatureIcon,
         ctaText: "Get Quote",
+        slug: "stretch-film",
       },
       {
         category: "CFC Boxes",
@@ -307,6 +312,7 @@ export const SCRAP_AND_PACKAGING_CONFIG = {
         applications: ["Pharmaceutical", "Food Industry", "Electronics"],
         icon: "Snowflake" as FeatureIcon,
         ctaText: "Get Quote",
+        slug: "pp-straps",
       },
       {
         category: "Export Packaging",
@@ -323,6 +329,7 @@ export const SCRAP_AND_PACKAGING_CONFIG = {
         applications: ["International Trade", "Export Compliance", "Global Shipping"],
         icon: "Globe" as FeatureIcon,
         ctaText: "Get Quote",
+        slug: "stretch-film",
       },
     ],
     cta: {
@@ -345,7 +352,7 @@ export const FOOTER_CONFIG = {
   contact: {
     title: "Get in Touch",
     description: "Ready to start your project?",
-    phone: "+1 (555) 123-4567",
+    phone: "+91 9930496506",
     email: "info@jtpack.com",
     address: "123 Business District, City, State 12345",
   },

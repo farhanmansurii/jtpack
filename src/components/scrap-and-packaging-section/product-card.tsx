@@ -1,8 +1,9 @@
 /* eslint-disable @next/next/no-img-element */
-'use client';
+"use client";
 import React, { useState } from "react";
 import { CheckCircle, ChevronDown, ChevronUp, Sparkles } from "lucide-react";
 import { QuoteRequest } from "../quote-request";
+import Link from "next/link";
 
 type ColorScheme = "blue" | "green" | "purple" | "orange";
 
@@ -15,6 +16,7 @@ type ProductCardProps = {
   icon?: React.ReactNode;
   ctaText: string;
   colorScheme?: ColorScheme;
+  href?: string;
 };
 
 export default function ProductCard({
@@ -26,6 +28,7 @@ export default function ProductCard({
   icon,
   ctaText,
   colorScheme = "blue",
+  href,
 }: ProductCardProps) {
   const [expanded, setExpanded] = useState(false);
 
@@ -142,6 +145,16 @@ export default function ProductCard({
               </button>
             )}
           </div>
+
+          {href && (
+            <div className="mb-3">
+              <Link href={href} className="inline-block">
+                <span className={`inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg border ${colors.border} hover:border-gray-300 transition-colors`}>
+                  View details
+                </span>
+              </Link>
+            </div>
+          )}
 
           <QuoteRequest product={getProductValue(category)} colorScheme={colorScheme as "green" | "blue"}>
             <button
