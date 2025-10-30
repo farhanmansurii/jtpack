@@ -10,7 +10,7 @@ import PresencePage from "@/components/presence-section/map";
 
 export default function Home() {
   return (
-    <div>
+    <div className="font-title">
       <Navbar />
       <HeroSection />
       <AboutUsSection />

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Roboto_Slab, JetBrains_Mono } from "next/font/google";
+import { Inter, Roboto_Slab, JetBrains_Mono, League_Spartan } from "next/font/google";
 import "./globals.css";
 const inter = Inter({
   variable: "--font-inter",
@@ -16,6 +16,12 @@ const robotoSlab = Roboto_Slab({
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
   subsets: ["latin"],
+});
+
+const leagueSpartan = League_Spartan({
+  variable: "--font-title",
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
 });
 export const metadata: Metadata = {
   title: {
@@ -77,7 +83,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.variable} ${robotoSlab.variable} ${jetbrainsMono.variable} antialiased`}
+        className={`${inter.variable} ${robotoSlab.variable} ${jetbrainsMono.variable} ${leagueSpartan.variable} antialiased`}
       >
         {children}
       </body>

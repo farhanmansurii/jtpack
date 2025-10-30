@@ -8,7 +8,11 @@ export type FeatureIcon =
   | "Shield"
   | "Snowflake"
   | "Globe"
-  | "Layers";
+  | "Layers"
+  | "Factory"
+  | "Boxes"
+  | "FlaskConical"
+  | "Truck";
 
 export type SocialIcon = "Facebook" | "Twitter" | "Instagram" | "Linkedin";
 
@@ -73,44 +77,87 @@ export const HERO_CONFIG = {
     secondary: { variant: "outline" as const, text: "Learn more", href: "/about" },
   },
 };
-
 // About Us Section Configuration
+
 export const ABOUT_US_CONFIG = {
   badge: {
     variant: "secondary" as const,
     text: "About Us",
   },
   title: "Driving Sustainability in Recycling & Packaging",
+  subtitle: "Precision. Sustainability. Industrial Excellence.",
   description: {
     first:
-      "At J T PACK PRIVATE LIMITED, we specialize in the trading of diverse scrap materials — including paper, plastic, and metal — with a mission centered on sustainability and environmental stewardship. We strive to make recycling more efficient and eco-friendly, contributing to a circular economy.",
+      "J T Pack Private Limited is a diversified industrial manufacturer and recycler, specializing in corrugated packaging, polymer granules, and multi-category scrap trading. Our product ecosystem bridges manufacturing, recycling, and material recovery — enabling sustainable value chains for India’s manufacturing, FMCG, logistics, and export sectors.",
     second:
-      "Alongside our recycling operations, we manufacture Controlled Foam Core (CFC) boxes — innovative packaging solutions known for durability, insulation, and sustainability. Our products meet the highest standards of quality, serving industries across India and beyond.",
+      "With fully automated corrugation and polymer-processing facilities, we combine high-throughput production with stringent quality assurance. Our integrated recycling division ensures that waste and by-products are converted into reusable industrial inputs, driving India’s transition toward a closed-loop, resource-efficient economy.",
   },
   features: [
     {
+      icon: "Factory" as FeatureIcon,
+      label: "Automated Corrugation & Polymer Facilities",
+    },
+    {
+      icon: "Boxes" as FeatureIcon,
+      label: "Custom 3-Ply, 5-Ply & 7-Ply Packaging Solutions",
+    },
+    {
+      icon: "FlaskConical" as FeatureIcon,
+      label: "LD & Polyester Plastic Granule Manufacturing",
+    },
+    {
       icon: "Recycle" as FeatureIcon,
-      label: "Trading paper, plastic, and metal scrap",
+      label: "Comprehensive Scrap Recovery & Reuse Systems",
+    },
+  ],
+  highlights: [
+    {
+      title: "Corrugation Division",
+      points: [
+        "Manufacturing of precision-cut corrugated boxes and sheets in multiple ply configurations (3-Ply, 5-Ply, 7-Ply)",
+        "Automated machinery ensuring dimensional accuracy, edge-crush strength, and consistent GSM calibration",
+        "Solutions tailored for e-commerce, FMCG, electronics, and logistics sectors",
+        "Sustainable production cycles minimizing raw-paper waste and energy usage",
+      ],
     },
     {
-      icon: "Package" as FeatureIcon,
-      label: "High-performance CFC packaging solutions",
+      title: "Polymer Granules Division",
+      points: [
+        "Production of LD, polyester, and pure-LD granules with controlled melt-flow and density parameters",
+        "Formulations suited for extrusion, injection molding, and blow-molding processes",
+        "Capability to customize color masterbatches, fillers, and additive blends",
+        "Recycling-first approach with verified polymer sourcing and quality traceability",
+      ],
     },
     {
-      icon: "Leaf" as FeatureIcon,
-      label: "Commitment to eco-friendly operations",
+      title: "Scrap Trading & Recycling",
+      points: [
+        "Nationwide collection and processing of paper, metal, and plastic scrap streams",
+        "Transparent procurement network with competitive, fair-value exchange models",
+        "Segregation, grading, and baling for high-efficiency material recovery",
+        "Supporting industrial partners in achieving ESG and zero-waste compliance",
+      ],
     },
   ],
   kpi: {
-    label: "Waste Diverted",
-    value: "60%+",
+    label: "Recycled & Reused Material Share",
+    value: "60%+ Annually",
   },
   values: [
-    { stat: "Pan-India", label: "Operational Reach" },
-    { stat: "Export-grade", label: "CFC Manufacturing" },
-    { stat: "ISO-ready", label: "Quality Compliance" },
+    { stat: "Reliability", label: "Consistent Supply & Delivery Assurance" },
+    { stat: "Integrity", label: "Ethical, Transparent Trade Operations" },
+    { stat: "Innovation", label: "Continuous Process & Material R&D" },
   ],
-};
+  mission:
+    "To provide reliable, cost-efficient, and eco-optimized materials that strengthen industrial supply chains while preserving environmental resources through innovation and circularity.",
+  vision:
+    "To establish J T Pack as India’s benchmark in integrated packaging and recycling — where corrugation, polymers, and scrap recovery unite to create a sustainable, closed-loop manufacturing ecosystem.",
+  cta: {
+    primary: { label: "Explore Our Divisions", href: "/divisions" },
+    secondary: { label: "Contact Our Team", href: "/contact" },
+  },
+} as const;
+
 
 // Dual Business Overview Configuration
 export const DUAL_BUSINESS_CONFIG = {
