@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Logo } from "@/components/logo";
 import {
   Mail,
   Phone,
@@ -99,7 +100,7 @@ function FooterSection() {
           {/* Company Info */}
           <div className="space-y-4">
             <div>
-              <h3 className="text-lg font-semibold mb-3">{FOOTER_CONFIG.company.name}</h3>
+              <Logo variant="dark" size="lg" showBadge={false} className="mb-3" />
               <p className="text-muted-foreground text-sm leading-relaxed">
                 {FOOTER_CONFIG.company.description}
               </p>

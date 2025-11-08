@@ -189,7 +189,7 @@ export const DUAL_BUSINESS_CONFIG = {
       ],
       badge: "Polymer Manufacturing",
       gradient: "from-green-500/10 via-white to-green-500/5",
-      image: "/products/granules.png",
+      image: "/products/granules.webp",
     },
     {
       title: "Corrugated Fibreboard Carton (CFC) Packaging",
@@ -486,6 +486,7 @@ export const NAVBAR_CONFIG = {
   logo: {
     text: "JTPack",
     badge: "Trusted",
+    image: "/logo.svg",
   },
   navigation: [
     { name: "Home", href: "/" },

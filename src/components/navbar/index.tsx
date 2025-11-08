@@ -7,6 +7,7 @@ import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NAVBAR_CONFIG } from "@/lib/config";
 import { QuoteRequest } from "@/components/quote-request";
+import { Logo } from "@/components/logo";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -144,16 +145,11 @@ export default function Navbar() {
       <Container>
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2 focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2 rounded-sm">
-            <div
-              className={cn(
-                "text-xl font-bold transition-colors duration-300 cursor-pointer",
-                scrolled || !isHomePage ? "text-primary" : "text-white",
-              )}
-            >
-              {NAVBAR_CONFIG.logo.text}
-            </div>
-          </Link>
+          <Logo
+            variant={scrolled || !isHomePage ? "default" : "light"}
+            size="md"
+            showBadge={false}
+          />
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-4">
