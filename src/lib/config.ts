@@ -16,11 +16,16 @@ export type FeatureIcon =
 
 export type SocialIcon = "Facebook" | "Twitter" | "Instagram" | "Linkedin";
 
+export type ProductImage = {
+  url: string;
+  description: string;
+};
+
 export type Product = {
   category: string;
   title: string;
   subtitle: string;
-  image: string;
+  image: string | ProductImage[];
   features: string[];
   applications: string[];
   icon: FeatureIcon;
@@ -224,20 +229,56 @@ export const SCRAP_AND_PACKAGING_CONFIG = {
         category: "Paper Scrap",
         title: "Recycled Plastic Trading",
         subtitle: "High-quality paper waste processing and trading solutions",
-        image:
-          "https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=400&h=300&fit=crop&auto=format",
+        image: [
+          {
+            url: "/products/waste-materials-trading/recycled-plastic-trading/pure-ld.png",
+            description: "Pure LD plastic granules - high quality recycled plastic material",
+          },
+          {
+            url: "/products/waste-materials-trading/recycled-plastic-trading/ldpe.jpg",
+            description: "LDPE (Low Density Polyethylene) - versatile plastic material for various applications",
+          },
+          {
+            url: "/products/waste-materials-trading/recycled-plastic-trading/ldpe-film-rolls.jpg",
+            description: "LDPE film rolls - premium quality film material for packaging and lamination",
+          },
+          {
+            url: "/products/waste-materials-trading/recycled-plastic-trading/pp-coating-layers.webp",
+            description: "PP Coating 2-3 Layers - multi-layer polypropylene coating material for industrial use",
+          },
+        ],
         features: ["Pure LD", "LD Coating", "LD Lamination", "PP Coating 2-3 Layers"],
         applications: ["Industrial Use", "Export Ready", "Quality Assured"],
         icon: "FileText" as FeatureIcon,
         ctaText: "Get Quote",
-        slug: "hdpe-scrap",
+        slug: "recycled-plastic-trading",
       },
       {
         category: "Plastic Trading",
         title: "Waste Paper Trading",
         subtitle: "Specialized plastic waste management and recycling services",
-        image:
-          "https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?w=400&h=300&fit=crop&auto=format",
+        image: [
+          {
+            url: "/products/waste-materials-trading/recycled-paper-trading/duplex.webp",
+            description: "Duplex paper - high quality recycled paper material",
+          },
+          {
+            url: "/products/waste-materials-trading/recycled-paper-trading/lcc.webp",
+            description: "LCC (Lineboard Corrugated Container) paper grade",
+          },
+          {
+            url: "/products/waste-materials-trading/recycled-paper-trading/cyber-xl.webp",
+            description: "Cyber XL paper - premium recycled paper grade",
+          },
+          {
+            url: "/products/waste-materials-trading/recycled-paper-trading/pulp-board.webp",
+            description: "Pulp board - high density recycled paper board",
+          },
+          {
+            url: "/products/waste-materials-trading/recycled-paper-trading/pasting-kraft.webp",
+            description: "Pasting kraft - strong kraft paper for lamination",
+          },
+        ],
         features: [
           "Duplex",
           "LCC",
@@ -251,19 +292,39 @@ export const SCRAP_AND_PACKAGING_CONFIG = {
         applications: ["Manufacturing", "Export Trade", "Eco-Friendly"],
         icon: "Recycle" as FeatureIcon,
         ctaText: "Get Quote",
-        slug: "ldpe-scrap",
+        slug: "waste-paper-trading",
       },
       {
         category: "Alloy Trading",
-        title: "Alloy  Trading",
+        title: "Alloy Trading",
         subtitle: "Comprehensive metal scrap collection and processing",
-        image:
-          "https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=400&h=300&fit=crop&auto=format",
+        image: [
+          {
+            url: "/products/waste-materials-trading/alloy-trading/aluminium.webp",
+            description: "Aluminium scrap - high quality recycled aluminium material for industrial use",
+          },
+          {
+            url: "/products/waste-materials-trading/alloy-trading/copper.jpg",
+            description: "Copper scrap - premium grade copper material for manufacturing and export",
+          },
+          {
+            url: "/products/waste-materials-trading/alloy-trading/ss-steel.png",
+            description: "Stainless Steel scrap - certified quality SS steel for industrial applications",
+          },
+          {
+            url: "/products/waste-materials-trading/alloy-trading/brass.webp",
+            description: "Brass scrap - high-grade brass material for various industrial uses",
+          },
+          {
+            url: "/products/waste-materials-trading/alloy-trading/mixed-metals.jpg",
+            description: "Mixed metals scrap - comprehensive metal collection and processing services",
+          },
+        ],
         features: ["Aluminium", "Copper", "SS Steel", "Metal", "Brass"],
         applications: ["Industrial Supply", "Export Ready", "Certified Quality"],
         icon: "Shield" as FeatureIcon,
         ctaText: "Get Quote",
-        slug: "hdpe-scrap",
+        slug: "alloy-trading",
       },
     ],
     cta: {
@@ -284,8 +345,32 @@ export const SCRAP_AND_PACKAGING_CONFIG = {
         category: "Corrugated Boxes",
         title: "Industrial Corrugated Solutions",
         subtitle: "Durable packaging solutions for heavy-duty applications",
-        image:
-          "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=400&h=300&fit=crop&auto=format",
+        image: [
+          {
+            url: "/products/packaging-manufacturing/industrial-corrugated-solutions/3ply-boxes.webp",
+            description: "3-Ply Construction - standard strength corrugated boxes for general packaging",
+          },
+          {
+            url: "/products/packaging-manufacturing/industrial-corrugated-solutions/5ply-boxes.webp",
+            description: "5-Ply Heavy Duty - reinforced corrugated boxes for heavy-duty applications",
+          },
+          {
+            url: "/products/packaging-manufacturing/industrial-corrugated-solutions/7ply-boxes.webp",
+            description: "7-Ply Extra Strong - maximum strength corrugated boxes for industrial use",
+          },
+          {
+            url: "/products/packaging-manufacturing/industrial-corrugated-solutions/boxes-manufacturing.webp",
+            description: "Boxes Manufacturing - professional corrugated box production facility",
+          },
+          {
+            url: "/products/packaging-manufacturing/industrial-corrugated-solutions/cfc-desc.webp",
+            description: "CFC Description - detailed information about corrugated fiberboard carton solutions",
+          },
+          {
+            url: "/products/packaging-manufacturing/industrial-corrugated-solutions/cfc-industry.webp",
+            description: "CFC Industry Solutions - corrugated fiberboard carton for industrial applications",
+          },
+        ],
         features: [
           "3-Ply Construction",
           "5-Ply Heavy Duty",
@@ -295,14 +380,30 @@ export const SCRAP_AND_PACKAGING_CONFIG = {
         applications: ["Industrial Packaging", "Export Ready", "Custom Sizing"],
         icon: "Package" as FeatureIcon,
         ctaText: "Get Quote",
-        slug: "stretch-film",
+        slug: "industrial-corrugated-solutions",
       },
       {
         category: "CFC Boxes",
         title: "Thermal Insulation Packaging",
         subtitle: "Advanced temperature-controlled packaging solutions",
-        image:
-          "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop&auto=format",
+        image: [
+          {
+            url: "/products/packaging-manufacturing/thermal-insulation-packaging/thermal-boxes.webp",
+            description: "Thermal Boxes - temperature-controlled packaging solutions for sensitive products",
+          },
+          {
+            url: "/products/packaging-manufacturing/thermal-insulation-packaging/thermal-box-2.png",
+            description: "Thermal Insulation Box - advanced temperature-regulated packaging with insulated core",
+          },
+          {
+            url: "/products/packaging-manufacturing/thermal-insulation-packaging/thermal-precision-fit.jpg",
+            description: "Precision Fit - custom-sized thermal packaging for optimal product protection",
+          },
+          {
+            url: "/products/packaging-manufacturing/thermal-insulation-packaging/temperature-controlled-distribution-boxes.webp",
+            description: "Temperature Controlled Distribution Boxes - specialized packaging maintaining consistent temperature during shipping",
+          },
+        ],
         features: [
           "Controlled Foam Core",
           "Shock Protection",
@@ -312,25 +413,41 @@ export const SCRAP_AND_PACKAGING_CONFIG = {
         applications: ["Pharmaceutical", "Food Industry", "Electronics"],
         icon: "Snowflake" as FeatureIcon,
         ctaText: "Get Quote",
-        slug: "pp-straps",
+        slug: "thermal-insulation-packaging",
       },
-      {
-        category: "Export Packaging",
-        title: "International Export Solutions",
-        subtitle: "Global-standard packaging for international trade",
-        image:
-          "https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?w=400&h=300&fit=crop&auto=format",
-        features: [
-          "Global Standards Compliance",
-          "Incoterms Ready",
-          "Multi-Currency Support",
-          "Documentation",
-        ],
-        applications: ["International Trade", "Export Compliance", "Global Shipping"],
-        icon: "Globe" as FeatureIcon,
-        ctaText: "Get Quote",
-        slug: "stretch-film",
-      },
+      // {
+      //   category: "Export Packaging",
+      //   title: "International Export Solutions",
+      //   subtitle: "Global-standard packaging for international trade",
+      //   image: [
+      //     {
+      //       url: "/products/packaging-manufacturing/international-export-solutions/global-standards.webp",
+      //       description: "Global Standards Compliance - packaging meeting international quality standards",
+      //     },
+      //     {
+      //       url: "/products/packaging-manufacturing/international-export-solutions/incoterms-ready.webp",
+      //       description: "Incoterms Ready - export packaging compliant with international trade terms",
+      //     },
+      //     {
+      //       url: "/products/packaging-manufacturing/international-export-solutions/multi-currency.webp",
+      //       description: "Multi-Currency Support - packaging solutions for global trade operations",
+      //     },
+      //     {
+      //       url: "/products/packaging-manufacturing/international-export-solutions/documentation.webp",
+      //       description: "Documentation - complete export documentation and labeling services",
+      //     },
+      //   ],
+      //   features: [
+      //     "Global Standards Compliance",
+      //     "Incoterms Ready",
+      //     "Multi-Currency Support",
+      //     "Documentation",
+      //   ],
+      //   applications: ["International Trade", "Export Compliance", "Global Shipping"],
+      //   icon: "Globe" as FeatureIcon,
+      //   ctaText: "Get Quote",
+      //   slug: "international-export-solutions",
+      // },
     ],
     cta: {
       primary: "View All Packaging",
@@ -338,7 +455,6 @@ export const SCRAP_AND_PACKAGING_CONFIG = {
     },
   },
 };
-
 // Footer Section Configuration
 export const FOOTER_CONFIG = {
   company: {
@@ -354,7 +470,7 @@ export const FOOTER_CONFIG = {
     description: "Ready to start your project?",
     phone: "+91 9930496506",
     email: "info@jtpack.com",
-    address: "123 Business District, City, State 12345",
+    address: "Plot No. 57/A/1 & 2, 1st Phase Industrial Road, G.I.D.C., Vapi - 396 195, Gujarat",
   },
   socialLinks: [
     { icon: "Facebook" as SocialIcon, label: "Facebook" },

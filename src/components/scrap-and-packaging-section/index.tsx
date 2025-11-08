@@ -11,11 +11,12 @@ type Product = {
   category: string;
   title: string;
   subtitle: string;
-  image: string;
+  image: string | string[];
   features: string[];
   applications: string[];
   icon: JSX.Element;
   ctaText: string;
+  slug?: string;
 };
 
 
@@ -41,10 +42,23 @@ const getIconComponent = (iconName: string) => {
 };
 
 const scrapMaterials: Product[] = SCRAP_AND_PACKAGING_CONFIG.scrapMaterials.products.map(
-  (product) => ({
-    ...product,
-    icon: getIconComponent(product.icon),
-  }),
+  (product) => {
+    // Convert image to array of URLs for carousel
+    let imageArray: string[]
+    if (Array.isArray(product.image)) {
+      imageArray = product.image.map(img =>
+        typeof img === 'string' ? img : img.url
+      )
+    } else {
+      imageArray = [product.image]
+    }
+
+    return {
+      ...product,
+      image: imageArray,
+      icon: getIconComponent(product.icon),
+    }
+  },
 );
 
 const colors = {
@@ -76,7 +90,12 @@ export default function ScrapAndPackagingSections(): JSX.Element {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {scrapMaterials.slice(0, 3).map((product, index) => (
-            <ProductCard key={index} {...product} colorScheme="green" />
+            <ProductCard
+              key={index}
+              {...product}
+              colorScheme="green"
+              href={product.slug ? `/products/scrap/${product.slug}` : undefined}
+            />
           ))}
         </div>
 

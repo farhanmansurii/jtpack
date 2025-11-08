@@ -44,7 +44,11 @@ const PRODUCT_OPTIONS: ProductOption[] = (
     ...SCRAP_AND_PACKAGING_CONFIG.scrapMaterials.products,
     ...SCRAP_AND_PACKAGING_CONFIG.packagingProducts.products,
   ] as Array<{ title: string; slug?: string }>
-).map((p) => ({ value: p.slug || p.title, label: p.title }));
+)
+  .map((p) => ({ value: p.slug || p.title, label: p.title }))
+  .filter((option, index, self) =>
+    index === self.findIndex((o) => o.value === option.value)
+  );
 
 export function QuoteRequest({
   children,

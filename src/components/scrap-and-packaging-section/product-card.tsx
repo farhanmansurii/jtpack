@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import React, { useState } from "react";
-import { CheckCircle, ChevronDown, ChevronUp, Sparkles } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { CheckCircle, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
 import { QuoteRequest } from "../quote-request";
 import Link from "next/link";
 
@@ -11,7 +11,7 @@ type ProductCardProps = {
   category: string;
   title: string;
   subtitle?: string;
-  image: string;
+  image: string | string[];
   features: string[];
   icon?: React.ReactNode;
   ctaText: string;
@@ -32,6 +32,29 @@ export default function ProductCard({
 }: ProductCardProps) {
   const [expanded, setExpanded] = useState(false);
 
+  // Normalize image to array
+  const images = Array.isArray(image) ? image : [image];
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  // Autoplay carousel
+  useEffect(() => {
+    if (images.length <= 1) return;
+
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % images.length);
+    }, 3000); // Change image every 3 seconds
+
+    return () => clearInterval(interval);
+  }, [images.length]);
+
+  const nextImage = () => {
+    setCurrentImageIndex((prev) => (prev + 1) % images.length);
+  };
+
+  const prevImage = () => {
+    setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
+  };
+
   const getProductValue = (c: string) =>
     ({
       "Paper Scrap": "paper-scrap",
@@ -44,36 +67,32 @@ export default function ProductCard({
 
   const colors = {
     blue: {
-      gradient: "from-blue-500/10 via-blue-400/5 to-transparent",
-      badge: "bg-gradient-to-r from-blue-500 to-blue-600",
+      badge: "bg-blue-600 text-white",
       checkIcon: "text-blue-600",
-      button: "bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800",
-      glow: "group-hover:shadow-blue-500/20",
-      border: "border-blue-200/50",
+      button: "bg-blue-600 hover:bg-blue-700 text-white",
+      border: "border-slate-200",
+      accent: "text-blue-600",
     },
     green: {
-      gradient: "from-green-500/10 via-green-400/5 to-transparent",
-      badge: "bg-gradient-to-r from-green-500 to-green-600",
-      checkIcon: "text-green-600",
-      button: "bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800",
-      glow: "group-hover:shadow-green-500/20",
-      border: "border-green-200/50",
+      badge: "bg-emerald-600 text-white",
+      checkIcon: "text-emerald-600",
+      button: "bg-emerald-600 hover:bg-emerald-700 text-white",
+      border: "border-slate-200",
+      accent: "text-emerald-600",
     },
     purple: {
-      gradient: "from-purple-500/10 via-purple-400/5 to-transparent",
-      badge: "bg-gradient-to-r from-purple-500 to-purple-600",
-      checkIcon: "text-purple-600",
-      button: "bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800",
-      glow: "group-hover:shadow-purple-500/20",
-      border: "border-purple-200/50",
+      badge: "bg-violet-600 text-white",
+      checkIcon: "text-violet-600",
+      button: "bg-violet-600 hover:bg-violet-700 text-white",
+      border: "border-slate-200",
+      accent: "text-violet-600",
     },
     orange: {
-      gradient: "from-orange-500/10 via-orange-400/5 to-transparent",
-      badge: "bg-gradient-to-r from-orange-500 to-orange-600",
-      checkIcon: "text-orange-600",
-      button: "bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800",
-      glow: "group-hover:shadow-orange-500/20",
-      border: "border-orange-200/50",
+      badge: "bg-amber-600 text-white",
+      checkIcon: "text-amber-600",
+      button: "bg-amber-600 hover:bg-amber-700 text-white",
+      border: "border-slate-200",
+      accent: "text-amber-600",
     },
   }[colorScheme];
 
@@ -81,108 +100,134 @@ export default function ProductCard({
   const hasMoreFeatures = features.length > 3;
 
   return (
-    <>
-      <div
-        className={`group relative flex flex-col rounded-3xl border ${colors.border} bg-white overflow-hidden shadow-lg hover:shadow-2xl ${colors.glow} transition-all duration-500 hover:-translate-y-2`}
-      >
-        <div className={`absolute inset-0 bg-gradient-to-br ${colors.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none`} />
-
-        <div className="relative aspect-[16/10] w-full overflow-hidden bg-gradient-to-br from-gray-100 to-gray-50">
+    <div
+      className={`group relative flex flex-col rounded-2xl border ${colors.border} bg-white overflow-hidden shadow-md hover:shadow-lg transition-all duration-300`}
+    >
+      <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-50 group/carousel">
+        {/* Image Carousel with Autoplay */}
+        {images.map((img, index) => (
           <img
-            src={image}
-            alt={title}
-            className="h-full w-full object-cover transition-all duration-700 group-hover:scale-110 group-hover:rotate-1"
+            key={index}
+            src={img}
+            alt={`${title} - Image ${index + 1}`}
+            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${
+              index === currentImageIndex ? 'opacity-100' : 'opacity-0'
+            }`}
           />
+        ))}
 
-          <div className="absolute top-4 left-4">
-            <span
-              className={`inline-flex items-center gap-2 ${colors.badge} text-white px-4 py-2 rounded-full text-xs font-semibold shadow-lg backdrop-blur-sm`}
+        {/* Navigation Arrows - Show on Hover */}
+        {images.length > 1 && (
+          <>
+            <button
+              onClick={prevImage}
+              className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/95 backdrop-blur-sm p-2 rounded-full shadow-lg hover:bg-white hover:scale-110 transition-all opacity-0 group-hover/carousel:opacity-100 z-20"
+              aria-label="Previous image"
             >
-              {icon || <Sparkles className="w-3.5 h-3.5" />}
-              {category}
-            </span>
+              <ChevronLeft className="w-5 h-5 text-slate-700" />
+            </button>
+            <button
+              onClick={nextImage}
+              className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/95 backdrop-blur-sm p-2 rounded-full shadow-lg hover:bg-white hover:scale-110 transition-all opacity-0 group-hover/carousel:opacity-100 z-20"
+              aria-label="Next image"
+            >
+              <ChevronRight className="w-5 h-5 text-slate-700" />
+            </button>
+          </>
+        )}
+
+        {/* Navigation Dots */}
+        {images.length > 1 && (
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex space-x-1.5 z-10">
+            {images.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentImageIndex(index)}
+                className={`transition-all rounded-full ${
+                  index === currentImageIndex
+                    ? 'bg-white w-6 h-1.5'
+                    : 'bg-white/50 hover:bg-white/75 w-1.5 h-1.5'
+                }`}
+                aria-label={`Go to image ${index + 1}`}
+              />
+            ))}
           </div>
+        )}
+
+        <div className="absolute top-4 left-4 z-10">
+          <span
+            className={`inline-flex items-center gap-1.5 ${colors.badge} px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm`}
+          >
+            {icon || <Sparkles className="w-3.5 h-3.5" />}
+            {category}
+          </span>
+        </div>
+      </div>
+
+      <div className="flex flex-col flex-1 p-6">
+        <div className="mb-5">
+          <h3 className="text-xl font-bold text-slate-900 mb-2 leading-tight">
+            {title}
+          </h3>
+          {subtitle && (
+            <p className="text-sm text-slate-600 leading-relaxed">{subtitle}</p>
+          )}
         </div>
 
-        <div className="relative flex flex-col flex-1 p-6">
-          <div className="mb-4">
-            <h3 className="text-xl font-bold text-gray-900 mb-1 leading-tight group-hover:text-gray-800 transition-colors">
-              {title}
-            </h3>
-            {subtitle && (
-              <p className="text-sm text-gray-500 leading-relaxed">{subtitle}</p>
-            )}
+        <div className="flex-1 mb-6">
+          <div className="mb-3">
+            <h4 className="text-sm font-semibold text-slate-800 uppercase tracking-wide">
+              What We Offer
+            </h4>
           </div>
-
-          <div className="flex-1 mb-4">
-            <div className={`space-y-2 transition-all duration-300 ${expanded ? 'max-h-96' : 'max-h-32'} overflow-hidden`}>
-              {visibleFeatures.map((feature, index) => (
-                <div
-                  key={index}
-                  className="flex items-start gap-2.5 opacity-0 animate-fadeIn"
-                  style={{ animationDelay: `${index * 50}ms`, animationFillMode: 'forwards' }}
-                >
-                  <CheckCircle className={`w-4 h-4 mt-0.5 flex-shrink-0 ${colors.checkIcon}`} />
-                  <span className="text-sm text-gray-700 leading-relaxed">{feature}</span>
-                </div>
-              ))}
-            </div>
-
-            {hasMoreFeatures && (
-              <button
-                onClick={() => setExpanded(!expanded)}
-                className="mt-3 text-xs font-medium text-gray-600 hover:text-gray-900 flex items-center gap-1.5 transition-all duration-200 hover:gap-2"
+          <div className={`space-y-2.5 transition-all duration-300 ${expanded ? 'max-h-96' : 'max-h-32'} overflow-hidden`}>
+            {visibleFeatures.map((feature, index) => (
+              <div
+                key={index}
+                className="flex items-start gap-2.5"
               >
-                {expanded ? (
-                  <>
-                    Show less <ChevronUp className="w-3.5 h-3.5" />
-                  </>
-                ) : (
-                  <>
-                    {features.length - 3} more features <ChevronDown className="w-3.5 h-3.5" />
-                  </>
-                )}
-              </button>
-            )}
+                <CheckCircle className={`w-4 h-4 mt-0.5 flex-shrink-0 ${colors.checkIcon}`} />
+                <span className="text-sm text-slate-700 leading-relaxed">{feature}</span>
+              </div>
+            ))}
           </div>
 
-          {href && (
-            <div className="mb-3">
-              <Link href={href} className="inline-block">
-                <span className={`inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg border ${colors.border} hover:border-gray-300 transition-colors`}>
-                  View details
-                </span>
-              </Link>
-            </div>
+          {hasMoreFeatures && (
+            <button
+              onClick={() => setExpanded(!expanded)}
+              className="mt-3 text-xs font-medium text-slate-600 hover:text-slate-900 flex items-center gap-1 transition-colors"
+            >
+              {expanded ? (
+                <>
+                  Show less <ChevronUp className="w-3.5 h-3.5" />
+                </>
+              ) : (
+                <>
+                  {features.length - 3} more features <ChevronDown className="w-3.5 h-3.5" />
+                </>
+              )}
+            </button>
           )}
+        </div>
 
+        <div className="flex gap-3">
+          {href && (
+            <Link href={href} className="flex-1">
+              <span className={`inline-flex items-center justify-center w-full px-4 py-2.5 text-sm font-semibold rounded-lg border ${colors.border} hover:bg-slate-50 text-slate-700 transition-colors`}>
+                View details
+              </span>
+            </Link>
+          )}
           <QuoteRequest product={getProductValue(category)} colorScheme={colorScheme as "green" | "blue"}>
             <button
-              className={`w-full ${colors.button} text-white font-semibold rounded-xl py-3.5 shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]`}
+              className={`${href ? 'flex-1' : 'w-full'} ${colors.button} font-semibold rounded-lg py-2.5 px-4 transition-colors duration-200 shadow-sm hover:shadow`}
             >
               {ctaText}
             </button>
           </QuoteRequest>
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        .animate-fadeIn {
-          animation: fadeIn 0.3s ease-out;
-        }
-      `}</style>
-    </>
+    </div>
   );
 }
 

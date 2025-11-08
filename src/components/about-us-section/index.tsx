@@ -1,6 +1,5 @@
 import React, { JSX } from "react";
 import { Leaf, Package, Recycle } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Card } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";

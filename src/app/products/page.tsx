@@ -37,23 +37,49 @@ function ProductsContent() {
 
   const scrap = React.useMemo(
     () =>
-      SCRAP_AND_PACKAGING_CONFIG.scrapMaterials.products.map((p: any) => ({
-        ...p,
-        icon: getIcon(p.icon),
-        division: "recycling" as const,
-        slug: p.slug,
-      })),
+      SCRAP_AND_PACKAGING_CONFIG.scrapMaterials.products.map((p: any) => {
+        // Convert image to array of URLs for carousel
+        let imageArray: string[]
+        if (Array.isArray(p.image)) {
+          imageArray = p.image.map((img: any) =>
+            typeof img === 'string' ? img : img.url
+          )
+        } else {
+          imageArray = [p.image]
+        }
+
+        return {
+          ...p,
+          image: imageArray,
+          icon: getIcon(p.icon),
+          division: "recycling" as const,
+          slug: p.slug,
+        }
+      }),
     [],
   );
 
   const packaging = React.useMemo(
     () =>
-      SCRAP_AND_PACKAGING_CONFIG.packagingProducts.products.map((p: any) => ({
-        ...p,
-        icon: getIcon(p.icon),
-        division: "packaging" as const,
-        slug: p.slug,
-      })),
+      SCRAP_AND_PACKAGING_CONFIG.packagingProducts.products.map((p: any) => {
+        // Convert image to array of URLs for carousel
+        let imageArray: string[]
+        if (Array.isArray(p.image)) {
+          imageArray = p.image.map((img: any) =>
+            typeof img === 'string' ? img : img.url
+          )
+        } else {
+          imageArray = [p.image]
+        }
+
+        return {
+          ...p,
+          image: imageArray,
+          icon: getIcon(p.icon),
+          division: "packaging" as const,
+          slug: p.slug,
+        }
+      }),
     [],
   );
 

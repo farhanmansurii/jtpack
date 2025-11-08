@@ -1,4 +1,4 @@
-import { SCRAP_AND_PACKAGING_CONFIG } from '@/lib/config'
+import { SCRAP_AND_PACKAGING_CONFIG, type ProductImage } from '@/lib/config'
 
 export type CatalogDivision = 'scrap' | 'packaging'
 
@@ -7,7 +7,7 @@ export interface CatalogProduct {
   slug: string
   title: string
   subtitle?: string
-  image: string
+  image: string | ProductImage[]
   features: string[]
 }
 
@@ -19,7 +19,7 @@ export function getAllCatalogProducts (): CatalogProduct[] {
       slug: String(p.slug),
       title: p.title,
       subtitle: p.subtitle,
-      image: p.image,
+      image: p.image, // Can be string or ProductImage[]
       features: p.features
     }))
 
@@ -30,7 +30,7 @@ export function getAllCatalogProducts (): CatalogProduct[] {
       slug: String(p.slug),
       title: p.title,
       subtitle: p.subtitle,
-      image: p.image,
+      image: p.image, // Can be string or ProductImage[]
       features: p.features
     }))
 

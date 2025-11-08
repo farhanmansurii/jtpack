@@ -12,7 +12,6 @@ import {
   Twitter,
   Instagram,
   Linkedin,
-  ArrowRight,
 } from "lucide-react";
 import { FOOTER_CONFIG } from "@/lib/config";
 

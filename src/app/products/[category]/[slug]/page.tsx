@@ -1,6 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
 'use client'
-import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Navbar from '@/components/navbar'
 import FooterSection from '@/components/footer-section'
@@ -8,26 +7,39 @@ import { Container } from '@/components/ui/container'
 import { Button } from '@/components/ui/button'
 import {
   getCatalogProductBySlug,
-  getCatalogPaths,
   type CatalogDivision
 } from '@/lib/catalog'
-import { ChevronLeft, ChevronRight, CheckCircle2, Package, Shield, Zap } from 'lucide-react'
-import { useState } from 'react'
+import { type ProductImage } from '@/lib/config'
+import { ChevronLeft, ChevronRight, CheckCircle2, Package, Zap } from 'lucide-react'
+import { useState, use } from 'react'
+import Link from 'next/link'
 
 interface PageParams {
-  params: { category: CatalogDivision, slug: string }
+  params: Promise<{ category: CatalogDivision, slug: string }>
 }
 
 
 
-function ProductJSONLD ({ product }: { product: { title: string, subtitle?: string, image: string | string[] } }) {
-  const image = Array.isArray(product.image) ? product.image[0] : product.image
+function ProductJSONLD ({ product }: { product: { title: string, subtitle?: string, image: string | ProductImage[] } }) {
+  // Extract first image URL for JSON-LD
+  let imageUrl: string
+  if (Array.isArray(product.image)) {
+    // If it's an array, check if it's ProductImage[] or string[]
+    if (product.image.length > 0) {
+      imageUrl = typeof product.image[0] === 'string' ? product.image[0] : product.image[0].url
+    } else {
+      imageUrl = ''
+    }
+  } else {
+    imageUrl = product.image
+  }
+
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: product.title,
     description: product.subtitle,
-    image
+    image: imageUrl
   }
   return (
     <script
@@ -37,28 +49,37 @@ function ProductJSONLD ({ product }: { product: { title: string, subtitle?: stri
   )
 }
 
-function ImageGallery({ images }: { images: string[] }) {
+function ImageGallery({ images }: { images: ProductImage[] | string[] | string }) {
   const [currentIndex, setCurrentIndex] = useState(0)
 
+  const normalizedImages: ProductImage[] = (Array.isArray(images) ? images : [images]).map((img) => {
+    if (typeof img === 'string') {
+      return { url: img, description: `Product image` }
+    }
+    return img
+  })
+
   const nextImage = () => {
-    setCurrentIndex((prev: number) => (prev + 1) % images.length)
+    setCurrentIndex((prev: number) => (prev + 1) % normalizedImages.length)
   }
 
   const prevImage = () => {
-    setCurrentIndex((prev: number) => (prev - 1 + images.length) % images.length)
+    setCurrentIndex((prev: number) => (prev - 1 + normalizedImages.length) % normalizedImages.length)
   }
+
+  const currentImage = normalizedImages[currentIndex]
 
   return (
     <div className="space-y-4">
       {/* Main Image */}
       <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-gradient-to-br from-slate-100 to-slate-50 shadow-2xl group">
         <img
-          src={images[currentIndex]}
-          alt={`Product image ${currentIndex + 1}`}
+          src={currentImage.url}
+          alt={currentImage.description}
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
         />
 
-        {images.length > 1 && (
+        {normalizedImages.length > 1 && (
           <>
             <button
               onClick={prevImage}
@@ -75,15 +96,19 @@ function ImageGallery({ images }: { images: string[] }) {
               <ChevronRight className="w-6 h-6 text-slate-700" />
             </button>
 
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex space-x-2">
-              {images.map((_, index) => (
+            <div className={`absolute left-1/2 -translate-x-1/2 flex space-x-2 z-10 px-4 py-2 rounded-full bg-gradient-to-t from-black/60 via-black/40 to-black/20 ${
+              currentImage.description && currentImage.description !== 'Product image'
+                ? 'bottom-10'
+                : 'bottom-6'
+            }`}>
+              {normalizedImages.map((_, index) => (
                 <button
                   key={index}
                   onClick={() => setCurrentIndex(index)}
                   className={`transition-all ${
                     index === currentIndex
                       ? 'bg-white w-8 h-2.5'
-                      : 'bg-white/60 hover:bg-white/90 w-2.5 h-2.5'
+                      : 'bg-white/60 border border-slate-200 hover:bg-white/90 w-2.5 h-2.5'
                   } rounded-full`}
                   aria-label={`Go to image ${index + 1}`}
                 />
@@ -91,12 +116,19 @@ function ImageGallery({ images }: { images: string[] }) {
             </div>
           </>
         )}
+
+        {/* Image Description Caption */}
+        {currentImage.description && currentImage.description !== 'Product image' && (
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/60 to-transparent px-4 py-3 text-white text-sm z-0">
+            {currentImage.description}
+          </div>
+        )}
       </div>
 
       {/* Thumbnail Grid */}
-      {images.length > 1 && (
+      {normalizedImages.length > 1 && (
         <div className="grid grid-cols-4 gap-3">
-          {images.map((image, index) => (
+          {normalizedImages.map((image, index) => (
             <button
               key={index}
               onClick={() => setCurrentIndex(index)}
@@ -107,8 +139,8 @@ function ImageGallery({ images }: { images: string[] }) {
               }`}
             >
               <img
-                src={image}
-                alt={`Thumbnail ${index + 1}`}
+                src={image.url}
+                alt={image.description}
                 className="w-full h-full object-cover"
               />
             </button>
@@ -120,11 +152,15 @@ function ImageGallery({ images }: { images: string[] }) {
 }
 
 export default function ProductPage ({ params }: PageParams) {
-  const product = getCatalogProductBySlug(params.category, params.slug)
+  const { category, slug } = use(params)
+  const product = getCatalogProductBySlug(category, slug)
   if (!product) return notFound()
 
-  // Support both single image and array of images
-  const images = Array.isArray(product.image) ? product.image : [product.image]
+  // Support both single image (string) and array of images (ProductImage[] or string[])
+  // Preserve the ProductImage[] type if it's already an array of ProductImage
+  const images: ProductImage[] | string[] | string = Array.isArray(product.image)
+    ? product.image
+    : product.image
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50/50">
@@ -135,9 +171,9 @@ export default function ProductPage ({ params }: PageParams) {
 
           {/* Breadcrumb */}
           <nav className="flex items-center space-x-2 text-sm text-muted-foreground mb-8 lg:mb-12" aria-label="Breadcrumb">
-            <a href="/products" className="hover:text-primary transition-colors">Products</a>
+            <Link href="/products" className="hover:text-primary transition-colors">Products</Link>
             <ChevronRight className="w-4 h-4" />
-            <a href={`/products/${params.category}`} className="hover:text-primary transition-colors capitalize">{params.category}</a>
+            <Link href={`/products/${category}`} className="hover:text-primary transition-colors capitalize">{category}</Link>
             <ChevronRight className="w-4 h-4" />
             <span className="text-foreground font-medium">{product.title}</span>
           </nav>
@@ -145,7 +181,7 @@ export default function ProductPage ({ params }: PageParams) {
           <article className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
             {/* Left Column - Image Gallery */}
             <div className="order-2 lg:order-1">
-              <ImageGallery images={Array.from({ length: 10 }, (_, i) => `https://picsum.photos/200/300?random=${i}`)} />
+              <ImageGallery images={images} />
             </div>
 
             {/* Right Column - Product Details */}
@@ -194,10 +230,10 @@ export default function ProductPage ({ params }: PageParams) {
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
                 <Button asChild size="lg" className="flex-1 text-base font-semibold shadow-lg hover:shadow-xl transition-all">
-                  <a href="/contact">Request a quote</a>
+                  <Link href="/contact" className="w-full">Request a quote</Link>
                 </Button>
                 <Button asChild variant="outline" size="lg" className="flex-1 text-base font-semibold border-2 hover:border-primary transition-all">
-                  <a href="/contact">Contact Sales</a>
+                  <Link href="/contact" className="w-full">Contact Sales</Link>
                 </Button>
               </div>
             </div>

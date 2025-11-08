@@ -2,6 +2,8 @@
 
 import React, { useMemo, useRef, useState, useLayoutEffect } from "react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { MapPin, Share2, X } from "lucide-react";
 
 export type PresenceCategory = "plant" | "hq" | "other";
 
@@ -13,6 +15,7 @@ export type PresenceLocation = {
   topPct: number; // 0..100
   category: PresenceCategory;
   label?: string;
+  address?: string;
 };
 
 const CATEGORY_META: Record<
@@ -138,6 +141,57 @@ export function PresenceMap({
 
   const toggleActive = (id: string) => setActiveId((prev) => (prev === id ? null : id));
 
+  // Format address to sentence case
+  const formatAddress = (address: string): string => {
+    return address
+      .toLowerCase()
+      .split(/[,\s]+/)
+      .map((word) => {
+        // Capitalize first letter of each word, but handle special cases
+        if (word === "no" || word === "no.") return word.toUpperCase();
+        if (word === "opp" || word === "p.o") return word.toUpperCase();
+        if (word.match(/^\d+[a-z]?$/)) return word.toUpperCase(); // Plot numbers
+        if (word.match(/^\d+$/)) return word; // PIN codes stay as is
+        return word.charAt(0).toUpperCase() + word.slice(1);
+      })
+      .join(" ")
+      .replace(/\s+/g, " ")
+      .replace(/,\s*/g, ", ")
+      .trim();
+  };
+
+  // Generate Google Maps URL
+  const getGoogleMapsUrl = (location: PresenceLocation): string => {
+    const query = location.address
+      ? encodeURIComponent(`${location.address}, ${location.state || ""}`)
+      : encodeURIComponent(`${location.name}, ${location.state || ""}`);
+    return `https://www.google.com/maps/search/?api=1&query=${query}`;
+  };
+
+  // Share location
+  const handleShare = async (location: PresenceLocation) => {
+    const shareData = {
+      title: `${location.name} - ${location.state || ""}`,
+      text: location.address || `${location.name}, ${location.state || ""}`,
+      url: getGoogleMapsUrl(location),
+    };
+
+    try {
+      if (navigator.share && navigator.canShare(shareData)) {
+        await navigator.share(shareData);
+      } else {
+        // Fallback: copy to clipboard
+        await navigator.clipboard.writeText(
+          `${shareData.title}\n${shareData.text}\n${shareData.url}`
+        );
+        // You could show a toast notification here
+      }
+    } catch (error) {
+      // User cancelled or error occurred
+      console.error("Error sharing:", error);
+    }
+  };
+
   return (
     <section className={`w-full ${className ?? ""}`}>
       <div className="text-center mb-10">
@@ -156,7 +210,7 @@ export function PresenceMap({
         <div className="relative w-full">
           <div
             ref={viewportRef}
-            className="relative w-full overflow-hidden rounded-2xl bg-slate-50  aspect-[16/10]"
+            className="relative w-full overflow-hidden rounded-2xl bg-slate-50 shadow-lg border border-slate-200 aspect-[16/10]"
             aria-label="Presence map"
             onClick={(e) => {
               // Only clear selection if clicking on the background container itself
@@ -218,15 +272,21 @@ export function PresenceMap({
 
         {/* Sidebar */}
         <aside className="self-start">
-          <div className="space-y-4 rounded-2xl border border-slate-200 p-4 shadow-sm bg-white">
+          <div className="space-y-5 rounded-2xl border border-slate-200 p-5 shadow-sm bg-white">
             {/* Legend */}
             <div>
-              <div className="text-xs uppercase tracking-wider text-slate-500 mb-2">Legend</div>
+              <div className="text-xs uppercase tracking-wider text-slate-500 mb-3 font-semibold">
+                Legend
+              </div>
               <div className="flex flex-wrap gap-3">
-                {(["plant", "hq", "other"] as PresenceCategory[]).map((c) => (
-                  <div key={c} className="flex items-center gap-2">
-                    <span className={`inline-block h-3 w-3 rounded-sm ${CATEGORY_META[c].dot}`} />
-                    <span className="text-sm font-medium">{CATEGORY_META[c].label}</span>
+                {(["plant", "hq", "other"] as PresenceCategory[]).map((category) => (
+                  <div key={category} className="flex items-center gap-2">
+                    <span
+                      className={`inline-block h-3 w-3 rounded-sm ${CATEGORY_META[category].dot}`}
+                    />
+                    <span className="text-sm font-medium text-slate-700">
+                      {CATEGORY_META[category].label}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -234,50 +294,98 @@ export function PresenceMap({
 
             {/* Details */}
             <div>
-              <div className="text-xs uppercase tracking-wider text-slate-500 mb-2">Details</div>
+              <div className="text-xs uppercase tracking-wider text-slate-500 mb-3 font-semibold">
+                Details
+              </div>
               {active ? (
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <Badge className={CATEGORY_META[active.category].pill}>
-                      {CATEGORY_META[active.category].label}
-                    </Badge>
-                    <span className="text-sm font-medium">{active.name}</span>
+                <div className="space-y-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1 space-y-1.5">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <Badge className={CATEGORY_META[active.category].pill}>
+                          {CATEGORY_META[active.category].label}
+                        </Badge>
+                        <span className="text-base font-semibold text-slate-900">{active.name}</span>
+                      </div>
+                      {active.label && (
+                        <div className="text-sm font-medium text-slate-700">{active.label}</div>
+                      )}
+                      {active.state && (
+                        <div className="flex items-center gap-1.5 text-sm text-slate-600">
+                          <MapPin className="h-3.5 w-3.5" />
+                          <span>{active.state}</span>
+                        </div>
+                      )}
+                      {active.address && (
+                        <div className="text-sm text-slate-600 leading-relaxed pt-1 border-t border-slate-100">
+                          {formatAddress(active.address)}
+                        </div>
+                      )}
+                    </div>
+                    <button
+                      onClick={() => setActiveId(null)}
+                      className="p-1.5 hover:bg-slate-100 rounded-md transition-colors"
+                      aria-label="Close details"
+                    >
+                      <X className="h-4 w-4 text-slate-500" />
+                    </button>
                   </div>
-                  {active.state && <div className="text-sm text-slate-600">{active.state}</div>}
-                  {active.label && <div className="text-sm text-slate-500">{active.label}</div>}
-                  <button
-                    onClick={() => setActiveId(null)}
-                    className="text-xs text-slate-500 hover:text-slate-700 underline"
-                  >
-                    Clear selection
-                  </button>
+                  <div className="flex gap-2 pt-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1 text-xs"
+                      onClick={() => window.open(getGoogleMapsUrl(active), "_blank")}
+                    >
+                      <MapPin className="h-3.5 w-3.5" />
+                      View on Maps
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-xs"
+                      onClick={() => handleShare(active)}
+                    >
+                      <Share2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
                 </div>
               ) : (
-                <div className="text-sm text-slate-600">Select a marker to view details.</div>
+                <div className="text-sm text-slate-500 italic py-2">
+                  Select a marker to view details.
+                </div>
               )}
             </div>
 
             {/* List */}
             <div>
-              <div className="text-xs uppercase tracking-wider text-slate-500 mb-2">Locations</div>
+              <div className="text-xs uppercase tracking-wider text-slate-500 mb-3 font-semibold">
+                All Locations
+              </div>
               <div className="space-y-2">
-                {locations.map((l) => (
+                {locations.map((location) => (
                   <button
-                    key={l.id}
-                    onClick={() => toggleActive(l.id)}
-                    className={`w-full text-left rounded-xl border px-3 py-2 transition ${
-                      activeId === l.id
-                        ? "border-indigo-600 bg-indigo-50"
-                        : "border-slate-200 hover:bg-slate-50"
+                    key={location.id}
+                    onClick={() => toggleActive(location.id)}
+                    className={`w-full text-left rounded-xl border px-3 py-2.5 transition-all ${
+                      activeId === location.id
+                        ? "border-indigo-600 bg-indigo-50 shadow-sm"
+                        : "border-slate-200 hover:bg-slate-50 hover:border-slate-300"
                     }`}
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="font-medium">{l.name}</div>
-                      <Badge className={`${CATEGORY_META[l.category].pill} border-none`}>
-                        {CATEGORY_META[l.category].label}
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex-1 min-w-0">
+                        <div className="font-semibold text-sm text-slate-900">{location.name}</div>
+                        {location.state && (
+                          <div className="text-xs text-slate-600 mt-0.5">{location.state}</div>
+                        )}
+                      </div>
+                      <Badge
+                        className={`${CATEGORY_META[location.category].pill} border-none shrink-0`}
+                      >
+                        {CATEGORY_META[location.category].label}
                       </Badge>
                     </div>
-                    {l.state && <div className="text-xs text-slate-600">{l.state}</div>}
                   </button>
                 ))}
               </div>
@@ -300,6 +408,7 @@ export default function PresencePage() {
       topPct: 56.3,
       category: "hq",
       label: "Corporate HQ",
+      address: "Plot No. 57/A/1 & 2, 1st Phase Industrial Road, G.I.D.C., Vapi - 396 195, Gujarat",
     },
     {
       id: "nadiad",
@@ -309,6 +418,7 @@ export default function PresencePage() {
       topPct: 49.6,
       category: "plant",
       label: "Formulations",
+      address: "R. S. No 139 NA, B/h ITC Limited Silod, Nadiad, Kheda-387320, Gujarat",
     },
     {
       id: "goa",
@@ -318,6 +428,7 @@ export default function PresencePage() {
       topPct: 71,
       category: "plant",
       label: "APIs & Intermediates",
+      address: "Plot No. 51 A, Kundaim Industrial Estate, Kundaim, North Goa, Goa 403115",
     },
     {
       id: "guwahati",
@@ -327,6 +438,17 @@ export default function PresencePage() {
       topPct: 40,
       category: "plant",
       label: "Northeast Hub",
+      address: "Plot No. 25/26, AIIDC IGC Phase 1, Chattabari Chaygoan, P.O. Bipra, Kamrup, Assam 781123",
+    },
+    {
+      id: "tamil-nadu",
+      name: "Tiruvallur",
+      state: "Tamil Nadu",
+      leftPct: 38.5,
+      topPct: 75.2,
+      category: "plant",
+      label: "Manufacturing Plant",
+      address: "Plot No. 116 & 117, Sri Saibaba Nagar, Vengal, Tiruvallur, Tamil Nadu 601103",
     },
   ];
 
