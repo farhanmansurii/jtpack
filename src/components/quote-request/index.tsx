@@ -177,7 +177,7 @@ export function QuoteRequest({
   };
 
   const Form = (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
       <div>
         <Input
           id="name"
@@ -186,16 +186,16 @@ export function QuoteRequest({
           onChange={(e) => handleInputChange("name", e.target.value)}
           placeholder="Your full name"
           required
-          className={`w-full ${colorClass.focus}`}
+          className={`w-full text-base sm:text-sm ${colorClass.focus}`}
         />
       </div>
 
-      <div className="flex flex-row gap-4">
+      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
         <Select
           value={formData.contactMethod}
           onValueChange={(value: "phone" | "email") => handleInputChange("contactMethod", value)}
         >
-          <SelectTrigger className="w-fit shadow-none border-slate-300">
+          <SelectTrigger className="w-full sm:w-fit shadow-none border-slate-300 text-base sm:text-sm">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -211,7 +211,7 @@ export function QuoteRequest({
           onChange={(e) => handleInputChange("contact", e.target.value)}
           placeholder={formData.contactMethod === "phone" ? "+91 9876543210" : "your@email.com"}
           required
-          className={`w-full  ${colorClass.focus}`}
+          className={`w-full text-base sm:text-sm ${colorClass.focus}`}
         />
       </div>
 
@@ -222,9 +222,9 @@ export function QuoteRequest({
             onValueChange={(value) => handleInputChange("product", value)}
             disabled={!!product}
           >
-            <SelectTrigger className="w-full shadow-none border-slate-300">
-              <SelectValue placeholder="Select a product or service" />
-            </SelectTrigger>
+          <SelectTrigger className="w-full shadow-none border-slate-300 text-base sm:text-sm">
+            <SelectValue placeholder="Select a product or service" />
+          </SelectTrigger>
             <SelectContent>
               {PRODUCT_OPTIONS.map((option) => (
                 <SelectItem key={option.value} value={option.value}>
@@ -245,24 +245,25 @@ export function QuoteRequest({
           value={formData.notes}
           onChange={(e) => handleInputChange("notes", e.target.value)}
           placeholder="Tell us about your specific requirements, quantities, timelines, etc."
-          rows={3}
-          className={`w-full rounded-md border border-slate-300 bg-background px-3 py-2 text-sm  transition-colors placeholder:text-muted-foreground focus:border-ring focus:outline-none focus:ring-[3px] focus:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 ${colorClass.focus}`}
+          rows={4}
+          className={`w-full rounded-md border border-slate-300 bg-background px-3 py-2.5 sm:py-2 text-base sm:text-sm transition-colors placeholder:text-muted-foreground focus:border-ring focus:outline-none focus:ring-[3px] focus:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 resize-none ${colorClass.focus}`}
         />
       </div>
 
-      <div className="flex justify-end space-x-3 pt-4">
+      <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-3 pt-3 sm:pt-4">
         <Button
           type="button"
           variant="outline"
           onClick={() => setIsOpen(false)}
           disabled={isSubmitting}
+          className="w-full sm:w-auto touch-manipulation min-h-[44px] sm:min-h-0"
         >
           Cancel
         </Button>
         <Button
           type="submit"
           disabled={isSubmitting || !formData.name || !formData.contact || !formData.product}
-          className={`${colorClass.button} text-white`}
+          className={`w-full sm:w-auto ${colorClass.button} text-white touch-manipulation min-h-[44px] sm:min-h-0`}
         >
           {isSubmitting ? (
             <>

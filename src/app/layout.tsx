@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Roboto_Slab, JetBrains_Mono, League_Spartan } from "next/font/google";
+import { FOOTER_CONFIG, DUAL_BUSINESS_CONFIG } from "@/lib/config";
 import "./globals.css";
 const inter = Inter({
   variable: "--font-inter",
@@ -23,13 +24,16 @@ const leagueSpartan = League_Spartan({
   subsets: ["latin"],
   weight: ["500", "600", "700"],
 });
+// Base URL for absolute image URLs in social sharing
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://jtpack.com";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: {
     default: "JTPack — Sustainable Scrap Trading & CFC Packaging",
     template: "%s | JTPack",
   },
-  description:
-    "J T PACK PRIVATE LIMITED specializes in trading paper, plastic, and metal scrap and manufacturing Controlled Foam Core (CFC) boxes — durable, insulation-ready, export-grade packaging solutions.",
+  description: DUAL_BUSINESS_CONFIG.description,
   keywords: [
     "scrap trading",
     "recycling",
@@ -37,42 +41,95 @@ export const metadata: Metadata = {
     "plastic scrap",
     "metal scrap",
     "CFC boxes",
-    "packaging",
+    "CFC packaging",
+    "corrugated packaging",
+    "polymer granules",
+    "packaging manufacturing",
     "export packaging",
     "sustainable packaging",
+    "waste management",
+    "circular economy",
     "India",
+    "Gujarat",
+    "Vapi",
   ],
-  authors: [{ name: "J T PACK PRIVATE LIMITED" }],
-  creator: "JTPack",
+  authors: [{ name: FOOTER_CONFIG.company.name }],
+  creator: FOOTER_CONFIG.company.name,
+  publisher: FOOTER_CONFIG.company.name,
+  applicationName: FOOTER_CONFIG.company.name,
+  category: "business",
+  classification: "Manufacturing, Recycling, Packaging",
   icons: {
-    icon: "/favicon.ico",
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
   },
+  manifest: "/site.webmanifest",
   openGraph: {
+    type: "website",
+    locale: "en_IN",
+    alternateLocale: ["en_US"],
+    url: siteUrl,
+    siteName: FOOTER_CONFIG.company.name,
     title: "JTPack — Sustainable Scrap Trading & CFC Packaging",
-    description:
-      "Combining end-to-end recycling operations with industry-leading CFC packaging manufacturing to deliver sustainable, high-performance solutions.",
-    siteName: "JTPack",
+    description: DUAL_BUSINESS_CONFIG.description,
     images: [
       {
-        url: "/hero/hero-video.webp",
+        url: `${siteUrl}/hero/hero-video.webp`,
         width: 1200,
         height: 630,
-        alt: "JTPack - Recycling and Packaging",
+        alt: "JTPack - Sustainable Scrap Trading & CFC Packaging Solutions",
+        type: "image/webp",
+      },
+      {
+        url: `${siteUrl}/og-image.jpg`,
+        width: 1200,
+        height: 630,
+        alt: "JTPack - Leading Recycling and Packaging Solutions",
+        type: "image/jpeg",
       },
     ],
-    locale: "en_US",
-    type: "website",
+    countryName: "India",
+    emails: [FOOTER_CONFIG.contact.email],
+    phoneNumbers: [FOOTER_CONFIG.contact.phone],
   },
   twitter: {
     card: "summary_large_image",
     title: "JTPack — Sustainable Scrap Trading & CFC Packaging",
-    description: "Sustainable scrap sourcing and premium CFC packaging.",
-    images: ["/hero/hero-video.webp"],
+    description: DUAL_BUSINESS_CONFIG.description,
+    images: [`${siteUrl}/hero/hero-video.webp`],
+    creator: "@jtpack",
+    site: "@jtpack",
   },
   alternates: {
-    canonical: "/",
+    canonical: siteUrl,
   },
-  category: "business",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  other: {
+    "contact:phone_number": FOOTER_CONFIG.contact.phone,
+    "contact:email": FOOTER_CONFIG.contact.email,
+    "contact:street_address": FOOTER_CONFIG.contact.address,
+    "business:contact_data:street_address": FOOTER_CONFIG.contact.address,
+    "business:contact_data:locality": "Vapi",
+    "business:contact_data:region": "Gujarat",
+    "business:contact_data:postal_code": "396195",
+    "business:contact_data:country_name": "India",
+  },
 };
 
 export default function RootLayout({

@@ -198,19 +198,19 @@ export function PresenceMap({
         <span className="inline-flex items-center rounded-full bg-amber-100 text-amber-800 px-3 py-1 text-xs font-medium">
           Our Reach
         </span>
-        <h2 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">{title}</h2>
-        <p className="mt-3 text-muted-foreground">
+        <h2 className="mt-4 text-2xl sm:text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl">{title}</h2>
+        <p className="mt-2 sm:mt-3 text-sm sm:text-base text-muted-foreground">
           Explore our locations across the country, from headquarters to manufacturing plants and
           regional hubs.
         </p>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_300px]">
+      <div className="grid gap-4 sm:gap-6 lg:grid-cols-[1fr_300px]">
         {/* Map panel */}
         <div className="relative w-full">
           <div
             ref={viewportRef}
-            className="relative w-full overflow-hidden rounded-2xl bg-slate-50 shadow-lg border border-slate-200 aspect-[16/10]"
+            className="relative w-full overflow-hidden rounded-xl sm:rounded-2xl bg-slate-50 shadow-lg border border-slate-200 aspect-[16/10] sm:aspect-[16/10]"
             aria-label="Presence map"
             onClick={(e) => {
               // Only clear selection if clicking on the background container itself
@@ -249,7 +249,7 @@ export function PresenceMap({
                   <div key={loc.id} className="absolute" style={{ left, top }}>
                     <button
                       onClick={() => toggleActive(loc.id)}
-                      className="absolute top-0 left-0 -translate-x-1/2 -translate-y-full"
+                      className="absolute top-0 left-0 -translate-x-1/2 -translate-y-full touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center p-2 -m-2 focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2 focus-visible:z-30"
                       aria-label={loc.name}
                     >
                       <SvgPin kind={loc.category} />
@@ -271,20 +271,20 @@ export function PresenceMap({
         </div>
 
         {/* Sidebar */}
-        <aside className="self-start">
-          <div className="space-y-5 rounded-2xl border border-slate-200 p-5 shadow-sm bg-white">
+        <aside className="self-start order-first lg:order-last">
+          <div className="space-y-4 sm:space-y-5 rounded-xl sm:rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-sm bg-white">
             {/* Legend */}
             <div>
               <div className="text-xs uppercase tracking-wider text-slate-500 mb-3 font-semibold">
                 Legend
               </div>
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-wrap gap-2 sm:gap-3">
                 {(["plant", "hq", "other"] as PresenceCategory[]).map((category) => (
-                  <div key={category} className="flex items-center gap-2">
+                  <div key={category} className="flex items-center gap-1.5 sm:gap-2">
                     <span
-                      className={`inline-block h-3 w-3 rounded-sm ${CATEGORY_META[category].dot}`}
+                      className={`inline-block h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-sm ${CATEGORY_META[category].dot}`}
                     />
-                    <span className="text-sm font-medium text-slate-700">
+                    <span className="text-xs sm:text-sm font-medium text-slate-700">
                       {CATEGORY_META[category].label}
                     </span>
                   </div>
@@ -324,29 +324,31 @@ export function PresenceMap({
                     </div>
                     <button
                       onClick={() => setActiveId(null)}
-                      className="p-1.5 hover:bg-slate-100 rounded-md transition-colors"
+                      className="p-2 sm:p-1.5 hover:bg-slate-100 active:bg-slate-200 rounded-md transition-colors touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
                       aria-label="Close details"
                     >
-                      <X className="h-4 w-4 text-slate-500" />
+                      <X className="h-4 w-4 sm:h-4 sm:w-4 text-slate-500" />
                     </button>
                   </div>
-                  <div className="flex gap-2 pt-2">
+                  <div className="flex gap-2 sm:gap-2 pt-2">
                     <Button
                       variant="outline"
                       size="sm"
-                      className="flex-1 text-xs"
+                      className="flex-1 text-xs sm:text-xs touch-manipulation min-h-[44px]"
                       onClick={() => window.open(getGoogleMapsUrl(active), "_blank")}
                     >
-                      <MapPin className="h-3.5 w-3.5" />
-                      View on Maps
+                      <MapPin className="h-3.5 w-3.5 sm:h-3.5 sm:w-3.5" />
+                      <span className="hidden sm:inline">View on Maps</span>
+                      <span className="sm:hidden">Maps</span>
                     </Button>
                     <Button
                       variant="outline"
                       size="sm"
-                      className="text-xs"
+                      className="text-xs touch-manipulation min-w-[44px] min-h-[44px]"
                       onClick={() => handleShare(active)}
+                      aria-label="Share location"
                     >
-                      <Share2 className="h-3.5 w-3.5" />
+                      <Share2 className="h-3.5 w-3.5 sm:h-3.5 sm:w-3.5" />
                     </Button>
                   </div>
                 </div>
@@ -362,26 +364,26 @@ export function PresenceMap({
               <div className="text-xs uppercase tracking-wider text-slate-500 mb-3 font-semibold">
                 All Locations
               </div>
-              <div className="space-y-2">
+              <div className="space-y-2 sm:space-y-2">
                 {locations.map((location) => (
                   <button
                     key={location.id}
                     onClick={() => toggleActive(location.id)}
-                    className={`w-full text-left rounded-xl border px-3 py-2.5 transition-all ${
+                    className={`w-full text-left rounded-lg sm:rounded-xl border px-3 sm:px-3 py-3 sm:py-2.5 transition-all touch-manipulation min-h-[56px] sm:min-h-0 focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2 ${
                       activeId === location.id
                         ? "border-indigo-600 bg-indigo-50 shadow-sm"
-                        : "border-slate-200 hover:bg-slate-50 hover:border-slate-300"
+                        : "border-slate-200 hover:bg-slate-50 active:bg-slate-100 hover:border-slate-300"
                     }`}
                   >
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex-1 min-w-0">
-                        <div className="font-semibold text-sm text-slate-900">{location.name}</div>
+                        <div className="font-semibold text-sm sm:text-sm text-slate-900">{location.name}</div>
                         {location.state && (
                           <div className="text-xs text-slate-600 mt-0.5">{location.state}</div>
                         )}
                       </div>
                       <Badge
-                        className={`${CATEGORY_META[location.category].pill} border-none shrink-0`}
+                        className={`${CATEGORY_META[location.category].pill} border-none shrink-0 text-xs`}
                       >
                         {CATEGORY_META[location.category].label}
                       </Badge>
@@ -453,7 +455,7 @@ export default function PresencePage() {
   ];
 
   return (
-    <main className="mx-auto max-w-7xl p-4 md:p-8">
+    <main className="mx-auto max-w-7xl pt-24 pb-16 px-4 md:pt-28 md:pb-24 md:px-8">
       <PresenceMap
         title="Our Presence"
         backgroundSrc="/hero/india.svg"

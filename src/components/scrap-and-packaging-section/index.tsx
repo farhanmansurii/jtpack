@@ -1,4 +1,4 @@
-import React, { JSX } from "react";
+import React, { JSX, memo } from "react";
 import { Container } from "@/components/ui/container";
 import { FileText, Recycle, Package, Shield, Globe, Snowflake,  } from "lucide-react";
 import ProductCard from "./product-card";
@@ -74,9 +74,9 @@ const colors = {
   },
 };
 
-export default function ScrapAndPackagingSections(): JSX.Element {
+function ScrapAndPackagingSections(): JSX.Element {
   return (
-    <section id="products" className="py-16 lg:py-24">
+    <section id="products" className="pt-24 pb-16 lg:pt-28 lg:pb-24">
       <Container>
         <SectionHeader
           badge={{
@@ -121,3 +121,5 @@ export default function ScrapAndPackagingSections(): JSX.Element {
     </section>
   );
 }
+
+export default memo(ScrapAndPackagingSections);

@@ -1,4 +1,4 @@
-import React, { JSX } from "react";
+import React, { JSX, memo } from "react";
 import { Leaf, Package, Recycle } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Card } from "@/components/ui/card";
@@ -8,12 +8,12 @@ import { ABOUT_US_CONFIG } from "@/lib/config";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
-export default function AboutUsSection(): JSX.Element {
+function AboutUsSection(): JSX.Element {
   return (
     <section
       id="about"
       aria-labelledby="about-heading"
-      className="bg-background py-16 sm:py-24 lg:py-28"
+      className="bg-background pt-24 pb-16 sm:pt-28 sm:pb-24 lg:pt-32 lg:pb-28"
     >
       <Container>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-y-12 gap-x-16 items-center">
@@ -87,3 +87,5 @@ export default function AboutUsSection(): JSX.Element {
     </section>
   );
 }
+
+export default memo(AboutUsSection);

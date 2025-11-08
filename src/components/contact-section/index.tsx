@@ -1,10 +1,11 @@
+import { memo } from "react";
 import { Container } from "@/components/ui/container";
 import { SectionHeader } from "../ui/section-header";
 import { QuoteRequest } from "../quote-request";
 
-export default function ContactSection() {
+function ContactSection() {
   return (
-    <section id="contact" className="py-16 sm:py-24 lg:py-28">
+    <section id="contact" className="pt-24 pb-16 sm:pt-28 sm:pb-24 lg:pt-32 lg:pb-28">
       <Container>
         <SectionHeader
           badge={{
@@ -31,3 +32,5 @@ export default function ContactSection() {
     </section>
   );
 }
+
+export default memo(ContactSection);

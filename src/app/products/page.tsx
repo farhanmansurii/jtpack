@@ -9,6 +9,7 @@ import { SCRAP_AND_PACKAGING_CONFIG } from "@/lib/config";
 import { FileText, Recycle, Shield, Package, Snowflake, Globe, Search } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 function getIcon(name: string) {
@@ -145,7 +146,7 @@ function ProductsContent() {
   }, [tab]);
 
   return (
-    <section className="py-16 lg:py-24">
+    <section className="pt-24 pb-16 lg:pt-28 lg:pb-24">
       <Container>
         <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold">{heading}</h1>
         <p className="mt-3 text-muted-foreground">{subheading}</p>
@@ -194,7 +195,22 @@ export default function ProductsPage() {
         fallback={
           <div className="py-16 lg:py-24">
             <Container>
-              <div className="animate-pulse">Loading...</div>
+              <div className="space-y-8">
+                <div className="space-y-4">
+                  <Skeleton className="h-10 w-64 mx-auto" />
+                  <Skeleton className="h-6 w-96 mx-auto" />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {[1, 2, 3, 4, 5, 6].map((i) => (
+                    <div key={i} className="space-y-4">
+                      <Skeleton className="h-48 w-full rounded-2xl" />
+                      <Skeleton className="h-6 w-3/4" />
+                      <Skeleton className="h-4 w-full" />
+                      <Skeleton className="h-4 w-5/6" />
+                    </div>
+                  ))}
+                </div>
+              </div>
             </Container>
           </div>
         }

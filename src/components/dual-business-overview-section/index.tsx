@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @next/next/no-img-element */
-import React from "react";
+import React, { useMemo, memo } from "react";
 import { DUAL_BUSINESS_CONFIG } from "@/lib/config";
 import { Container } from "@/components/ui/container";
 import { Badge } from "@/components/ui/badge";
@@ -20,38 +20,38 @@ import {
   CheckCircle2,FileText
 } from "lucide-react";
 
-function getIconComponent(icon: string) {
-  const icons = {
-    Recycle,
-    Package,
-    Shield,
-    Zap,
-    Globe,
-    Award,
-    TrendingUp,
-    Users,
-    PackageSearch,
-    Leaf,
-    CheckCircle2,
-    FileText,
-  } as const;
+const iconMap = {
+  Recycle,
+  Package,
+  Shield,
+  Zap,
+  Globe,
+  Award,
+  TrendingUp,
+  Users,
+  PackageSearch,
+  Leaf,
+  CheckCircle2,
+  FileText,
+} as const;
 
-  const Icon = (icons as Record<string, any>)[icon] ?? Package;
+function getIconComponent(icon: string) {
+  const Icon = (iconMap as Record<string, any>)[icon] ?? Package;
   return <Icon className="h-6 w-6" />;
 }
 
-
-
-export default function DualBusinessOverview() {
-  const businesses = DUAL_BUSINESS_CONFIG.businesses.map((b) => ({
-    ...b,
-    icon: getIconComponent(b.icon),
-  }));
+function DualBusinessOverview() {
+  const businesses = useMemo(() =>
+    DUAL_BUSINESS_CONFIG.businesses.map((b) => ({
+      ...b,
+      icon: getIconComponent(b.icon),
+    })), []
+  );
 
   return (
     <section
-      id="expertise"
-      className="relative overflow-hidden bg-gradient-to-b from-gray-50 via-white to-gray-50 py-24"
+      id="services"
+      className="relative overflow-hidden bg-gradient-to-b from-gray-50 via-white to-gray-50 pt-28 pb-24 lg:pt-32 lg:pb-28"
     >
 
 
@@ -130,11 +130,13 @@ export default function DualBusinessOverview() {
                   ))}
                 </ul>
 
-                <div className="relative overflow-hidden rounded-2xl border border-white/40 shadow-inner">
+                <div className="relative overflow-hidden rounded-2xl border border-white/40 shadow-inner aspect-video">
                   <img
                     src={b.image}
                     alt={b.title}
-                    className="h-60 w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    loading="lazy"
+                    decoding="async"
+                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent" />
                 </div>
@@ -179,3 +181,5 @@ export default function DualBusinessOverview() {
     </section>
   );
 }
+
+export default memo(DualBusinessOverview);

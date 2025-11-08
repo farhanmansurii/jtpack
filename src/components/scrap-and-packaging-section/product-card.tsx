@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo, memo } from "react";
 import { CheckCircle, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
 import { QuoteRequest } from "../quote-request";
 import Link from "next/link";
@@ -19,7 +19,7 @@ type ProductCardProps = {
   href?: string;
 };
 
-export default function ProductCard({
+function ProductCard({
   category,
   title,
   subtitle,
@@ -35,6 +35,8 @@ export default function ProductCard({
   // Normalize image to array
   const images = Array.isArray(image) ? image : [image];
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
 
   // Autoplay carousel
   useEffect(() => {
@@ -47,15 +49,42 @@ export default function ProductCard({
     return () => clearInterval(interval);
   }, [images.length]);
 
-  const nextImage = () => {
+  const nextImage = useCallback(() => {
     setCurrentImageIndex((prev) => (prev + 1) % images.length);
-  };
+  }, [images.length]);
 
-  const prevImage = () => {
+  const prevImage = useCallback(() => {
     setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
-  };
+  }, [images.length]);
 
-  const getProductValue = (c: string) =>
+  // Swipe gesture handlers
+  const minSwipeDistance = 50;
+
+  const onTouchStart = useCallback((e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  }, []);
+
+  const onTouchMove = useCallback((e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  }, []);
+
+  const onTouchEnd = useCallback(() => {
+    if (!touchStart || !touchEnd) return;
+
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe && images.length > 1) {
+      nextImage();
+    }
+    if (isRightSwipe && images.length > 1) {
+      prevImage();
+    }
+  }, [touchStart, touchEnd, images.length, nextImage, prevImage]);
+
+  const getProductValue = useCallback((c: string) =>
     ({
       "Paper Scrap": "paper-scrap",
       "Plastic Scrap": "plastic-scrap",
@@ -63,9 +92,9 @@ export default function ProductCard({
       "CFC Packaging": "cfc-packaging",
       "Thermal Packaging": "thermal-packaging",
       "Custom Packaging": "custom-packaging",
-    }[c] || "other");
+    }[c] || "other"), []);
 
-  const colors = {
+  const colors = useMemo(() => ({
     blue: {
       badge: "bg-blue-600 text-white",
       checkIcon: "text-blue-600",
@@ -94,22 +123,33 @@ export default function ProductCard({
       border: "border-slate-200",
       accent: "text-amber-600",
     },
-  }[colorScheme];
+  }[colorScheme]), [colorScheme]);
 
-  const visibleFeatures = expanded ? features : features.slice(0, 3);
-  const hasMoreFeatures = features.length > 3;
+  const visibleFeatures = useMemo(() =>
+    expanded ? features : features.slice(0, 3),
+    [expanded, features]
+  );
+  const hasMoreFeatures = useMemo(() => features.length > 3, [features.length]);
 
   return (
     <div
       className={`group relative flex flex-col rounded-2xl border ${colors.border} bg-white overflow-hidden shadow-md hover:shadow-lg transition-all duration-300`}
     >
-      <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-50 group/carousel">
+      <div
+        className="relative aspect-[16/10] w-full overflow-hidden bg-slate-50 group/carousel touch-pan-y"
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+      >
         {/* Image Carousel with Autoplay */}
         {images.map((img, index) => (
           <img
             key={index}
             src={img}
             alt={`${title} - Image ${index + 1}`}
+            loading={index === 0 ? "eager" : "lazy"}
+            decoding="async"
+            fetchPriority={index === 0 ? "high" : "low"}
             className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${
               index === currentImageIndex ? 'opacity-100' : 'opacity-0'
             }`}
@@ -121,32 +161,32 @@ export default function ProductCard({
           <>
             <button
               onClick={prevImage}
-              className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/95 backdrop-blur-sm p-2 rounded-full shadow-lg hover:bg-white hover:scale-110 transition-all opacity-0 group-hover/carousel:opacity-100 z-20"
+              className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 bg-white/95 backdrop-blur-sm p-2.5 sm:p-2 rounded-full shadow-lg hover:bg-white hover:scale-110 active:scale-95 transition-all opacity-0 group-hover/carousel:opacity-100 md:opacity-0 md:group-hover/carousel:opacity-100 z-20 touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2"
               aria-label="Previous image"
             >
-              <ChevronLeft className="w-5 h-5 text-slate-700" />
+              <ChevronLeft className="w-5 h-5 sm:w-5 sm:h-5 text-slate-700" />
             </button>
             <button
               onClick={nextImage}
-              className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/95 backdrop-blur-sm p-2 rounded-full shadow-lg hover:bg-white hover:scale-110 transition-all opacity-0 group-hover/carousel:opacity-100 z-20"
+              className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 bg-white/95 backdrop-blur-sm p-2.5 sm:p-2 rounded-full shadow-lg hover:bg-white hover:scale-110 active:scale-95 transition-all opacity-0 group-hover/carousel:opacity-100 md:opacity-0 md:group-hover/carousel:opacity-100 z-20 touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2"
               aria-label="Next image"
             >
-              <ChevronRight className="w-5 h-5 text-slate-700" />
+              <ChevronRight className="w-5 h-5 sm:w-5 sm:h-5 text-slate-700" />
             </button>
           </>
         )}
 
         {/* Navigation Dots */}
         {images.length > 1 && (
-          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex space-x-1.5 z-10">
+          <div className="absolute bottom-2 sm:bottom-3 left-1/2 -translate-x-1/2 flex space-x-1.5 sm:space-x-1.5 z-10">
             {images.map((_, index) => (
               <button
                 key={index}
                 onClick={() => setCurrentImageIndex(index)}
-                className={`transition-all rounded-full ${
+                className={`transition-all rounded-full touch-manipulation focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 ${
                   index === currentImageIndex
-                    ? 'bg-white w-6 h-1.5'
-                    : 'bg-white/50 hover:bg-white/75 w-1.5 h-1.5'
+                    ? 'bg-white w-7 sm:w-6 h-2 sm:h-1.5'
+                    : 'bg-white/50 hover:bg-white/75 active:bg-white/90 w-2 sm:w-1.5 h-2 sm:h-1.5'
                 }`}
                 aria-label={`Go to image ${index + 1}`}
               />
@@ -230,4 +270,6 @@ export default function ProductCard({
     </div>
   );
 }
+
+export default memo(ProductCard);
 

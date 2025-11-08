@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Container } from "@/components/ui/container";
 import { CheckCircle2, Leaf, Recycle, PackageSearch } from "lucide-react";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 
 type BadgeVariant = "default" | "secondary" | "destructive" | "outline";
 
@@ -54,23 +54,7 @@ const HERO_SLIDES: {
       secondary: { text: "Our Story", href: "#about" },
     },
   },
-  {
-    videoSrc: "/hero/hero-video-3.webp",
-    posterSrc: "/hero/hero-video-3.webp",
-    badge: { variant: "default", text: "Community" },
-    title: "Building a Better Future Together",
-    subtitle: "Empowering communities through sustainable practices",
-    features: [
-      { icon: "Recycle", label: "Local Partnerships" },
-      { icon: "Leaf", label: "Renewable Energy" },
-      { icon: "CheckCircle2", label: "Impact Verified" },
-      { icon: "PackageSearch", label: "Full Traceability" },
-    ],
-    cta: {
-      primary: { text: "Join Us", href: "#services" },
-      secondary: { text: "Our Impact", href: "#about" },
-    },
-  },
+
 ];
 
 type Props = {
@@ -80,12 +64,27 @@ type Props = {
 export default function HeroSection({ interval = 10000 }: Props) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [loadedVideos, setLoadedVideos] = useState<Set<number>>(new Set([0]));
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
       setIsTransitioning(true);
       setTimeout(() => {
-        setCurrentSlide((prev) => (prev + 1) % HERO_SLIDES.length);
+        setCurrentSlide((prev) => {
+          const nextSlide = (prev + 1) % HERO_SLIDES.length;
+          setLoadedVideos((prevVideos) => {
+            const next = new Set(prevVideos);
+            next.add(nextSlide);
+            next.add((nextSlide + 1) % HERO_SLIDES.length);
+            return next;
+          });
+          return nextSlide;
+        });
         setIsTransitioning(false);
       }, 500);
     }, interval);
@@ -93,9 +92,9 @@ export default function HeroSection({ interval = 10000 }: Props) {
     return () => clearInterval(timer);
   }, [interval]);
 
-  const currentConfig = HERO_SLIDES[currentSlide];
+  const currentConfig = useMemo(() => HERO_SLIDES[currentSlide], [currentSlide]);
 
-  const getIcon = (iconName: string) => {
+  const getIcon = useCallback((iconName: string) => {
     switch (iconName) {
       case "Leaf":
         return Leaf;
@@ -108,28 +107,40 @@ export default function HeroSection({ interval = 10000 }: Props) {
       default:
         return Leaf;
     }
-  };
+  }, []);
 
   return (
     <section id="home" className="relative h-[85vh] w-full overflow-hidden">
       {/* Background video with crossfade */}
       <div className="absolute inset-0 -z-10">
-        {HERO_SLIDES.map((slide, index) => (
-          <video
-            key={index}
-            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${
-              index === currentSlide ? "opacity-100" : "opacity-0"
-            }`}
-            autoPlay
-            loop
-            muted
-            playsInline
-            poster={slide.posterSrc}
-            aria-hidden
-          >
-            <source src={slide.videoSrc} type="video/mp4" />
-          </video>
-        ))}
+        {HERO_SLIDES.map((slide, index) => {
+          const isActive = index === currentSlide;
+          const shouldLoad = isMounted && loadedVideos.has(index);
+
+          return (
+            <video
+              key={index}
+              className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${
+                isActive ? "opacity-100" : "opacity-0"
+              }`}
+              autoPlay={isActive && isMounted}
+              loop
+              muted
+              playsInline
+              poster={slide.posterSrc}
+              preload={isMounted ? (isActive ? "auto" : shouldLoad ? "metadata" : "none") : "none"}
+              aria-hidden
+            >
+              {shouldLoad && (
+                <>
+                  {/* Use poster image on mobile for better performance */}
+                  <source src={slide.videoSrc} type="video/mp4" media="(min-width: 768px)" />
+                  <source src={slide.posterSrc} type="image/webp" media="(max-width: 767px)" />
+                </>
+              )}
+            </video>
+          );
+        })}
         {/* Overlays for readability */}
         <div className="pointer-events-none absolute inset-0 bg-black/60 mix-blend-multiply" />
       </div>
@@ -146,37 +157,37 @@ export default function HeroSection({ interval = 10000 }: Props) {
               <Badge variant={currentConfig.badge.variant ?? "outline"}>
                 {currentConfig.badge.text}
               </Badge>
-              <div className="hidden h-px flex-1 bg-white/30 sm:block" />
+              <div className="hidden h-px flex-1 bg-white/30 sm:block" aria-hidden="true" />
             </div>
 
-            <h1 className="max-w-3xl text-3xl font-semibold leading-tight tracking-tight text-white sm:text-4xl lg:text-5xl">
+            <h1 className="max-w-3xl text-2xl font-semibold leading-tight tracking-tight text-white sm:text-3xl md:text-4xl lg:text-5xl">
               {currentConfig.title}
             </h1>
 
-            <p className="mt-4 max-w-2xl text-slate-200">
+            <p className="mt-3 sm:mt-4 max-w-2xl text-sm sm:text-base text-slate-200">
               {currentConfig.subtitle}
             </p>
 
-            <ul className="mt-6 grid max-w-2xl grid-cols-1 gap-3 sm:grid-cols-2">
+            <ul className="mt-4 sm:mt-6 grid max-w-2xl grid-cols-1 gap-2 sm:gap-3 sm:grid-cols-2">
               {currentConfig.features.map((item) => {
                 const IconComponent = getIcon(item.icon);
                 return (
-                  <li key={item.label} className="flex items-center gap-2 text-sm text-white">
-                    <IconComponent className="h-4 w-4 text-accent" aria-hidden />
+                  <li key={item.label} className="flex items-center gap-2 text-xs sm:text-sm text-white">
+                    <IconComponent className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-accent flex-shrink-0" aria-hidden />
                     <span>{item.label}</span>
                   </li>
                 );
               })}
             </ul>
 
-            <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Button size="lg" variant="secondary" asChild>
+            <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2 sm:gap-3">
+              <Button size="lg" variant="secondary" asChild className="w-full sm:w-auto">
                 <Link href={currentConfig.cta.primary.href}>
                   {currentConfig.cta.primary.text}
                 </Link>
               </Button>
 
-              <Button size="lg" asChild>
+              <Button size="lg" asChild className="w-full sm:w-auto">
                 <Link href={currentConfig.cta.secondary.href}>
                   {currentConfig.cta.secondary.text}
                 </Link>
@@ -185,25 +196,36 @@ export default function HeroSection({ interval = 10000 }: Props) {
           </div>
 
           {/* Slide indicators */}
-          <div className="mt-8 flex items-center gap-2">
-            {HERO_SLIDES.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => {
-                  setIsTransitioning(true);
-                  setTimeout(() => {
-                    setCurrentSlide(index);
-                    setIsTransitioning(false);
-                  }, 500);
-                }}
-                className={`h-1.5 rounded-full transition-all duration-300 ${
-                  index === currentSlide
-                    ? "w-8 bg-white"
-                    : "w-1.5 bg-white/40 hover:bg-white/60"
-                }`}
-                aria-label={`Go to slide ${index + 1}`}
-              />
-            ))}
+          <div className="mt-6 sm:mt-8 flex items-center gap-2 sm:gap-2.5">
+            {HERO_SLIDES.map((_, index) => {
+              const handleSlideClick = () => {
+                setIsTransitioning(true);
+                setTimeout(() => {
+                  setCurrentSlide(index);
+                  setLoadedVideos((prev) => {
+                    const next = new Set(prev);
+                    next.add(index);
+                    next.add((index + 1) % HERO_SLIDES.length);
+                    next.add((index - 1 + HERO_SLIDES.length) % HERO_SLIDES.length);
+                    return next;
+                  });
+                  setIsTransitioning(false);
+                }, 500);
+              };
+
+              return (
+                <button
+                  key={index}
+                  onClick={handleSlideClick}
+                  className={`h-2 sm:h-1.5 rounded-full transition-all duration-300 touch-manipulation focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 ${
+                    index === currentSlide
+                      ? "w-10 sm:w-8 bg-white"
+                      : "w-2 sm:w-1.5 bg-white/40 hover:bg-white/60 active:bg-white/80"
+                  }`}
+                  aria-label={`Go to slide ${index + 1}`}
+                />
+              );
+            })}
           </div>
 
           {/* Spacer for visual balance on tall screens */}

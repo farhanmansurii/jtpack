@@ -21,13 +21,27 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ABOUT_US_CONFIG } from "@/lib/config";
 
+/** ---------------------------- Icons ---------------------------- */
+const IconMap: Record<string, LucideIcon> = {
+  Leaf,
+  Recycle,
+  Package,
+  Shield,
+  Globe,
+  Layers,
+  FlaskConical,
+  Factory,
+  Truck,
+  Boxes,
+};
+
 /** ---------------------------- Types ---------------------------- */
 type Feature = { icon: keyof typeof IconMap; label: string };
 type ValueItem = { stat: string; label: string };
 type Highlight = { title: string; points: string[] };
 
 type AboutConfig = {
-  badge: { variant?: "default" | "secondary" | "outline" | "success" | "destructive"; text: string };
+  badge: { variant?: "default" | "secondary" | "outline" | "destructive"; text: string };
   title: string;
   subtitle?: string;
   description: { first: string; second?: string };
@@ -43,20 +57,6 @@ type AboutConfig = {
   };
 };
 
-/** ---------------------------- Icons ---------------------------- */
-const IconMap: Record<string, LucideIcon> = {
-  Leaf,
-  Recycle,
-  Package,
-  Shield,
-  Globe,
-  Layers,
-  FlaskConical,
-  Factory,
-  Truck,
-  Boxes,
-};
-
 /** ---------------------------- Page ---------------------------- */
 export default function AboutPage() {
   const cfg = ABOUT_US_CONFIG as unknown as AboutConfig;
@@ -67,14 +67,13 @@ export default function AboutPage() {
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       <Navbar />
 
-      <Container className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16 sm:pb-20">
+      <div className="pt-20 sm:pt-24">
+        <Container className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 sm:pb-20">
         {/* ---------------------------- Header ---------------------------- */}
         <section className="text-left items-start space-y-6 mb-6 sm:mb-10">
           {cfg.badge?.text ? (
             <Badge
-              // Only allow allowed variants per lint error, fallback to "secondary"
-              variant={cfg.badge.variant as "secondary" | "default" | "outline" | "destructive" | undefined}
-              className=""
+              variant={cfg.badge.variant}
             >
               {cfg.badge.text}
             </Badge>
@@ -85,14 +84,14 @@ export default function AboutPage() {
           </h1>
 
           {cfg.subtitle ? (
-            <p className="text-pretty text-base sm:text-lg text-muted-foreground  text-left">
+            <p className="text-pretty text-base sm:text-lg text-muted-foreground text-left">
               {cfg.subtitle}
             </p>
           ) : null}
         </section>
 
         {/* ---------------------------- Overview ---------------------------- */}
-        <section className="text-left  mx-auto space-y-6 leading-relaxed mb-10 sm:mb-14">
+        <section className="text-left mx-auto space-y-6 leading-relaxed mb-10 sm:mb-14">
           <p className="text-pretty text-base sm:text-lg text-muted-foreground text-left">{cfg.description.first}</p>
           {cfg.description.second ? (
             <p className="text-pretty text-base sm:text-lg text-muted-foreground text-left">{cfg.description.second}</p>
@@ -221,7 +220,8 @@ export default function AboutPage() {
             </div>
           </section>
         ) : null}
-      </Container>
+        </Container>
+      </div>
 
       <FooterSection />
     </div>

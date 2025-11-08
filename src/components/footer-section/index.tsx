@@ -1,4 +1,5 @@
-import React from "react";
+"use client";
+import React, { memo } from "react";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -14,9 +15,81 @@ import {
   Linkedin,
 } from "lucide-react";
 import { FOOTER_CONFIG } from "@/lib/config";
+import { usePathname } from "next/navigation";
 
-export default function FooterSection() {
+function FooterSection() {
   const currentYear = new Date().getFullYear();
+  const pathname = usePathname();
+  const isHomePage = pathname === "/";
+
+  const scrollToSection = (href: string) => {
+    if (href.startsWith("#")) {
+      const element = document.querySelector(href);
+      if (element) {
+        const navbarHeight = 64;
+        const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+        const offsetPosition = elementPosition - navbarHeight;
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: "smooth",
+        });
+      }
+    } else if (href.startsWith("/")) {
+      if (isHomePage && (href === "/about" || href === "/products")) {
+        const sectionMap: Record<string, string> = {
+          "/about": "#about",
+          "/products": "#products",
+        };
+        const sectionHref = sectionMap[href];
+        if (sectionHref) {
+          const element = document.querySelector(sectionHref);
+          if (element) {
+            const navbarHeight = 64;
+            const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+            const offsetPosition = elementPosition - navbarHeight;
+            window.scrollTo({
+              top: offsetPosition,
+              behavior: "smooth",
+            });
+            return;
+          }
+        }
+      }
+      window.location.href = href;
+    }
+  };
+
+  const getQuickLinkHref = (link: string): string => {
+    const linkMap: Record<string, string> = {
+      "About Us": "/about",
+      "Services": "#services",
+      "Products": "/products",
+      "Contact": "#contact",
+    };
+    return linkMap[link] || "#";
+  };
+
+  const getServiceLinkHref = (service: string): string => {
+    // Map services to sections or pages
+    const serviceMap: Record<string, string> = {
+      "Scrap Trading": "#products",
+      "Packaging Solutions": "#products",
+      "Metal Processing": "#products",
+      "Recycling": "#products",
+    };
+    return serviceMap[service] || "#";
+  };
+
+  const getSocialLinkHref = (platform: string): string => {
+    // Placeholder URLs - replace with actual social media links
+    const socialMap: Record<string, string> = {
+      Facebook: "https://facebook.com/jtpack",
+      Twitter: "https://twitter.com/jtpack",
+      Instagram: "https://instagram.com/jtpack",
+      LinkedIn: "https://linkedin.com/company/jtpack",
+    };
+    return socialMap[platform] || "#";
+  };
 
   return (
     <footer id="contact" className="bg-background border-t">
@@ -44,16 +117,20 @@ export default function FooterSection() {
           <div className="space-y-4">
             <h4 className="text-base font-medium">Quick Links</h4>
             <nav className="flex flex-col space-y-2">
-              {FOOTER_CONFIG.quickLinks.map((link) => (
-                <Button
-                  key={link}
-                  variant="link"
-                  size="sm"
-                  className="justify-start   text-muted-foreground hover:text-foreground"
-                >
-                  {link}
-                </Button>
-              ))}
+              {FOOTER_CONFIG.quickLinks.map((link) => {
+                const href = getQuickLinkHref(link);
+                return (
+                  <Button
+                    key={link}
+                    variant="link"
+                    size="sm"
+                    onClick={() => scrollToSection(href)}
+                    className="justify-start text-muted-foreground hover:text-foreground"
+                  >
+                    {link}
+                  </Button>
+                );
+              })}
             </nav>
           </div>
 
@@ -61,16 +138,20 @@ export default function FooterSection() {
           <div className="space-y-4">
             <h4 className="text-base font-medium">Our Services</h4>
             <nav className="flex flex-col space-y-2">
-              {FOOTER_CONFIG.services.map((service) => (
-                <Button
-                  key={service}
-                  variant="link"
-                  size="sm"
-                  className="justify-start   text-muted-foreground hover:text-foreground"
-                >
-                  {service}
-                </Button>
-              ))}
+              {FOOTER_CONFIG.services.map((service) => {
+                const href = getServiceLinkHref(service);
+                return (
+                  <Button
+                    key={service}
+                    variant="link"
+                    size="sm"
+                    onClick={() => scrollToSection(href)}
+                    className="justify-start text-muted-foreground hover:text-foreground"
+                  >
+                    {service}
+                  </Button>
+                );
+              })}
             </nav>
           </div>
 
@@ -93,7 +174,7 @@ export default function FooterSection() {
                 <MapPin className="w-4 h-4 text-primary flex-shrink-0" />
                 <span className="text-muted-foreground">{FOOTER_CONFIG.contact.address}</span>
               </div>
-              <Button size="sm" className="w-full mt-4">
+              <Button size="sm" className="w-full mt-4" onClick={() => scrollToSection("#contact")}>
                 Contact Us
               </Button>
             </CardContent>
@@ -119,29 +200,35 @@ export default function FooterSection() {
               } as const;
 
               const IconComponent = iconMap[icon as keyof typeof iconMap];
+              const socialHref = getSocialLinkHref(label);
 
               return (
                 <Button
                   key={label}
                   variant="link"
                   size="icon"
+                  asChild
                   className="h-8 w-8 text-muted-foreground hover:text-foreground"
                   aria-label={label}
                 >
-                  <IconComponent className="w-4 h-4" />
+                  <a href={socialHref} target="_blank" rel="noopener noreferrer">
+                    <IconComponent className="w-4 h-4" />
+                  </a>
                 </Button>
               );
             })}
           </div>
 
-          {/* Legal Links */}
+          {/* Legal Links - Placeholders for now */}
           <div className="flex space-x-4 text-sm">
             {FOOTER_CONFIG.legal.map((link) => (
               <Button
                 key={link}
                 variant="link"
                 size="sm"
-                className="p-0 h-auto text-muted-foreground hover:text-foreground"
+                className="p-0 h-auto text-muted-foreground hover:text-foreground cursor-not-allowed opacity-50"
+                disabled
+                aria-label={`${link} - Coming soon`}
               >
                 {link}
               </Button>
@@ -152,3 +239,5 @@ export default function FooterSection() {
     </footer>
   );
 }
+
+export default memo(FooterSection);
