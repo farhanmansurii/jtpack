@@ -8,7 +8,6 @@ import { cn } from "@/lib/utils";
 import { NAVBAR_CONFIG } from "@/lib/config";
 import { QuoteRequest } from "@/components/quote-request";
 import { Logo } from "@/components/logo";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 export default function Navbar() {
