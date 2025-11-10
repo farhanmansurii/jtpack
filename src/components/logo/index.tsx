@@ -1,17 +1,16 @@
 "use client";
 
-import React, { useState } from "react";
+      import React from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { NAVBAR_CONFIG } from "@/lib/config";
 
-type LogoVariant = "default" | "light" | "dark";
+type LogoVariant =  "light" | "dark";
 type LogoSize = "sm" | "md" | "lg" | "xl";
 
-interface LogoProps {
+interface  LogoProps {
   /**
    * Variant of the logo - controls text color
-   * - default: uses primary color
    * - light: uses white color
    * - dark: uses foreground color
    */
@@ -49,47 +48,44 @@ const sizeClasses: Record<LogoSize, string> = {
   xl: "text-3xl",
 };
 
-const imageSizeClasses: Record<LogoSize, number> = {
-  sm: 24,
-  md: 32,
-  lg: 40,
-  xl: 48,
+const imageSizeClasses: Record<LogoSize, string> = {
+  sm: "3rem",
+  md: "4rem",
+  lg: "8rem",
+  xl: "10rem",
 };
 
 const variantClasses: Record<LogoVariant, string> = {
-  default: "text-primary",
   light: "text-white",
   dark: "text-foreground",
 };
 
 export function Logo({
-  variant = "default",
-  size = "md",
+  variant ,
+  size = "lg",
   showBadge = false,
   className,
   href = "/",
   clickable = true,
 }: LogoProps) {
+
+  console.log("variant", variant);
+
+
   // Determine if we should use image or text
   const logoImageSrc = NAVBAR_CONFIG.logo.image;
-  const [imageError, setImageError] = useState(false);
-  const useImage = (logoImageSrc && logoImageSrc !== "" && !imageError);
+  const useImage = logoImageSrc && logoImageSrc !== "";
 
   const logoContent = (
     <div className={cn("flex items-center space-x-2", className)}>
       {useImage ? (
-        <div className="relative flex-shrink-0" style={{ width: imageSizeClasses[size], height: imageSizeClasses[size] }}>
+        <div className="relative flex-shrink-0">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={logoImageSrc}
             alt={NAVBAR_CONFIG.logo.text}
-            width={imageSizeClasses[size]}
-            height={imageSizeClasses[size]}
-            className="object-contain"
-            onError={() => {
-              // Fallback to text if image fails to load
-              setImageError(true);
-            }}
+            style={{ width: imageSizeClasses[size] }}
+            className={`object-contain  font-bold ${variant === "light" ? "text-white" : "text-black"}`}
           />
         </div>
       ) : (
@@ -97,7 +93,7 @@ export function Logo({
           className={cn(
             "font-bold transition-colors duration-300",
             sizeClasses[size],
-            variantClasses[variant],
+            variantClasses[variant as LogoVariant] || ''  ,
           )}
         >
           {NAVBAR_CONFIG.logo.text}
@@ -131,4 +127,3 @@ export function Logo({
     </Link>
   );
 }
-

@@ -482,11 +482,29 @@ export const FOOTER_CONFIG = {
 };
 
 // Navbar Configuration
+export const LOGO_COLORS = {
+  light: {
+    primary: "#3D670C", // Green - main logo color
+    secondary: "#2D4A08", // Darker green for accents
+    text: "#1A2E05", // Dark green for text elements
+    background: "#FFFFFF", // White background
+    accent: "#5A8A1A", // Lighter green for highlights
+  },
+  dark: {
+    primary: "#7DD87D", // Light green for dark mode
+    secondary: "#5AB85A", // Medium green for accents
+    text: "#B8E6B8", // Light green for text elements
+    background: "#0A0A0A", // Dark background
+    accent: "#9EE89E", // Bright green for highlights
+  },
+} as const;
+
 export const NAVBAR_CONFIG = {
   logo: {
     text: "JTPack",
     badge: "Trusted",
-    image: "/logo.svg",
+    image: "/svgviewer-inherit.svg",
+    colors: LOGO_COLORS,
   },
   navigation: [
     { name: "Home", href: "/" },

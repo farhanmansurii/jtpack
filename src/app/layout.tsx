@@ -78,22 +78,6 @@ export const metadata: Metadata = {
     siteName: FOOTER_CONFIG.company.name,
     title: "JTPack — Sustainable Scrap Trading & CFC Packaging",
     description: DUAL_BUSINESS_CONFIG.description,
-    images: [
-      {
-        url: `${siteUrl}/hero/hero-video.webp`,
-        width: 1200,
-        height: 630,
-        alt: "JTPack - Sustainable Scrap Trading & CFC Packaging Solutions",
-        type: "image/webp",
-      },
-      {
-        url: `${siteUrl}/og-image.jpg`,
-        width: 1200,
-        height: 630,
-        alt: "JTPack - Leading Recycling and Packaging Solutions",
-        type: "image/jpeg",
-      },
-    ],
     countryName: "India",
     emails: [FOOTER_CONFIG.contact.email],
     phoneNumbers: [FOOTER_CONFIG.contact.phone],

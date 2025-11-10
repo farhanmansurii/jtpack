@@ -146,8 +146,8 @@ export default function Navbar() {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Logo
-            variant={scrolled || !isHomePage ? "default" : "light"}
-            size="md"
+            variant={(scrolled || !isHomePage ? "dark" : "light") as "dark" | "light"}
+            size="xl"
             showBadge={false}
           />
 
