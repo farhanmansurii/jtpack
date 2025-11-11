@@ -68,44 +68,17 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [isHomePage]);
 
-  const scrollToSection = useCallback((href: string) => {
-    if (href.startsWith("#")) {
-      // If we're on the home page, try to scroll to the section
-      if (isHomePage) {
-        const element = document.querySelector(href);
-        if (element) {
-          const navbarHeight = 64;
-          const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
-          const offsetPosition = elementPosition - navbarHeight;
-
-          window.scrollTo({
-            top: offsetPosition,
-            behavior: "smooth",
-          });
-          setIsOpen(false);
-          return;
-        }
-      } else {
-        // If we're not on the home page, navigate to home page with hash
-        setIsOpen(false);
-        const url = `${window.location.origin}/${href}`;
-        window.location.href = url;
-        return;
-      }
-    }
-    if (href.startsWith("/")) {
-      if (isHomePage) {
-        const sectionMap: Record<string, string> = {
-          "/about": "#about",
-          "/products": "#products",
-        };
-
-        if (sectionMap[href]) {
-          const element = document.querySelector(sectionMap[href]);
+  const scrollToSection = useCallback(
+    (href: string) => {
+      if (href.startsWith("#")) {
+        // If we're on the home page, try to scroll to the section
+        if (isHomePage) {
+          const element = document.querySelector(href);
           if (element) {
             const navbarHeight = 64;
             const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
             const offsetPosition = elementPosition - navbarHeight;
+
             window.scrollTo({
               top: offsetPosition,
               behavior: "smooth",
@@ -113,25 +86,55 @@ export default function Navbar() {
             setIsOpen(false);
             return;
           }
+        } else {
+          // If we're not on the home page, navigate to home page with hash
+          setIsOpen(false);
+          const url = `${window.location.origin}/${href}`;
+          window.location.href = url;
+          return;
         }
       }
-      window.location.href = href;
-      setIsOpen(false);
-      return;
-    }
-    const element = document.querySelector(href);
-    if (element) {
-      const navbarHeight = 64;
-      const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
-      const offsetPosition = elementPosition - navbarHeight;
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth",
-      });
-    }
-    setIsOpen(false);
-  }, [isHomePage]);
+      if (href.startsWith("/")) {
+        if (isHomePage) {
+          const sectionMap: Record<string, string> = {
+            "/about": "#about",
+            "/products": "#products",
+          };
 
+          if (sectionMap[href]) {
+            const element = document.querySelector(sectionMap[href]);
+            if (element) {
+              const navbarHeight = 64;
+              const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+              const offsetPosition = elementPosition - navbarHeight;
+              window.scrollTo({
+                top: offsetPosition,
+                behavior: "smooth",
+              });
+              setIsOpen(false);
+              return;
+            }
+          }
+        }
+        window.location.href = href;
+        setIsOpen(false);
+        return;
+      }
+      const element = document.querySelector(href);
+      if (element) {
+        const navbarHeight = 64;
+        const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+        const offsetPosition = elementPosition - navbarHeight;
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: "smooth",
+        });
+      }
+      setIsOpen(false);
+    },
+    [isHomePage],
+  );
+  const isMobile = window.innerWidth && window.innerWidth < 768;
   return (
     <nav
       className={cn(
@@ -144,21 +147,17 @@ export default function Navbar() {
       <Container>
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Logo
-            variant={scrolled ? "dark" : "light"}
-            size="xl"
-            showBadge={false}
-          />
+          <Logo variant={scrolled && isMobile ? "dark" : "light"} size="xl" showBadge={false} />
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-4">
             {NAVBAR_CONFIG.navigation.map((item) => {
-              const isActive = isHomePage && (
-                (item.href === "/" && activeSection === "home") ||
-                (item.href === "/about" && activeSection === "about") ||
-                (item.href === "#services" && activeSection === "services") ||
-                (item.href === "/products" && activeSection === "products")
-              );
+              const isActive =
+                isHomePage &&
+                ((item.href === "/" && activeSection === "home") ||
+                  (item.href === "/about" && activeSection === "about") ||
+                  (item.href === "#services" && activeSection === "services") ||
+                  (item.href === "/products" && activeSection === "products"));
 
               return (
                 <Button
@@ -172,8 +171,8 @@ export default function Navbar() {
                         ? "text-primary font-semibold"
                         : "text-foreground hover:text-primary"
                       : isActive
-                        ? "text-white font-semibold"
-                        : "text-white hover:text-white/80",
+                      ? "text-white font-semibold"
+                      : "text-white hover:text-white/80",
                   )}
                 >
                   {item.name}
