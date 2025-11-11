@@ -2,11 +2,8 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   compress: true,
-
-  // Performance optimizations
+  reactCompiler: true,
   poweredByHeader: false,
-
-  // Headers for better caching
   async headers() {
     return [
       {

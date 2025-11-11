@@ -503,7 +503,10 @@ export const NAVBAR_CONFIG = {
   logo: {
     text: "JTPack",
     badge: "Trusted",
-    image: "/svgviewer-inherit.svg",
+    image: {
+      light: "/logo/logo-white.svg",
+      dark: "/logo/logo-black.svg",
+    },
     colors: LOGO_COLORS,
   },
   navigation: [

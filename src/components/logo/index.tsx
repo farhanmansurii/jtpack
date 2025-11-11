@@ -69,11 +69,9 @@ export function Logo({
   clickable = true,
 }: LogoProps) {
 
-  console.log("variant", variant);
-
-
-  // Determine if we should use image or text
-  const logoImageSrc = NAVBAR_CONFIG.logo.image;
+  const logoImageSrc = typeof NAVBAR_CONFIG.logo.image === "string"
+    ? NAVBAR_CONFIG.logo.image
+    : NAVBAR_CONFIG.logo.image[variant || "dark"];
   const useImage = logoImageSrc && logoImageSrc !== "";
 
   const logoContent = (
@@ -85,7 +83,7 @@ export function Logo({
             src={logoImageSrc}
             alt={NAVBAR_CONFIG.logo.text}
             style={{ width: imageSizeClasses[size] }}
-            className={`object-contain  font-bold ${variant === "light" ? "text-white" : "text-black"}`}
+            className="object-contain font-bold"
           />
         </div>
       ) : (

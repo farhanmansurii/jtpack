@@ -41,6 +41,9 @@ export const metadata: Metadata = {
   },
 };
 
+export const dynamic = "force-static";
+export const revalidate = 86400; // Revalidate every 1 day (86400 seconds)
+
 export default function Home() {
   const jsonLd = {
     "@context": "https://schema.org",

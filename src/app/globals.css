@@ -95,6 +95,14 @@
   --sidebar-accent-foreground: oklch(0.25 0.08 220);
   --sidebar-border: oklch(0.88 0.01 106.99);
   --sidebar-ring: oklch(0.45 0.15 142.5);
+
+  /* Map location colors */
+  --map-plant: oklch(0.55 0.18 240); /* Indigo for plants */
+  --map-plant-foreground: oklch(0.98 0.002 106.99);
+  --map-hq: oklch(0.65 0.15 75); /* Amber for headquarters */
+  --map-hq-foreground: oklch(0.98 0.002 106.99);
+  --map-other: oklch(0.5 0.02 285.82); /* Slate for other */
+  --map-other-foreground: oklch(0.98 0.002 106.99);
 }
 
 
@@ -130,6 +138,14 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+
+  /* Map location colors - dark mode */
+  --map-plant: oklch(0.6 0.18 240);
+  --map-plant-foreground: oklch(0.98 0.002 106.99);
+  --map-hq: oklch(0.7 0.15 75);
+  --map-hq-foreground: oklch(0.98 0.002 106.99);
+  --map-other: oklch(0.55 0.02 285.82);
+  --map-other-foreground: oklch(0.98 0.002 106.99);
 }
 
 @layer base {
@@ -155,4 +171,20 @@
 
 @layer utilities {
   .font-title { font-family: var(--font-title), var(--font-sans); }
+
+  /* Map location color utilities */
+  .bg-map-plant { background-color: var(--map-plant); }
+  .text-map-plant-foreground { color: var(--map-plant-foreground); }
+  .fill-map-plant { fill: var(--map-plant); }
+  .stroke-map-plant-foreground { stroke: var(--map-plant-foreground); }
+
+  .bg-map-hq { background-color: var(--map-hq); }
+  .text-map-hq-foreground { color: var(--map-hq-foreground); }
+  .fill-map-hq { fill: var(--map-hq); }
+  .stroke-map-hq-foreground { stroke: var(--map-hq-foreground); }
+
+  .bg-map-other { background-color: var(--map-other); }
+  .text-map-other-foreground { color: var(--map-other-foreground); }
+  .fill-map-other { fill: var(--map-other); }
+  .stroke-map-other-foreground { stroke: var(--map-other-foreground); }
 }
