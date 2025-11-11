@@ -1,4 +1,3 @@
-"use cache";
 
 import { SCRAP_AND_PACKAGING_CONFIG, type ProductImage } from '@/lib/config'
 
