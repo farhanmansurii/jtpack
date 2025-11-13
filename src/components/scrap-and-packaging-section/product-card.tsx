@@ -17,6 +17,7 @@ type ProductCardProps = {
   ctaText: string;
   colorScheme?: ColorScheme;
   href?: string;
+  slug?: string;
 };
 
 function ProductCard({
@@ -29,6 +30,7 @@ function ProductCard({
   ctaText,
   colorScheme = "blue",
   href,
+  slug,
 }: ProductCardProps) {
   const [expanded, setExpanded] = useState(false);
 
@@ -83,16 +85,6 @@ function ProductCard({
       prevImage();
     }
   }, [touchStart, touchEnd, images.length, nextImage, prevImage]);
-
-  const getProductValue = useCallback((c: string) =>
-    ({
-      "Paper Scrap": "paper-scrap",
-      "Plastic Scrap": "plastic-scrap",
-      "Metal Scrap": "metal-scrap",
-      "CFC Packaging": "cfc-packaging",
-      "Thermal Packaging": "thermal-packaging",
-      "Custom Packaging": "custom-packaging",
-    }[c] || "other"), []);
 
   const colors = useMemo(() => ({
     blue: {
@@ -258,7 +250,7 @@ function ProductCard({
               </span>
             </Link>
           )}
-          <QuoteRequest product={getProductValue(category)} colorScheme={colorScheme as "green" | "blue"}>
+          <QuoteRequest product={slug || ""} colorScheme={colorScheme as "green" | "blue"}>
             <button
               className={`${href ? 'flex-1' : 'w-full'} ${colors.button} font-semibold rounded-lg py-2.5 px-4 transition-colors duration-200 shadow-sm hover:shadow`}
             >

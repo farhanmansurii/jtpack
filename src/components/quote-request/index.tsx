@@ -94,31 +94,51 @@ export function QuoteRequest({
       if (mode === "whatsapp") {
         const toNumber = FOOTER_CONFIG.contact.phone.replace(/[^0-9]/g, "");
 
-        // Build message parts array
-        const messageParts = [
-          "🎯 *NEW QUOTE REQUEST*",
-          "━━━━━━━━━━━━━━━━━━━━",
-          "",
-          "👤 *Customer Details*",
-          `   • Name: ${formData.name}`,
-          `   • ${formData.contactMethod === "email" ? "📧" : "📱"} ${formData.contact}`,
-          "",
-          "📦 *Product Information*",
-          `   • Product: ${
-            PRODUCT_OPTIONS.find((p) => p.value === formData.product)?.label || formData.product
-          }`,
-          "",
-        ];
+        // Try to find product by exact slug match first
+        let productLabel = PRODUCT_OPTIONS.find((p) => p.value === formData.product)?.label;
 
-        // Add notes section only if notes exist
-        if (formData.notes && formData.notes.trim()) {
-          messageParts.push("📝 *Additional Notes*", `   ${formData.notes}`, "");
+        // If not found, try to find by title (case-insensitive partial match)
+        if (!productLabel) {
+          const foundProduct = PRODUCT_OPTIONS.find((p) =>
+            p.label.toLowerCase().includes(formData.product.toLowerCase()) ||
+            formData.product.toLowerCase().includes(p.label.toLowerCase())
+          );
+          productLabel = foundProduct?.label;
         }
 
-        // Add timestamp
-        messageParts.push(
-          "━━━━━━━━━━━━━━━━━━━━",
-          `📅 ${new Date().toLocaleDateString("en-US", {
+        // If still not found, try to find by slug partial match
+        if (!productLabel) {
+          const foundProduct = PRODUCT_OPTIONS.find((p) =>
+            p.value.toLowerCase().includes(formData.product.toLowerCase()) ||
+            formData.product.toLowerCase().includes(p.value.toLowerCase())
+          );
+          productLabel = foundProduct?.label;
+        }
+
+        // Final fallback: format the product value nicely or use it as-is
+        if (!productLabel) {
+          productLabel = formData.product
+            .split("-")
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(" ");
+        }
+
+        const message = [
+          "NEW QUOTE REQUEST",
+          "----------------------------------------",
+          "",
+          "Customer Details",
+          `   • Name: ${formData.name}`,
+          `   • ${formData.contactMethod === "email" ? "Email" : "Phone"}: ${formData.contact}`,
+          "",
+          "Product Information",
+          `   • Product: ${productLabel}`,
+          "",
+          formData.notes?.trim() ? "Additional Notes" : "",
+          formData.notes?.trim() ? `   • ${formData.notes.trim()}` : "",
+          "",
+          "----------------------------------------",
+          `Submitted On: ${new Date().toLocaleString("en-US", {
             weekday: "short",
             year: "numeric",
             month: "short",
@@ -126,36 +146,16 @@ export function QuoteRequest({
             hour: "2-digit",
             minute: "2-digit",
           })}`,
-        );
+        ]
+          .filter(Boolean)
+          .join("\n");
 
-        // Encode the message for WhatsApp URL
-        const message = messageParts
-          .join("%0A")
-          .replace(/\*/g, "%2A")
-          .replace(/_/g, "%5F")
-          .replace(/#/g, "%23");
-        console.log(message);
         const url = `https://wa.me/${toNumber}?text=${encodeURIComponent(message)}`;
         window.open(url, "_blank", "noopener,noreferrer");
-
-        setIsSubmitted(true);
-        setTimeout(() => {
-          setIsOpen(false);
-          setIsSubmitted(false);
-          setFormData({
-            name: "",
-            contactMethod: "phone",
-            contact: "",
-            product: product || "",
-            notes: "",
-          });
-        }, 1500);
       } else {
         const response = await fetch("/api/quote-request", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData),
         });
 
@@ -173,7 +173,7 @@ export function QuoteRequest({
             });
           }, 2000);
         } else {
-          throw new Error("Failed to submit quote request");
+          throw new Error("failed to submit quote request");
         }
       }
     } catch (error) {

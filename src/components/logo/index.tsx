@@ -91,6 +91,7 @@ export function Logo({
             width={imageSize}
             height={imageSize}
             className="object-contain"
+            style={{ width: `${imageSize}px` }}
             priority
           />
         </div>
