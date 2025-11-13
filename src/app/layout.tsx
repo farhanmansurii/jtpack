@@ -64,12 +64,13 @@ export const metadata: Metadata = {
       { url: "/favicon.ico", sizes: "any" },
       { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
       { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/android-chrome-192x192.png", sizes: "192x192", type: "image/png" },
+      { url: "/android-chrome-512x512.png", sizes: "512x512", type: "image/png" },
     ],
-    apple: [
-      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
-    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
   },
   manifest: "/site.webmanifest",
+
   openGraph: {
     type: "website",
     locale: "en_IN",
@@ -123,6 +124,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="manifest" href="https://progressier.app/koHyvc3FSRc4oKchdxLE/progressier.json" />
+        <script defer src="https://progressier.app/koHyvc3FSRc4oKchdxLE/script.js"></script>
+      </head>
       <body
         className={`${inter.variable} ${robotoSlab.variable} ${jetbrainsMono.variable} ${leagueSpartan.variable} antialiased`}
         suppressHydrationWarning

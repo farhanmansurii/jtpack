@@ -46,9 +46,7 @@ const PRODUCT_OPTIONS: ProductOption[] = (
   ] as Array<{ title: string; slug?: string }>
 )
   .map((p) => ({ value: p.slug || p.title, label: p.title }))
-  .filter((option, index, self) =>
-    index === self.findIndex((o) => o.value === option.value)
-  );
+  .filter((option, index, self) => index === self.findIndex((o) => o.value === option.value));
 
 export function QuoteRequest({
   children,
@@ -95,20 +93,49 @@ export function QuoteRequest({
     try {
       if (mode === "whatsapp") {
         const toNumber = FOOTER_CONFIG.contact.phone.replace(/[^0-9]/g, "");
-        const message = [
-          "*New Quote Request*",
+
+        // Build message parts array
+        const messageParts = [
+          "🎯 *NEW QUOTE REQUEST*",
+          "━━━━━━━━━━━━━━━━━━━━",
           "",
-          `*Name:* ${formData.name}`,
-          `*Preferred Contact Method:* ${formData.contactMethod}`,
-          `*Contact:* ${formData.contact}`,
-          `*Product:* ${PRODUCT_OPTIONS.find(p => p.value === formData.product)?.label || formData.product}`,
-          `*Additional Notes:* ${formData.notes || "-"}`,
-        ]
+          "👤 *Customer Details*",
+          `   • Name: ${formData.name}`,
+          `   • ${formData.contactMethod === "email" ? "📧" : "📱"} ${formData.contact}`,
+          "",
+          "📦 *Product Information*",
+          `   • Product: ${
+            PRODUCT_OPTIONS.find((p) => p.value === formData.product)?.label || formData.product
+          }`,
+          "",
+        ];
+
+        // Add notes section only if notes exist
+        if (formData.notes && formData.notes.trim()) {
+          messageParts.push("📝 *Additional Notes*", `   ${formData.notes}`, "");
+        }
+
+        // Add timestamp
+        messageParts.push(
+          "━━━━━━━━━━━━━━━━━━━━",
+          `📅 ${new Date().toLocaleDateString("en-US", {
+            weekday: "short",
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          })}`,
+        );
+
+        // Encode the message for WhatsApp URL
+        const message = messageParts
           .join("%0A")
           .replace(/\*/g, "%2A")
-          .replace(/_/g, "%5F");
-
-        const url = `https://wa.me/${toNumber}?text=${message}`;
+          .replace(/_/g, "%5F")
+          .replace(/#/g, "%23");
+        console.log(message);
+        const url = `https://wa.me/${toNumber}?text=${encodeURIComponent(message)}`;
         window.open(url, "_blank", "noopener,noreferrer");
 
         setIsSubmitted(true);
@@ -123,8 +150,7 @@ export function QuoteRequest({
             notes: "",
           });
         }, 1500);
-      }
-       else {
+      } else {
         const response = await fetch("/api/quote-request", {
           method: "POST",
           headers: {
@@ -222,9 +248,9 @@ export function QuoteRequest({
             onValueChange={(value) => handleInputChange("product", value)}
             disabled={!!product}
           >
-          <SelectTrigger className="w-full shadow-none border-slate-300 text-base sm:text-sm">
-            <SelectValue placeholder="Select a product or service" />
-          </SelectTrigger>
+            <SelectTrigger className="w-full shadow-none border-slate-300 text-base sm:text-sm">
+              <SelectValue placeholder="Select a product or service" />
+            </SelectTrigger>
             <SelectContent>
               {PRODUCT_OPTIONS.map((option) => (
                 <SelectItem key={option.value} value={option.value}>

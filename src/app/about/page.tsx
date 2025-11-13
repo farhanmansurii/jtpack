@@ -20,6 +20,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ABOUT_US_CONFIG } from "@/lib/config";
+import { ProductImageCarousel } from "@/components/about-us-section/product-image-carousel";
 
 /** ---------------------------- Icons ---------------------------- */
 const IconMap: Record<string, LucideIcon> = {
@@ -88,6 +89,11 @@ export default function AboutPage() {
               {cfg.subtitle}
             </p>
           ) : null}
+        </section>
+
+        {/* ---------------------------- Carousel ---------------------------- */}
+        <section className="mb-10 sm:mb-14">
+          <ProductImageCarousel />
         </section>
 
         {/* ---------------------------- Overview ---------------------------- */}

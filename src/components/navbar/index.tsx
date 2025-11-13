@@ -134,7 +134,8 @@ export default function Navbar() {
     },
     [isHomePage],
   );
-  const isMobile = window.innerWidth && window.innerWidth < 768;
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+
   return (
     <nav
       className={cn(
@@ -147,7 +148,7 @@ export default function Navbar() {
       <Container>
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Logo variant={scrolled && isMobile ? "dark" : "light"} size="xl" showBadge={false} />
+          <Logo variant={scrolled && isMobile ? "dark" : "light"} size={isMobile ? 100 : "xl"} showBadge={false} />
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-4">

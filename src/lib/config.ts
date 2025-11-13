@@ -226,9 +226,9 @@ export const SCRAP_AND_PACKAGING_CONFIG = {
     description: null,
     products: [
       {
-        category: "Paper Scrap",
+        category: "Plastic Trading", // add proper category name here
         title: "Recycled Plastic Trading",
-        subtitle: "High-quality paper waste processing and trading solutions",
+        subtitle: "High-quality plastic waste processing and trading solutions",
         image: [
           {
             url: "/products/waste-materials-trading/recycled-plastic-trading/pure-ld.png",
@@ -254,9 +254,9 @@ export const SCRAP_AND_PACKAGING_CONFIG = {
         slug: "recycled-plastic-trading",
       },
       {
-        category: "Plastic Trading",
+        category: "Paper Trading", // add proper category name here
         title: "Waste Paper Trading",
-        subtitle: "Specialized plastic waste management and recycling services",
+        subtitle: "Specialized paper waste management and recycling services",
         image: [
           {
             url: "/products/waste-materials-trading/recycled-paper-trading/duplex.webp",
@@ -295,7 +295,7 @@ export const SCRAP_AND_PACKAGING_CONFIG = {
         slug: "waste-paper-trading",
       },
       {
-        category: "Alloy Trading",
+        category: "Metal Scrap", // add proper category name here
         title: "Alloy Trading",
         subtitle: "Comprehensive metal scrap collection and processing",
         image: [
@@ -342,7 +342,7 @@ export const SCRAP_AND_PACKAGING_CONFIG = {
       "Precision-engineered packaging solutions including corrugated boxes, CFC thermal insulation products, and export-grade custom solutions.",
     products: [
       {
-        category: "Corrugated Boxes",
+        category: "CFC Packaging", // add proper category name here
         title: "Industrial Corrugated Solutions",
         subtitle: "Durable packaging solutions for heavy-duty applications",
         image: [
@@ -383,7 +383,7 @@ export const SCRAP_AND_PACKAGING_CONFIG = {
         slug: "industrial-corrugated-solutions",
       },
       {
-        category: "CFC Boxes",
+        category: "Thermal Packaging", // add proper category name here
         title: "Thermal Insulation Packaging",
         subtitle: "Advanced temperature-controlled packaging solutions",
         image: [
@@ -504,8 +504,8 @@ export const NAVBAR_CONFIG = {
     text: "JTPack",
     badge: "Trusted",
     image: {
-      light: "/logo/logo-white.svg",
-      dark: "/logo/logo-black.svg",
+      light: "/logo/jtpack-logo.svg",
+      dark: "/logo/jtpack-logo.svg",
     },
     colors: LOGO_COLORS,
   },

@@ -1,12 +1,12 @@
 import React, { JSX, memo } from "react";
 import { Leaf, Package, Recycle } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { Card } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import { SectionHeader } from "@/components/ui/section-header";
 import { ABOUT_US_CONFIG } from "@/lib/config";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { ProductImageCarousel } from "./product-image-carousel";
 
 function AboutUsSection(): JSX.Element {
   return (
@@ -58,16 +58,7 @@ function AboutUsSection(): JSX.Element {
 
           {/* Right Column */}
           <div className="lg:col-span-6">
-            <Card className="relative overflow-hidden rounded-2xl shadow-lg bg-gradient-to-br from-primary/10 via-background to-secondary/10">
-              <div className="aspect-video bg-muted flex items-center justify-center rounded-t-2xl">
-                <span className="text-sm text-muted-foreground">Company / Product Visual</span>
-              </div>
-              {/* KPI Floating Card */}
-              <div className="absolute top-4 right-4 bg-background/90 backdrop-blur rounded-lg p-3 shadow">
-                <p className="text-xs text-muted-foreground">{ABOUT_US_CONFIG.kpi.label}</p>
-                <p className="text-lg font-semibold text-primary">{ABOUT_US_CONFIG.kpi.value}</p>
-              </div>
-            </Card>
+            <ProductImageCarousel />
           </div>
         </div>
 
@@ -87,5 +78,4 @@ function AboutUsSection(): JSX.Element {
     </section>
   );
 }
-
 export default memo(AboutUsSection);

@@ -100,7 +100,7 @@ function FooterSection() {
           {/* Company Info */}
           <div className="space-y-4">
             <div>
-              <Logo variant="dark" size="lg" showBadge={false} className="mb-3" />
+              <Logo variant="dark" size={200} showBadge={false} className="mb-3" />
               <p className="text-muted-foreground text-sm leading-relaxed">
                 {FOOTER_CONFIG.company.description}
               </p>

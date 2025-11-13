@@ -37,23 +37,23 @@ const HERO_SLIDES: {
       secondary: { text: "Learn More", href: "#about" },
     },
   },
-  {
-    videoSrc: "/hero/hero-video-2.webp",
-    posterSrc: "/hero/hero-video-2.webp",
-    badge: { variant: "secondary", text: "Innovation" },
-    title: "Transforming Ideas Into Reality",
-    subtitle: "Cutting-edge technology meets environmental responsibility",
-    features: [
-      { icon: "CheckCircle2", label: "Award-Winning Design" },
-      { icon: "Leaf", label: "Carbon Neutral" },
-      { icon: "PackageSearch", label: "Quality Guaranteed" },
-      { icon: "Recycle", label: "Circular Economy" },
-    ],
-    cta: {
-      primary: { text: "Get Started", href: "#services" },
-      secondary: { text: "Our Story", href: "#about" },
-    },
-  },
+  // {
+  //   videoSrc: "/hero/hero-video-2.webp",
+  //   posterSrc: "/hero/hero-video-2.webp",
+  //   badge: { variant: "secondary", text: "Innovation" },
+  //   title: "Transforming Ideas Into Reality",
+  //   subtitle: "Cutting-edge technology meets environmental responsibility",
+  //   features: [
+  //     { icon: "CheckCircle2", label: "Award-Winning Design" },
+  //     { icon: "Leaf", label: "Carbon Neutral" },
+  //     { icon: "PackageSearch", label: "Quality Guaranteed" },
+  //     { icon: "Recycle", label: "Circular Economy" },
+  //   ],
+  //   cta: {
+  //     primary: { text: "Get Started", href: "#services" },
+  //     secondary: { text: "Our Story", href: "#about" },
+  //   },
+  // },
 
 ];
 
@@ -64,23 +64,30 @@ type Props = {
 export default function HeroSection({ interval = 10000 }: Props) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [loadedVideos, setLoadedVideos] = useState<Set<number>>(new Set([0]));
+  const [loadedVideos, setLoadedVideos] = useState<Set<number>>(() => {
+    return HERO_SLIDES.length > 0 ? new Set([0]) : new Set();
+  });
   const [isMounted, setIsMounted] = useState(false);
+  const slideCount = HERO_SLIDES.length;
+  const hasMultipleSlides = slideCount > 1;
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
   useEffect(() => {
+    if (!hasMultipleSlides) {
+      return undefined;
+    }
     const timer = setInterval(() => {
       setIsTransitioning(true);
       setTimeout(() => {
         setCurrentSlide((prev) => {
-          const nextSlide = (prev + 1) % HERO_SLIDES.length;
+          const nextSlide = (prev + 1) % slideCount;
           setLoadedVideos((prevVideos) => {
             const next = new Set(prevVideos);
             next.add(nextSlide);
-            next.add((nextSlide + 1) % HERO_SLIDES.length);
+            next.add((nextSlide + 1) % slideCount);
             return next;
           });
           return nextSlide;
@@ -90,9 +97,32 @@ export default function HeroSection({ interval = 10000 }: Props) {
     }, interval);
 
     return () => clearInterval(timer);
-  }, [interval]);
+  }, [hasMultipleSlides, interval, slideCount]);
 
-  const currentConfig = useMemo(() => HERO_SLIDES[currentSlide], [currentSlide]);
+  const currentConfig = useMemo(() => {
+    return HERO_SLIDES[currentSlide] ?? HERO_SLIDES[0];
+  }, [currentSlide]);
+
+  const handleIndicatorClick = useCallback(
+    (targetIndex: number) => {
+      if (!hasMultipleSlides || targetIndex === currentSlide) {
+        return;
+      }
+      setIsTransitioning(true);
+      setTimeout(() => {
+        setCurrentSlide(targetIndex);
+        setLoadedVideos((prev) => {
+          const next = new Set(prev);
+          next.add(targetIndex);
+          next.add((targetIndex + 1) % slideCount);
+          next.add((targetIndex - 1 + slideCount) % slideCount);
+          return next;
+        });
+        setIsTransitioning(false);
+      }, 500);
+    },
+    [currentSlide, hasMultipleSlides, slideCount]
+  );
 
   const getIcon = useCallback((iconName: string) => {
     switch (iconName) {
@@ -196,37 +226,24 @@ export default function HeroSection({ interval = 10000 }: Props) {
           </div>
 
           {/* Slide indicators */}
-          <div className="mt-6 sm:mt-8 flex items-center gap-2 sm:gap-2.5">
-            {HERO_SLIDES.map((_, index) => {
-              const handleSlideClick = () => {
-                setIsTransitioning(true);
-                setTimeout(() => {
-                  setCurrentSlide(index);
-                  setLoadedVideos((prev) => {
-                    const next = new Set(prev);
-                    next.add(index);
-                    next.add((index + 1) % HERO_SLIDES.length);
-                    next.add((index - 1 + HERO_SLIDES.length) % HERO_SLIDES.length);
-                    return next;
-                  });
-                  setIsTransitioning(false);
-                }, 500);
-              };
-
-              return (
-                <button
-                  key={index}
-                  onClick={handleSlideClick}
-                  className={`h-2 sm:h-1.5 rounded-full transition-all duration-300 touch-manipulation focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 ${
-                    index === currentSlide
-                      ? "w-10 sm:w-8 bg-white"
-                      : "w-2 sm:w-1.5 bg-white/40 hover:bg-white/60 active:bg-white/80"
-                  }`}
-                  aria-label={`Go to slide ${index + 1}`}
-                />
-              );
-            })}
-          </div>
+          {hasMultipleSlides && (
+            <div className="mt-6 sm:mt-8 flex items-center gap-2 sm:gap-2.5">
+              {HERO_SLIDES.map((_, index) => {
+                return (
+                  <button
+                    key={index}
+                    onClick={() => handleIndicatorClick(index)}
+                    className={`h-2 sm:h-1.5 rounded-full transition-all duration-300 touch-manipulation focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 ${
+                      index === currentSlide
+                        ? "w-10 sm:w-8 bg-white"
+                        : "w-2 sm:w-1.5 bg-white/40 hover:bg-white/60 active:bg-white/80"
+                    }`}
+                    aria-label={`Go to slide ${index + 1}`}
+                  />
+                );
+              })}
+            </div>
+          )}
 
           {/* Spacer for visual balance on tall screens */}
           <div className="h-8 sm:h-10" />
