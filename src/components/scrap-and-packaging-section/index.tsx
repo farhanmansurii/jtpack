@@ -1,6 +1,6 @@
 import React, { JSX, memo } from "react";
 import { Container } from "@/components/ui/container";
-import { FileText, Recycle, Package, Shield, Globe, Snowflake,  } from "lucide-react";
+import { FileText, Recycle, Package, Shield, Globe, Snowflake } from "lucide-react";
 import ProductCard from "./product-card";
 import Link from "next/link";
 import { SCRAP_AND_PACKAGING_CONFIG } from "@/lib/config";
@@ -11,16 +11,13 @@ type Product = {
   category: string;
   title: string;
   subtitle: string;
-  image: string | string[];
+  image: string | { url: string; description?: string }[];
   features: string[];
   applications: string[];
   icon: JSX.Element;
   ctaText: string;
   slug?: string;
 };
-
-
-
 
 const getIconComponent = (iconName: string) => {
   switch (iconName) {
@@ -41,25 +38,21 @@ const getIconComponent = (iconName: string) => {
   }
 };
 
-const scrapMaterials: Product[] = SCRAP_AND_PACKAGING_CONFIG.scrapMaterials.products.map(
-  (product) => {
-    // Convert image to array of URLs for carousel
-    let imageArray: string[]
-    if (Array.isArray(product.image)) {
-      imageArray = product.image.map(img =>
-        typeof img === 'string' ? img : img.url
-      )
-    } else {
-      imageArray = [product.image]
-    }
+const scrapMaterials = SCRAP_AND_PACKAGING_CONFIG.scrapMaterials.products.map((product) => {
+  // Convert image to the format ProductCard expects
+  let imageFormatted: string | { url: string; description?: string }[];
+  if (Array.isArray(product.image)) {
+    imageFormatted = product.image.map((img) => (typeof img === "string" ? { url: img } : img));
+  } else {
+    imageFormatted = product.image;
+  }
 
-    return {
-      ...product,
-      image: imageArray,
-      icon: getIconComponent(product.icon),
-    }
-  },
-);
+  return {
+    ...product,
+    image: imageFormatted,
+    icon: getIconComponent(product.icon),
+  };
+});
 
 const colors = {
   blue: {
