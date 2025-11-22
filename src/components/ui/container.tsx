@@ -5,6 +5,7 @@ interface ContainerProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
   size?: "sm" | "md" | "lg" | "xl" | "full";
   padding?: "none" | "sm" | "md" | "lg";
+  isOnPage?: boolean;
 }
 
 const containerSizes = {
@@ -22,10 +23,23 @@ const containerPadding = {
   lg: "px-4 sm:px-6 lg:px-8 xl:px-12",
 };
 
-function Container({ className, children, size = "lg", padding = "md", ...props }: ContainerProps) {
+function Container({
+  className,
+  children,
+  size = "lg",
+  padding = "md",
+  isOnPage = false,
+  ...props
+}: ContainerProps) {
   return (
     <div
-      className={cn("mx-auto w-full", containerSizes[size], containerPadding[padding], className)}
+      className={cn(
+        "mx-auto w-full",
+        containerSizes[size],
+        containerPadding[padding],
+        isOnPage ? "pt-[160px] pb-16 lg:pt-[200px] lg:pb-24" : "",
+        className,
+      )}
       {...props}
     >
       {children}

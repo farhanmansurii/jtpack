@@ -145,10 +145,7 @@ export const ABOUT_US_CONFIG = {
       ],
     },
   ],
-  kpi: {
-    label: "Recycled & Reused Material Share",
-    value: "60%+ Annually",
-  },
+
   values: [
     { stat: "Reliability", label: "Consistent Supply & Delivery Assurance" },
     { stat: "Integrity", label: "Ethical, Transparent Trade Operations" },
@@ -163,7 +160,6 @@ export const ABOUT_US_CONFIG = {
     secondary: { label: "Contact Our Team", href: "/contact" },
   },
 } as const;
-
 
 // Dual Business Overview Configuration
 export const DUAL_BUSINESS_CONFIG = {
@@ -195,7 +191,7 @@ export const DUAL_BUSINESS_CONFIG = {
       title: "Corrugated Fibreboard Carton (CFC) Packaging",
       icon: "Package" as FeatureIcon,
       description:
-"Our CFC boxes deliver unmatched protection with 3, 5, and 7 PLY options. Designed with eco-conscious precision, they’re trusted across industries",
+        "Our CFC boxes deliver unmatched protection with 3, 5, and 7 PLY options. Designed with eco-conscious precision, they’re trusted across industries",
       highlights: ["3 PLY", "5 PLY", "7 PLY"],
       badge: "CFC Packaging",
       gradient: "from-blue-500/10 via-white to-blue-500/5",
@@ -236,15 +232,18 @@ export const SCRAP_AND_PACKAGING_CONFIG = {
           },
           {
             url: "/products/waste-materials-trading/recycled-plastic-trading/ldpe.jpg",
-            description: "LDPE (Low Density Polyethylene) - versatile plastic material for various applications",
+            description:
+              "LDPE (Low Density Polyethylene) - versatile plastic material for various applications",
           },
           {
             url: "/products/waste-materials-trading/recycled-plastic-trading/ldpe-film-rolls.jpg",
-            description: "LDPE film rolls - premium quality film material for packaging and lamination",
+            description:
+              "LDPE film rolls - premium quality film material for packaging and lamination",
           },
           {
             url: "/products/waste-materials-trading/recycled-plastic-trading/pp-coating-layers.webp",
-            description: "PP Coating 2-3 Layers - multi-layer polypropylene coating material for industrial use",
+            description:
+              "PP Coating 2-3 Layers - multi-layer polypropylene coating material for industrial use",
           },
         ],
         features: ["Pure LD", "LD Coating", "LD Lamination", "PP Coating 2-3 Layers"],
@@ -301,15 +300,18 @@ export const SCRAP_AND_PACKAGING_CONFIG = {
         image: [
           {
             url: "/products/waste-materials-trading/alloy-trading/aluminium.webp",
-            description: "Aluminium scrap - high quality recycled aluminium material for industrial use",
+            description:
+              "Aluminium scrap - high quality recycled aluminium material for industrial use",
           },
           {
             url: "/products/waste-materials-trading/alloy-trading/copper.jpg",
-            description: "Copper scrap - premium grade copper material for manufacturing and export",
+            description:
+              "Copper scrap - premium grade copper material for manufacturing and export",
           },
           {
             url: "/products/waste-materials-trading/alloy-trading/ss-steel.png",
-            description: "Stainless Steel scrap - certified quality SS steel for industrial applications",
+            description:
+              "Stainless Steel scrap - certified quality SS steel for industrial applications",
           },
           {
             url: "/products/waste-materials-trading/alloy-trading/brass.webp",
@@ -317,7 +319,8 @@ export const SCRAP_AND_PACKAGING_CONFIG = {
           },
           {
             url: "/products/waste-materials-trading/alloy-trading/mixed-metals.jpg",
-            description: "Mixed metals scrap - comprehensive metal collection and processing services",
+            description:
+              "Mixed metals scrap - comprehensive metal collection and processing services",
           },
         ],
         features: ["Aluminium", "Copper", "SS Steel", "Metal", "Brass"],
@@ -348,15 +351,18 @@ export const SCRAP_AND_PACKAGING_CONFIG = {
         image: [
           {
             url: "/products/packaging-manufacturing/industrial-corrugated-solutions/3ply-boxes.webp",
-            description: "3-Ply Construction - standard strength corrugated boxes for general packaging",
+            description:
+              "3-Ply Construction - standard strength corrugated boxes for general packaging",
           },
           {
             url: "/products/packaging-manufacturing/industrial-corrugated-solutions/5ply-boxes.webp",
-            description: "5-Ply Heavy Duty - reinforced corrugated boxes for heavy-duty applications",
+            description:
+              "5-Ply Heavy Duty - reinforced corrugated boxes for heavy-duty applications",
           },
           {
             url: "/products/packaging-manufacturing/industrial-corrugated-solutions/7ply-boxes.webp",
-            description: "7-Ply Extra Strong - maximum strength corrugated boxes for industrial use",
+            description:
+              "7-Ply Extra Strong - maximum strength corrugated boxes for industrial use",
           },
           {
             url: "/products/packaging-manufacturing/industrial-corrugated-solutions/boxes-manufacturing.webp",
@@ -364,11 +370,13 @@ export const SCRAP_AND_PACKAGING_CONFIG = {
           },
           {
             url: "/products/packaging-manufacturing/industrial-corrugated-solutions/cfc-desc.webp",
-            description: "CFC Description - detailed information about corrugated fiberboard carton solutions",
+            description:
+              "CFC Description - detailed information about corrugated fiberboard carton solutions",
           },
           {
             url: "/products/packaging-manufacturing/industrial-corrugated-solutions/cfc-industry.webp",
-            description: "CFC Industry Solutions - corrugated fiberboard carton for industrial applications",
+            description:
+              "CFC Industry Solutions - corrugated fiberboard carton for industrial applications",
           },
         ],
         features: [
@@ -389,19 +397,23 @@ export const SCRAP_AND_PACKAGING_CONFIG = {
         image: [
           {
             url: "/products/packaging-manufacturing/thermal-insulation-packaging/thermal-boxes.webp",
-            description: "Thermal Boxes - temperature-controlled packaging solutions for sensitive products",
+            description:
+              "Thermal Boxes - temperature-controlled packaging solutions for sensitive products",
           },
           {
             url: "/products/packaging-manufacturing/thermal-insulation-packaging/thermal-box-2.png",
-            description: "Thermal Insulation Box - advanced temperature-regulated packaging with insulated core",
+            description:
+              "Thermal Insulation Box - advanced temperature-regulated packaging with insulated core",
           },
           {
             url: "/products/packaging-manufacturing/thermal-insulation-packaging/thermal-precision-fit.jpg",
-            description: "Precision Fit - custom-sized thermal packaging for optimal product protection",
+            description:
+              "Precision Fit - custom-sized thermal packaging for optimal product protection",
           },
           {
             url: "/products/packaging-manufacturing/thermal-insulation-packaging/temperature-controlled-distribution-boxes.webp",
-            description: "Temperature Controlled Distribution Boxes - specialized packaging maintaining consistent temperature during shipping",
+            description:
+              "Temperature Controlled Distribution Boxes - specialized packaging maintaining consistent temperature during shipping",
           },
         ],
         features: [

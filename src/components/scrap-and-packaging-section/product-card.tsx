@@ -1,23 +1,64 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import React, { useState, useEffect, useCallback, useMemo, memo } from "react";
-import { CheckCircle, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
-import { QuoteRequest } from "../quote-request";
+
+import React, { useState, useCallback, useMemo, memo } from "react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronDown,
+  ChevronUp,
+  ArrowUpRight,
+  Box,
+  Layers,
+  Info,
+} from "lucide-react";
 import Link from "next/link";
+import { QuoteRequest } from "../quote-request";
+import { cn } from "@/lib/utils"; // Assuming you have a shadcn utils helper
 
-type ColorScheme = "blue" | "green" | "purple" | "orange";
+// --- Types ---
+export type ColorScheme = "blue" | "green" | "slate";
 
-type ProductCardProps = {
+export type ProductCardProps = {
   category: string;
   title: string;
   subtitle?: string;
-  image: string | string[];
-  features: string[];
+  image: string | { url: string; description?: string }[];
+  features: string[]; // These are now "Products/Grades"
   icon?: React.ReactNode;
   ctaText: string;
-  colorScheme?: ColorScheme;
+  colorScheme?: ColorScheme; // Derived from your config (Recycling=Green, Packaging=Blue)
   href?: string;
   slug?: string;
+};
+
+// --- Theme Configuration using Shadcn-like Utility Classes ---
+const getTheme = (scheme: ColorScheme) => {
+  // Using specific colors for branding, but shadcn utilities for structure
+  const themes = {
+    blue: {
+      badge: "bg-blue-100 text-blue-800 border-blue-200",
+      icon: "text-blue-600",
+      softBg: "bg-blue-50/50",
+      primaryBtn: "bg-blue-600 hover:bg-blue-700 text-white shadow-sm",
+      hoverBorder: "hover:border-blue-300",
+    },
+    green: {
+      badge: "bg-green-100 text-green-800 border-green-200",
+      icon: "text-green-600",
+      softBg: "bg-green-50/50",
+      primaryBtn: "bg-green-600 hover:bg-green-700 text-white shadow-sm",
+      hoverBorder: "hover:border-green-300",
+    },
+    slate: {
+      badge: "bg-secondary text-secondary-foreground border-border",
+      icon: "text-muted-foreground",
+      softBg: "bg-muted/30",
+      primaryBtn: "bg-primary text-primary-foreground hover:bg-primary/90",
+      hoverBorder: "hover:border-primary/30",
+    },
+  };
+  return themes[scheme] || themes.blue;
 };
 
 function ProductCard({
@@ -33,228 +74,223 @@ function ProductCard({
   slug,
 }: ProductCardProps) {
   const [expanded, setExpanded] = useState(false);
-
-  // Normalize image to array
-  const images = Array.isArray(image) ? image : [image];
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
 
-  // Autoplay carousel
-  useEffect(() => {
-    if (images.length <= 1) return;
+  // Normalize images
+  const images = useMemo(() => {
+    if (!image) return [];
+    const imgArray = Array.isArray(image) ? image : [image];
+    return imgArray.map((img) => (typeof img === "string" ? img : img.url));
+  }, [image]);
 
-    const interval = setInterval(() => {
-      setCurrentImageIndex((prev) => (prev + 1) % images.length);
-    }, 3000); // Change image every 3 seconds
+  const theme = useMemo(() => getTheme(colorScheme), [colorScheme]);
 
-    return () => clearInterval(interval);
-  }, [images.length]);
+  // Show 4 items initially
+  const visibleProducts = useMemo(
+    () => (expanded ? features : features.slice(0, 4)),
+    [expanded, features],
+  );
+  const hasMoreProducts = features.length > 4;
 
+  // --- Carousel Logic ---
   const nextImage = useCallback(() => {
-    setCurrentImageIndex((prev) => (prev + 1) % images.length);
+    if (images.length > 1) setCurrentImageIndex((prev) => (prev + 1) % images.length);
   }, [images.length]);
 
   const prevImage = useCallback(() => {
-    setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
+    if (images.length > 1)
+      setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
   }, [images.length]);
 
-  // Swipe gesture handlers
-  const minSwipeDistance = 50;
-
-  const onTouchStart = useCallback((e: React.TouchEvent) => {
+  // Swipe Handlers
+  const onTouchStart = (e: React.TouchEvent) => {
     setTouchEnd(null);
     setTouchStart(e.targetTouches[0].clientX);
-  }, []);
-
-  const onTouchMove = useCallback((e: React.TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  }, []);
-
-  const onTouchEnd = useCallback(() => {
+  };
+  const onTouchMove = (e: React.TouchEvent) => setTouchEnd(e.targetTouches[0].clientX);
+  const onTouchEnd = () => {
     if (!touchStart || !touchEnd) return;
-
     const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
-
-    if (isLeftSwipe && images.length > 1) {
-      nextImage();
-    }
-    if (isRightSwipe && images.length > 1) {
-      prevImage();
-    }
-  }, [touchStart, touchEnd, images.length, nextImage, prevImage]);
-
-  const colors = useMemo(() => ({
-    blue: {
-      badge: "bg-blue-600 text-white",
-      checkIcon: "text-blue-600",
-      button: "bg-blue-600 hover:bg-blue-700 text-white",
-      border: "border-slate-200",
-      accent: "text-blue-600",
-    },
-    green: {
-      badge: "bg-emerald-600 text-white",
-      checkIcon: "text-emerald-600",
-      button: "bg-emerald-600 hover:bg-emerald-700 text-white",
-      border: "border-slate-200",
-      accent: "text-emerald-600",
-    },
-    purple: {
-      badge: "bg-violet-600 text-white",
-      checkIcon: "text-violet-600",
-      button: "bg-violet-600 hover:bg-violet-700 text-white",
-      border: "border-slate-200",
-      accent: "text-violet-600",
-    },
-    orange: {
-      badge: "bg-amber-600 text-white",
-      checkIcon: "text-amber-600",
-      button: "bg-amber-600 hover:bg-amber-700 text-white",
-      border: "border-slate-200",
-      accent: "text-amber-600",
-    },
-  }[colorScheme]), [colorScheme]);
-
-  const visibleFeatures = useMemo(() =>
-    expanded ? features : features.slice(0, 3),
-    [expanded, features]
-  );
-  const hasMoreFeatures = useMemo(() => features.length > 3, [features.length]);
+    if (distance > 50) nextImage();
+    if (distance < -50) prevImage();
+  };
 
   return (
     <div
-      className={`group relative flex flex-col rounded-2xl border ${colors.border} bg-white overflow-hidden shadow-md hover:shadow-lg transition-all duration-300`}
+      className={cn(
+        "group flex flex-col h-full bg-card text-card-foreground rounded-xl border border-border shadow-sm transition-all duration-300 overflow-hidden hover:shadow-md",
+        theme.hoverBorder,
+      )}
     >
+      {/* --- Header: Image Carousel --- */}
       <div
-        className="relative aspect-[16/10] w-full overflow-hidden bg-slate-50 group/carousel touch-pan-y"
+        className="relative aspect-[4/3] w-full overflow-hidden bg-muted touch-pan-y select-none border-b border-border"
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
       >
-        {/* Image Carousel with Autoplay */}
-        {images.map((img, index) => (
-          <img
-            key={index}
-            src={img}
-            alt={`${title} - Image ${index + 1}`}
-            loading={index === 0 ? "eager" : "lazy"}
-            decoding="async"
-            fetchPriority={index === 0 ? "high" : "low"}
-            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${
-              index === currentImageIndex ? 'opacity-100' : 'opacity-0'
-            }`}
-          />
-        ))}
-
-        {/* Navigation Arrows - Show on Hover */}
-        {images.length > 1 && (
-          <>
-            <button
-              onClick={prevImage}
-              className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 bg-white/95 backdrop-blur-sm p-2.5 sm:p-2 rounded-full shadow-lg hover:bg-white hover:scale-110 active:scale-95 transition-all opacity-0 group-hover/carousel:opacity-100 md:opacity-0 md:group-hover/carousel:opacity-100 z-20 touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2"
-              aria-label="Previous image"
-            >
-              <ChevronLeft className="w-5 h-5 sm:w-5 sm:h-5 text-slate-700" />
-            </button>
-            <button
-              onClick={nextImage}
-              className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 bg-white/95 backdrop-blur-sm p-2.5 sm:p-2 rounded-full shadow-lg hover:bg-white hover:scale-110 active:scale-95 transition-all opacity-0 group-hover/carousel:opacity-100 md:opacity-0 md:group-hover/carousel:opacity-100 z-20 touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2"
-              aria-label="Next image"
-            >
-              <ChevronRight className="w-5 h-5 sm:w-5 sm:h-5 text-slate-700" />
-            </button>
-          </>
-        )}
-
-        {/* Navigation Dots */}
-        {images.length > 1 && (
-          <div className="absolute bottom-2 sm:bottom-3 left-1/2 -translate-x-1/2 flex space-x-1.5 sm:space-x-1.5 z-10">
-            {images.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentImageIndex(index)}
-                className={`transition-all rounded-full touch-manipulation focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 ${
-                  index === currentImageIndex
-                    ? 'bg-white w-7 sm:w-6 h-2 sm:h-1.5'
-                    : 'bg-white/50 hover:bg-white/75 active:bg-white/90 w-2 sm:w-1.5 h-2 sm:h-1.5'
-                }`}
-                aria-label={`Go to image ${index + 1}`}
-              />
-            ))}
+        {images.length > 0 ? (
+          images.map((img, index) => (
+            <img
+              key={index}
+              src={img}
+              alt={`${title} - View ${index + 1}`}
+              loading={index === 0 ? "eager" : "lazy"}
+              className={cn(
+                "absolute inset-0 w-full h-full object-cover transition-opacity duration-500 z-0",
+                index === currentImageIndex ? "opacity-100" : "opacity-0",
+              )}
+            />
+          ))
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center bg-muted text-muted-foreground">
+            <Box className="w-12 h-12 opacity-20" />
           </div>
         )}
 
-        <div className="absolute top-4 left-4 z-10">
+        {/* Gradient & Badge */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none z-10" />
+
+        <div className="absolute top-3 left-3 z-20">
           <span
-            className={`inline-flex items-center gap-1.5 ${colors.badge} px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm`}
+            className={cn(
+              "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wide border shadow-sm bg-white/95 backdrop-blur",
+              theme.badge,
+            )}
           >
-            {icon || <Sparkles className="w-3.5 h-3.5" />}
+            {icon || <Box className="w-3.5 h-3.5" />}
             {category}
           </span>
         </div>
+
+        {/* Navigation */}
+        {images.length > 1 && (
+          <>
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                prevImage();
+              }}
+              className="absolute z-20 left-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-md bg-background/90 text-foreground shadow-sm border border-border opacity-0 group-hover:opacity-100 transition-all hover:bg-background"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                nextImage();
+              }}
+              className="absolute z-20 right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-md bg-background/90 text-foreground shadow-sm border border-border opacity-0 group-hover:opacity-100 transition-all hover:bg-background"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
+            <div className="absolute bottom-0 left-0 right-0 flex justify-center p-2 gap-1 z-20">
+              {images.map((_, idx) => (
+                <div
+                  key={idx}
+                  className={cn(
+                    "h-1 rounded-full transition-all duration-300 shadow-sm",
+                    idx === currentImageIndex ? "w-6 bg-white" : "w-2 bg-white/60",
+                  )}
+                />
+              ))}
+            </div>
+          </>
+        )}
       </div>
 
-      <div className="flex flex-col flex-1 p-6">
-        <div className="mb-5">
-          <h3 className="text-xl font-bold text-slate-900 mb-2 leading-tight">
+      {/* --- Body Content --- */}
+      <div className="flex flex-col flex-grow p-5">
+        <div className="mb-4">
+          <h3 className="text-lg font-bold text-foreground leading-tight tracking-tight">
             {title}
           </h3>
           {subtitle && (
-            <p className="text-sm text-slate-600 leading-relaxed">{subtitle}</p>
+            <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{subtitle}</p>
           )}
         </div>
 
-        <div className="flex-1 mb-6">
-          <div className="mb-3">
-            <h4 className="text-sm font-semibold text-slate-800 uppercase tracking-wide">
-              What We Offer
-            </h4>
-          </div>
-          <div className={`space-y-2.5 transition-all duration-300 ${expanded ? 'max-h-96' : 'max-h-32'} overflow-hidden`}>
-            {visibleFeatures.map((feature, index) => (
-              <div
-                key={index}
-                className="flex items-start gap-2.5"
-              >
-                <CheckCircle className={`w-4 h-4 mt-0.5 flex-shrink-0 ${colors.checkIcon}`} />
-                <span className="text-sm text-slate-700 leading-relaxed">{feature}</span>
-              </div>
-            ))}
-          </div>
-
-          {hasMoreFeatures && (
-            <button
-              onClick={() => setExpanded(!expanded)}
-              className="mt-3 text-xs font-medium text-slate-600 hover:text-slate-900 flex items-center gap-1 transition-colors"
-            >
-              {expanded ? (
-                <>
-                  Show less <ChevronUp className="w-3.5 h-3.5" />
-                </>
-              ) : (
-                <>
-                  {features.length - 3} more features <ChevronDown className="w-3.5 h-3.5" />
-                </>
-              )}
-            </button>
-          )}
-        </div>
-
-        <div className="flex gap-3">
-          {href && (
-            <Link href={href} className="flex-1">
-              <span className={`inline-flex items-center justify-center w-full px-4 py-2.5 text-sm font-semibold rounded-lg border ${colors.border} hover:bg-slate-50 text-slate-700 transition-colors`}>
-                View details
+        {/* --- Product Range Grid (Was Features) --- */}
+        <div className="flex-grow mb-6">
+          <div className={cn("rounded-lg p-3.5 border border-border/50", theme.softBg)}>
+            <div className="flex items-center gap-2 mb-3">
+              <Layers className="w-3.5 h-3.5 text-muted-foreground" />
+              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                what we offer
               </span>
+            </div>
+
+            <div
+              className={cn(
+                "grid grid-cols-2 gap-x-2 gap-y-2 transition-all duration-300",
+                expanded ? "" : "max-h-[110px] overflow-hidden",
+              )}
+            >
+              {visibleProducts.map((item, idx) => (
+                <div key={idx} className="flex items-start gap-2 min-w-0">
+                  {/* Small bullet point style instead of checkmark to imply "List of Items" */}
+                  <div
+                    className={cn(
+                      "mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0",
+                      theme.icon.replace("text-", "bg-"),
+                    )}
+                  />
+                  <span className="text-xs text-foreground/90 font-medium leading-snug break-words">
+                    {item}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            {hasMoreProducts && (
+              <button
+                onClick={() => setExpanded(!expanded)}
+                className="w-full mt-3 pt-2 border-t border-border/40 text-[11px] font-bold text-muted-foreground hover:text-foreground uppercase tracking-wide flex items-center justify-center gap-1 transition-colors"
+              >
+                {expanded ? (
+                  <>
+                    Show Less <ChevronUp className="w-3 h-3" />
+                  </>
+                ) : (
+                  <>
+                    View All <ChevronDown className="w-3 h-3" />
+                  </>
+                )}
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* --- Footer Buttons --- */}
+        <div className="mt-auto grid grid-cols-[auto_1fr] gap-3">
+          {href ? (
+            <Link
+              href={href}
+              className="flex items-center justify-center px-4 py-2.5 text-sm font-semibold rounded-lg border border-border bg-background hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+              title="View Product Details"
+            >
+              <Info className="w-4 h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Details</span>
             </Link>
+          ) : (
+            <div className="hidden" />
           )}
-          <QuoteRequest product={slug || ""} colorScheme={colorScheme as "green" | "blue"}>
+
+          <QuoteRequest
+            product={slug || title}
+            colorScheme={colorScheme === "green" ? "green" : "blue"}
+          >
             <button
-              className={`${href ? 'flex-1' : 'w-full'} ${colors.button} font-semibold rounded-lg py-2.5 px-4 transition-colors duration-200 shadow-sm hover:shadow`}
+              className={cn(
+                "w-full flex items-center justify-center px-4 py-2.5 text-sm font-bold rounded-lg transition-all active:scale-[0.98]",
+                theme.primaryBtn,
+                !href ? "col-span-2" : "",
+              )}
             >
               {ctaText}
+              <ArrowUpRight className="w-4 h-4 ml-2 opacity-90" />
             </button>
           </QuoteRequest>
         </div>
@@ -264,4 +300,3 @@ function ProductCard({
 }
 
 export default memo(ProductCard);
-

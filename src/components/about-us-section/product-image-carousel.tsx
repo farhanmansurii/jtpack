@@ -18,11 +18,7 @@ type CarouselImage = {
   alt: string;
 };
 
-function ProductImageCarouselComponent({
-  className,
-  kpiLabel = ABOUT_US_CONFIG.kpi.label,
-  kpiValue = ABOUT_US_CONFIG.kpi.value,
-}: ProductImageCarouselProps): JSX.Element {
+function ProductImageCarouselComponent({ className }: ProductImageCarouselProps): JSX.Element {
   const productImages = useMemo<CarouselImage[]>(() => buildCarouselImages(), []);
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -38,22 +34,26 @@ function ProductImageCarouselComponent({
 
   if (productImages.length === 0) {
     return (
-      <Card className={cn("relative overflow-hidden rounded-2xl border-0 p-0 shadow-lg bg-background", className)}>
+      <Card
+        className={cn(
+          "relative overflow-hidden rounded-2xl border-0 p-0 shadow-lg bg-background",
+          className,
+        )}
+      >
         <div className="aspect-video bg-muted flex items-center justify-center rounded-t-2xl">
           <span className="text-sm text-muted-foreground">Product visuals coming soon</span>
         </div>
-        {(kpiLabel || kpiValue) && (
-          <div className="absolute top-4 right-4 bg-background/90 backdrop-blur rounded-lg p-3 shadow">
-            {kpiLabel ? <p className="text-xs text-muted-foreground">{kpiLabel}</p> : null}
-            {kpiValue ? <p className="text-lg font-semibold text-primary">{kpiValue}</p> : null}
-          </div>
-        )}
       </Card>
     );
   }
 
   return (
-    <Card className={cn("relative overflow-hidden rounded-2xl border-0 p-0 shadow-lg bg-background", className)}>
+    <Card
+      className={cn(
+        "relative overflow-hidden rounded-2xl border-0 p-0 shadow-lg bg-background",
+        className,
+      )}
+    >
       <div
         className="relative aspect-video bg-muted rounded-t-2xl overflow-hidden"
         role="group"
@@ -68,7 +68,9 @@ function ProductImageCarouselComponent({
             fill
             sizes="(min-width: 1024px) 480px, 100vw"
             priority={index === 0}
-            className={`object-cover transition-opacity duration-700 ${index === activeIndex ? "opacity-100" : "opacity-0"}`}
+            className={`object-cover transition-opacity duration-700 ${
+              index === activeIndex ? "opacity-100" : "opacity-0"
+            }`}
           />
         ))}
 
@@ -76,12 +78,6 @@ function ProductImageCarouselComponent({
           Showing image {activeIndex + 1} of {productImages.length}
         </span>
       </div>
-      {(kpiLabel || kpiValue) && (
-        <div className="absolute top-4 right-4 bg-background/90 backdrop-blur rounded-lg p-3 shadow">
-          {kpiLabel ? <p className="text-xs text-muted-foreground">{kpiLabel}</p> : null}
-          {kpiValue ? <p className="text-lg font-semibold text-primary">{kpiValue}</p> : null}
-        </div>
-      )}
     </Card>
   );
 }
@@ -97,7 +93,10 @@ function buildCarouselImages(): CarouselImage[] {
   };
 
   const collectFromProducts = (
-    products: Array<{ title: string; image?: string | Array<{ url: string; description?: string }> }>
+    products: Array<{
+      title: string;
+      image?: string | Array<{ url: string; description?: string }>;
+    }>,
   ) => {
     products.forEach(({ title, image }) => {
       if (!image) return;
@@ -124,4 +123,3 @@ function buildCarouselImages(): CarouselImage[] {
 }
 
 export const ProductImageCarousel = memo(ProductImageCarouselComponent);
-

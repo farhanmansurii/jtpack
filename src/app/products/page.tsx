@@ -40,13 +40,11 @@ function ProductsContent() {
     () =>
       SCRAP_AND_PACKAGING_CONFIG.scrapMaterials.products.map((p: any) => {
         // Convert image to array of URLs for carousel
-        let imageArray: string[]
+        let imageArray: string[];
         if (Array.isArray(p.image)) {
-          imageArray = p.image.map((img: any) =>
-            typeof img === 'string' ? img : img.url
-          )
+          imageArray = p.image.map((img: any) => (typeof img === "string" ? img : img.url));
         } else {
-          imageArray = [p.image]
+          imageArray = [p.image];
         }
 
         return {
@@ -55,7 +53,7 @@ function ProductsContent() {
           icon: getIcon(p.icon),
           division: "recycling" as const,
           slug: p.slug,
-        }
+        };
       }),
     [],
   );
@@ -64,13 +62,11 @@ function ProductsContent() {
     () =>
       SCRAP_AND_PACKAGING_CONFIG.packagingProducts.products.map((p: any) => {
         // Convert image to array of URLs for carousel
-        let imageArray: string[]
+        let imageArray: string[];
         if (Array.isArray(p.image)) {
-          imageArray = p.image.map((img: any) =>
-            typeof img === 'string' ? img : img.url
-          )
+          imageArray = p.image.map((img: any) => (typeof img === "string" ? img : img.url));
         } else {
-          imageArray = [p.image]
+          imageArray = [p.image];
         }
 
         return {
@@ -79,7 +75,7 @@ function ProductsContent() {
           icon: getIcon(p.icon),
           division: "packaging" as const,
           slug: p.slug,
-        }
+        };
       }),
     [],
   );
@@ -146,44 +142,42 @@ function ProductsContent() {
   }, [tab]);
 
   return (
-    <section className="pt-24 pb-16 lg:pt-28 lg:pb-24">
-      <Container>
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold">{heading}</h1>
-        <p className="mt-3 text-muted-foreground">{subheading}</p>
+    <Container isOnPage>
+      <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold">{heading}</h1>
+      <p className="mt-3 text-muted-foreground">{subheading}</p>
 
-        {/* Search + Tabs */}
-        <div className="mt-6 flex flex-col gap-4">
-          <div className="relative max-w-xl">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search products, categories…"
-              className="pl-9"
-              aria-label="Search products"
-            />
-          </div>
-
-          <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)}>
-            <TabsList className="flex-wrap">
-              <TabsTrigger value="all">All</TabsTrigger>
-              <TabsTrigger value="recycling">Recycling</TabsTrigger>
-              <TabsTrigger value="packaging">Packaging</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="all" className="mt-6">
-              <Grid items={items} />
-            </TabsContent>
-            <TabsContent value="recycling" className="mt-6">
-              <Grid items={items} colorScheme="green" />
-            </TabsContent>
-            <TabsContent value="packaging" className="mt-6">
-              <Grid items={items} colorScheme="blue" />
-            </TabsContent>
-          </Tabs>
+      {/* Search + Tabs */}
+      <div className="mt-6 flex flex-col gap-4">
+        <div className="relative max-w-xl">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search products, categories…"
+            className="pl-9"
+            aria-label="Search products"
+          />
         </div>
-      </Container>
-    </section>
+
+        <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)}>
+          <TabsList className="flex-wrap">
+            <TabsTrigger value="all">All</TabsTrigger>
+            <TabsTrigger value="recycling">Recycling</TabsTrigger>
+            <TabsTrigger value="packaging">Packaging</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="all" className="mt-6">
+            <Grid items={items} />
+          </TabsContent>
+          <TabsContent value="recycling" className="mt-6">
+            <Grid items={items} colorScheme="green" />
+          </TabsContent>
+          <TabsContent value="packaging" className="mt-6">
+            <Grid items={items} colorScheme="blue" />
+          </TabsContent>
+        </Tabs>
+      </div>
+    </Container>
   );
 }
 
@@ -238,7 +232,13 @@ function Grid({ items, colorScheme }: { items: any[]; colorScheme?: "green" | "b
           key={`${product?.id ?? product?.title}-${i}`}
           {...product}
           colorScheme={colorScheme || (product.division === "recycling" ? "green" : "blue")}
-          href={product.slug ? `/products/${product.division === "recycling" ? "scrap" : "packaging"}/${product.slug}` : undefined}
+          href={
+            product.slug
+              ? `/products/${product.division === "recycling" ? "scrap" : "packaging"}/${
+                  product.slug
+                }`
+              : undefined
+          }
         />
       ))}
     </div>

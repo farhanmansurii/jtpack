@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
@@ -54,7 +54,6 @@ const HERO_SLIDES: {
   //     secondary: { text: "Our Story", href: "#about" },
   //   },
   // },
-
 ];
 
 type Props = {
@@ -121,7 +120,7 @@ export default function HeroSection({ interval = 10000 }: Props) {
         setIsTransitioning(false);
       }, 500);
     },
-    [currentSlide, hasMultipleSlides, slideCount]
+    [currentSlide, hasMultipleSlides, slideCount],
   );
 
   const getIcon = useCallback((iconName: string) => {
@@ -140,7 +139,7 @@ export default function HeroSection({ interval = 10000 }: Props) {
   }, []);
 
   return (
-    <section id="home" className="relative h-[85vh] w-full overflow-hidden">
+    <section id="home" className="relative h-[83vh] w-full overflow-hidden">
       {/* Background video with crossfade */}
       <div className="absolute inset-0 -z-10">
         {HERO_SLIDES.map((slide, index) => {
@@ -202,8 +201,14 @@ export default function HeroSection({ interval = 10000 }: Props) {
               {currentConfig.features.map((item) => {
                 const IconComponent = getIcon(item.icon);
                 return (
-                  <li key={item.label} className="flex items-center gap-2 text-xs sm:text-sm text-white">
-                    <IconComponent className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-accent flex-shrink-0" aria-hidden />
+                  <li
+                    key={item.label}
+                    className="flex items-center gap-2 text-xs sm:text-sm text-white"
+                  >
+                    <IconComponent
+                      className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-accent flex-shrink-0"
+                      aria-hidden
+                    />
                     <span>{item.label}</span>
                   </li>
                 );
@@ -212,9 +217,7 @@ export default function HeroSection({ interval = 10000 }: Props) {
 
             <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2 sm:gap-3">
               <Button size="lg" variant="secondary" asChild className="w-full sm:w-auto">
-                <Link href={currentConfig.cta.primary.href}>
-                  {currentConfig.cta.primary.text}
-                </Link>
+                <Link href={currentConfig.cta.primary.href}>{currentConfig.cta.primary.text}</Link>
               </Button>
 
               <Button size="lg" asChild className="w-full sm:w-auto">
@@ -244,9 +247,6 @@ export default function HeroSection({ interval = 10000 }: Props) {
               })}
             </div>
           )}
-
-          {/* Spacer for visual balance on tall screens */}
-          <div className="h-8 sm:h-10" />
         </Container>
       </div>
     </section>

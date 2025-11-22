@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import {
   Leaf,
@@ -10,6 +12,12 @@ import {
   Factory,
   Truck,
   Boxes,
+  CheckCircle2,
+  Target,
+  Lightbulb,
+  TrendingUp,
+  Users,
+  Box,
   type LucideIcon,
 } from "lucide-react";
 
@@ -17,10 +25,11 @@ import Navbar from "@/components/navbar";
 import FooterSection from "@/components/footer-section";
 import { Container } from "@/components/ui/container";
 import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ABOUT_US_CONFIG } from "@/lib/config";
 import { ProductImageCarousel } from "@/components/about-us-section/product-image-carousel";
+import { cn } from "@/lib/utils"; // Ensure you have this standard shadcn util
 
 /** ---------------------------- Icons ---------------------------- */
 const IconMap: Record<string, LucideIcon> = {
@@ -49,7 +58,6 @@ type AboutConfig = {
   features: Feature[];
   highlights: Highlight[];
   values: ValueItem[];
-  kpi?: { label: string; value: string };
   mission?: string;
   vision?: string;
   cta?: {
@@ -62,172 +70,217 @@ type AboutConfig = {
 export default function AboutPage() {
   const cfg = ABOUT_US_CONFIG as unknown as AboutConfig;
 
-  // Title upgrade: tighter, more executive
-
   return (
-    <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
+    <div className="min-h-screen bg-background text-foreground font-sans selection:bg-primary/10">
       <Navbar />
 
-      <div className="pt-20 sm:pt-24">
-        <Container className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 sm:pb-20">
-        {/* ---------------------------- Header ---------------------------- */}
-        <section className="text-left items-start space-y-6 mb-6 sm:mb-10">
-          {cfg.badge?.text ? (
+      <Container isOnPage className="max-w-7xl mx-auto pt-[90px]">
+        {/* ---------------------------- 1. Hero Header ---------------------------- */}
+        <section className="max-w-4xl mx-auto text-center mb-16 sm:mb-20 space-y-6">
+          {cfg.badge?.text && (
             <Badge
-              variant={cfg.badge.variant}
+              variant="outline"
+              className="bg-muted/50 border-primary/20 text-primary px-4 py-1.5 text-sm font-medium tracking-wide uppercase"
             >
               {cfg.badge.text}
             </Badge>
-          ) : null}
+          )}
 
-          <h1 className="text-balance font-bold tracking-tight leading-tight text-[clamp(1.75rem,3vw+0.75rem,2.75rem)] sm:text-[clamp(2rem,2.5vw+1rem,3.25rem)] md:text-[clamp(2.25rem,2vw+1.25rem,3.5rem)]">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-foreground leading-[1.1]">
             {cfg.title}
           </h1>
 
-          {cfg.subtitle ? (
-            <p className="text-pretty text-base sm:text-lg text-muted-foreground text-left">
+          {cfg.subtitle && (
+            <p className="text-lg sm:text-xl text-muted-foreground leading-relaxed max-w-2xl mx-auto">
               {cfg.subtitle}
             </p>
-          ) : null}
+          )}
         </section>
 
-        {/* ---------------------------- Carousel ---------------------------- */}
-        <section className="mb-10 sm:mb-14">
-          <ProductImageCarousel />
+        {/* ---------------------------- 2. Visual Showcase ---------------------------- */}
+        <section className="mb-20 sm:mb-24 relative">
+          {/* Decorative elements */}
+          <div className="absolute -inset-4 bg-gradient-to-b from-muted/50 to-transparent -z-10 rounded-[2.5rem] blur-xl opacity-50" />
+
+          <div className="rounded-2xl overflow-hidden shadow-2xl border border-border/50 bg-card">
+            <ProductImageCarousel />
+          </div>
         </section>
 
-        {/* ---------------------------- Overview ---------------------------- */}
-        <section className="text-left mx-auto space-y-6 leading-relaxed mb-10 sm:mb-14">
-          <p className="text-pretty text-base sm:text-lg text-muted-foreground text-left">{cfg.description.first}</p>
-          {cfg.description.second ? (
-            <p className="text-pretty text-base sm:text-lg text-muted-foreground text-left">{cfg.description.second}</p>
-          ) : null}
-        </section>
+        {/* ---------------------------- 3. Corporate Overview ---------------------------- */}
+        <section className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-24 items-start">
+          <div className="lg:col-span-5 space-y-8 sticky top-32">
+            <h2 className="text-3xl font-bold tracking-tight text-foreground flex items-center gap-3">
+              <Factory className="w-8 h-8 text-muted-foreground/50" />
+              Who We Are
+            </h2>
+            <div className="prose prose-lg text-muted-foreground leading-relaxed">
+              <p>{cfg.description.first}</p>
+              {cfg.description.second && <p>{cfg.description.second}</p>}
+            </div>
+          </div>
 
-        {/* ---------------------------- Core Capabilities (uniform on mobile) ---------------------------- */}
-        <section className="mb-12 sm:mb-16">
-            <h2 className="text-balance text-2xl sm:text-3xl font-semibold text-left mb-6 leading-tight">Core Capabilities</h2>
+          <div className="lg:col-span-7">
+            <div className="bg-muted/20 rounded-3xl border border-border/50 p-6 sm:p-8">
+              <div className="flex items-center gap-3 mb-6">
+                <Layers className="w-5 h-5 text-primary" />
+                <h3 className="text-sm font-bold uppercase tracking-widest text-muted-foreground">
+                  Core Capabilities
+                </h3>
+              </div>
 
-          <div className="rounded-2xl border border-border/70 bg-card/50 p-4 sm:p-6">
-            {/* Auto-fit yields balanced wrapping without orphans */}
-            <div
-              className="
-                grid gap-4 sm:gap-6 md:gap-7
-                [grid-template-columns:repeat(auto-fit,minmax(200px,1fr))]
-                md:[grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]
-              "
-            >
-              {cfg.features?.map(({ icon, label }, featureIndex) => (
-                <Card
-                  key={`${label}-${featureIndex}`}
-                  className="h-full rounded-xl border border-border/60 bg-card/60 shadow-sm backdrop-blur-sm transition-all hover:shadow-md hover:border-border"
-                >
-                  <div className="flex h-full flex-col items-start justify-center gap-3 p-5 sm:p-6">
-                    <div className="inline-flex items-center justify-center rounded-lg bg-muted/60 ring-1 ring-border/60 p-2.5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {cfg.features?.map(({ icon, label }, idx) => (
+                  <div
+                    key={idx}
+                    className="group flex items-center gap-4 p-4 bg-card rounded-xl border border-border/60 hover:border-primary/30 shadow-sm hover:shadow-md transition-all duration-300"
+                  >
+                    <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-primary/5 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
                       {IconMap[icon] ? (
-                        React.createElement(IconMap[icon], { className: "h-5 w-5", "aria-hidden": true, focusable: false })
-                      ) : null}
+                        React.createElement(IconMap[icon], { className: "h-5 w-5" })
+                      ) : (
+                        <Boxes className="h-5 w-5" />
+                      )}
                     </div>
-                    <p className="text-left text-sm sm:text-base font-medium leading-tight text-foreground">
+                    <span className="font-medium text-foreground text-sm sm:text-base">
                       {label}
-                    </p>
+                    </span>
                   </div>
-                </Card>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
         </section>
 
-        {/* ---------------------------- Divisions / Highlights ---------------------------- */}
-        <section className="space-y-10 sm:space-y-12 mb-12 sm:mb-16">
-            {cfg.highlights?.map(({ title, points }, highlightIndex) => (
-            <div key={`${title}-${highlightIndex}`} className="pt-6 border-t border-border/70">
-              <h3 className="text-xl sm:text-2xl font-semibold mb-5 leading-tight">{title}</h3>
-              <ul className="list-disc pl-6 space-y-3 text-muted-foreground">
-                {points?.map((point, pointIndex) => (
-                  <li key={`${highlightIndex}-${pointIndex}`} className="leading-relaxed text-pretty">
-                    {point}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </section>
-
-        {/* ---------------------------- Mission / Vision ---------------------------- */}
+        {/* ---------------------------- 4. Mission & Vision (Dual Grid) ---------------------------- */}
         {(cfg.mission || cfg.vision) && (
-          <section className="grid gap-7 sm:gap-9 md:grid-cols-2 mb-12 sm:mb-16">
-            {cfg.mission ? (
-              <Card className="rounded-2xl border border-border shadow-sm">
-                <div className="p-6 sm:p-8 md:p-10 space-y-4">
-                  <h3 className="text-xl font-semibold leading-tight">Our Mission</h3>
-                  <p className="text-muted-foreground leading-relaxed text-pretty">{cfg.mission}</p>
-                </div>
-              </Card>
-            ) : null}
+          <section className="mb-24">
+            <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
+              {cfg.mission && (
+                <Card className="bg-gradient-to-br from-green-50/50 to-transparent dark:from-green-950/10 border-green-100/50 dark:border-green-900/50">
+                  <CardContent className="p-8 sm:p-10 flex flex-col h-full">
+                    <div className="w-12 h-12 rounded-xl bg-green-100 text-green-600 flex items-center justify-center mb-6">
+                      <Target className="w-6 h-6" />
+                    </div>
+                    <h3 className="text-2xl font-bold mb-4 text-foreground">Our Mission</h3>
+                    <p className="text-lg text-muted-foreground leading-relaxed flex-grow">
+                      {cfg.mission}
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
 
-            {cfg.vision ? (
-              <Card className="rounded-2xl border border-border shadow-sm">
-                <div className="p-6 sm:p-8 md:p-10 space-y-4">
-                  <h3 className="text-xl font-semibold leading-tight">Our Vision</h3>
-                  <p className="text-muted-foreground leading-relaxed text-pretty">{cfg.vision}</p>
-                </div>
-              </Card>
-            ) : null}
+              {cfg.vision && (
+                <Card className="bg-gradient-to-br from-blue-50/50 to-transparent dark:from-blue-950/10 border-blue-100/50 dark:border-blue-900/50">
+                  <CardContent className="p-8 sm:p-10 flex flex-col h-full">
+                    <div className="w-12 h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center mb-6">
+                      <Lightbulb className="w-6 h-6" />
+                    </div>
+                    <h3 className="text-2xl font-bold mb-4 text-foreground">Our Vision</h3>
+                    <p className="text-lg text-muted-foreground leading-relaxed flex-grow">
+                      {cfg.vision}
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
           </section>
         )}
 
-        {/* ---------------------------- Values ---------------------------- */}
-        {cfg.values?.length ? (
-          <section className="mb-12 sm:mb-16">
-            <h2 className="text-balance text-2xl sm:text-3xl font-semibold text-center mb-8 sm:mb-10 leading-tight">Our Values</h2>
+        {/* ---------------------------- 5. Detailed Highlights ---------------------------- */}
+        {cfg.highlights?.length > 0 && (
+          <section className="mb-24">
+            <div className="text-center max-w-3xl mx-auto mb-12">
+              <h2 className="text-3xl font-bold mb-4">Operational Excellence</h2>
+              <p className="text-muted-foreground">
+                Our commitment to quality spans across every division of our business.
+              </p>
+            </div>
 
-            <div className="grid gap-7 sm:gap-9 [grid-template-columns:repeat(auto-fit,minmax(240px,1fr))]">
-              {cfg.values.map(({ stat, label }, valueIndex) => (
-                <Card
-                  key={`${label}-${valueIndex}`}
-                  className="rounded-2xl border border-border text-center shadow-sm transition-shadow motion-reduce:transition-none hover:shadow-md h-full"
+            <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
+              {cfg.highlights.map((highlight, idx) => (
+                <div
+                  key={idx}
+                  className="space-y-6 p-8 rounded-2xl bg-muted/10 border border-border/50 hover:bg-muted/20 transition-colors"
                 >
-                  <div className="p-6 sm:p-8 md:p-10 space-y-3">
-                    <p className="text-2xl sm:text-3xl font-bold">{stat}</p>
-                    <p className="text-muted-foreground text-pretty">{label}</p>
+                  <div className="flex items-center gap-4 pb-4 border-b border-border/40">
+                    <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-lg">
+                      {idx + 1}
+                    </div>
+                    <h3 className="text-xl font-bold text-foreground">{highlight.title}</h3>
                   </div>
-                </Card>
+                  <ul className="space-y-4">
+                    {highlight.points?.map((point, pIdx) => (
+                      <li key={pIdx} className="flex items-start gap-3 text-muted-foreground">
+                        <CheckCircle2 className="w-5 h-5 text-primary/60 shrink-0 mt-0.5" />
+                        <span className="text-sm sm:text-base leading-relaxed">{point}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               ))}
             </div>
           </section>
-        ) : null}
+        )}
 
-        {/* ---------------------------- KPI / Impact ---------------------------- */}
-        {cfg.kpi ? (
-          <section className="text-center mb-12 sm:mb-16">
-            <h2 className="text-balance text-2xl sm:text-3xl font-semibold mb-4 leading-tight">Our Impact</h2>
-            <p className="text-pretty text-base sm:text-lg font-medium text-muted-foreground">{cfg.kpi.label}</p>
-            <p className="text-3xl sm:text-4xl font-semibold mt-1">{cfg.kpi.value}</p>
+        {/* ---------------------------- 6. Values & Stats (Redesigned) ---------------------------- */}
+        {cfg.values?.length > 0 && (
+          <section className="mb-24">
+            <div className="text-center mb-10">
+              <h2 className="text-2xl font-bold text-foreground">By The Numbers</h2>
+            </div>
+
+            <div className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-border">
+                {cfg.values.map((val, idx) => (
+                  <div
+                    key={idx}
+                    className="group p-8 sm:p-10 flex flex-col items-center justify-center text-center hover:bg-muted/30 transition-colors duration-300"
+                  >
+                    {/* Decorative accent line */}
+                    <div className="text-4xl sm:text-5xl font-bold text-foreground tracking-tight mb-3">
+                      {val.stat}
+                    </div>
+
+                    <p className="text-sm font-semibold text-muted-foreground uppercase tracking-widest">
+                      {val.label}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
           </section>
-        ) : null}
+        )}
 
-        {/* ---------------------------- CTA ---------------------------- */}
-        {cfg.cta?.primary ? (
-          <section className="text-center mb-4 sm:mb-6">
-            <h2 className="text-balance text-2xl sm:text-3xl font-semibold mb-6 leading-tight">
-              Partner with Us for Sustainable Growth
+        {/* ---------------------------- 7. CTA ---------------------------- */}
+        {cfg.cta?.primary && (
+          <section className="max-w-3xl mx-auto text-center space-y-8">
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
+              Ready to Transform Your Supply Chain?
             </h2>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-5">
-              <Button asChild>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Button
+                size="lg"
+                className="w-full sm:w-auto h-12 px-8 text-base font-bold shadow-lg"
+                asChild
+              >
                 <a href={cfg.cta.primary.href}>{cfg.cta.primary.label}</a>
               </Button>
 
-              {cfg.cta.secondary ? (
-                <Button variant="outline" asChild>
+              {cfg.cta.secondary && (
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="w-full sm:w-auto h-12 px-8 text-base font-semibold"
+                  asChild
+                >
                   <a href={cfg.cta.secondary.href}>{cfg.cta.secondary.label}</a>
                 </Button>
-              ) : null}
+              )}
             </div>
           </section>
-        ) : null}
-        </Container>
-      </div>
+        )}
+      </Container>
 
       <FooterSection />
     </div>

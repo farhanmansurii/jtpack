@@ -3,10 +3,14 @@
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -18,15 +22,17 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { ArrowRight, Loader2 } from "lucide-react";
+import { ArrowRight, Loader2, Phone, Mail, MessageSquare, User, Package } from "lucide-react";
 import { SCRAP_AND_PACKAGING_CONFIG, FOOTER_CONFIG } from "@/lib/config";
+import { cn } from "@/lib/utils";
 
+// --- Types ---
 interface QuoteRequestProps {
   children: React.ReactNode;
   product?: string;
   colorScheme?: "green" | "blue";
   className?: string;
-  useModal?: boolean; // new prop
+  useModal?: boolean;
   mode?: "submit" | "whatsapp";
 }
 
@@ -38,27 +44,34 @@ interface QuoteFormData {
   notes: string;
 }
 
-type ProductOption = { value: string; label: string };
-const PRODUCT_OPTIONS: ProductOption[] = (
-  [
-    ...SCRAP_AND_PACKAGING_CONFIG.scrapMaterials.products,
-    ...SCRAP_AND_PACKAGING_CONFIG.packagingProducts.products,
-  ] as Array<{ title: string; slug?: string }>
-)
-  .map((p) => ({ value: p.slug || p.title, label: p.title }))
-  .filter((option, index, self) => index === self.findIndex((o) => o.value === option.value));
+// --- Product Data ---
+const PRODUCT_GROUPS = [
+  {
+    label: "Recycling Services",
+    items: SCRAP_AND_PACKAGING_CONFIG.scrapMaterials.products.map((p) => ({
+      value: p.slug || p.title,
+      label: p.title,
+    })),
+  },
+  {
+    label: "Packaging Solutions",
+    items: SCRAP_AND_PACKAGING_CONFIG.packagingProducts.products.map((p) => ({
+      value: p.slug || p.title,
+      label: p.title,
+    })),
+  },
+];
 
 export function QuoteRequest({
   children,
   product,
-  colorScheme = "blue",
+  colorScheme = "green",
   className,
   useModal = true,
   mode = "whatsapp",
 }: QuoteRequestProps) {
   const [isOpen, setIsOpen] = React.useState(false);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [isSubmitted, setIsSubmitted] = React.useState(false);
 
   const [formData, setFormData] = React.useState<QuoteFormData>({
     name: "",
@@ -68,25 +81,10 @@ export function QuoteRequest({
     notes: "",
   });
 
-  const colors = {
-    green: {
-      button: "bg-green-600 hover:bg-green-700",
-      focus: "focus:ring-green-500",
-    },
-    blue: {
-      button: "bg-blue-600 hover:bg-blue-700",
-      focus: "focus:ring-blue-500",
-    },
-  };
-
-  const colorClass = colors[colorScheme];
-
+  // --- Handlers ---
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!formData.name || !formData.contact || !formData.product) {
-      return;
-    }
+    if (!formData.name || !formData.contact || !formData.product) return;
 
     setIsSubmitting(true);
 
@@ -94,263 +92,192 @@ export function QuoteRequest({
       if (mode === "whatsapp") {
         const toNumber = FOOTER_CONFIG.contact.phone.replace(/[^0-9]/g, "");
 
-        // Try to find product by exact slug match first
-        let productLabel = PRODUCT_OPTIONS.find((p) => p.value === formData.product)?.label;
-
-        // If not found, try to find by title (case-insensitive partial match)
-        if (!productLabel) {
-          const foundProduct = PRODUCT_OPTIONS.find((p) =>
-            p.label.toLowerCase().includes(formData.product.toLowerCase()) ||
-            formData.product.toLowerCase().includes(p.label.toLowerCase())
-          );
-          productLabel = foundProduct?.label;
-        }
-
-        // If still not found, try to find by slug partial match
-        if (!productLabel) {
-          const foundProduct = PRODUCT_OPTIONS.find((p) =>
-            p.value.toLowerCase().includes(formData.product.toLowerCase()) ||
-            formData.product.toLowerCase().includes(p.value.toLowerCase())
-          );
-          productLabel = foundProduct?.label;
-        }
-
-        // Final fallback: format the product value nicely or use it as-is
-        if (!productLabel) {
-          productLabel = formData.product
-            .split("-")
-            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-            .join(" ");
-        }
+        // Clean Product Label
+        let productLabel = PRODUCT_GROUPS.flatMap((g) => g.items).find(
+          (p) => p.value === formData.product,
+        )?.label;
+        if (!productLabel) productLabel = formData.product; // Fallback
 
         const message = [
-          "NEW QUOTE REQUEST",
-          "----------------------------------------",
-          "",
-          "Customer Details",
-          `   • Name: ${formData.name}`,
-          `   • ${formData.contactMethod === "email" ? "Email" : "Phone"}: ${formData.contact}`,
-          "",
-          "Product Information",
-          `   • Product: ${productLabel}`,
-          "",
-          formData.notes?.trim() ? "Additional Notes" : "",
-          formData.notes?.trim() ? `   • ${formData.notes.trim()}` : "",
-          "",
-          "----------------------------------------",
-          `Submitted On: ${new Date().toLocaleString("en-US", {
-            weekday: "short",
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-          })}`,
+          `*New Inquiry*`,
+          `👤 ${formData.name}`,
+          `📞 ${formData.contact} (${formData.contactMethod})`,
+          `📦 ${productLabel}`,
+          formData.notes ? `📝 ${formData.notes}` : "",
         ]
           .filter(Boolean)
           .join("\n");
 
         const url = `https://wa.me/${toNumber}?text=${encodeURIComponent(message)}`;
         window.open(url, "_blank", "noopener,noreferrer");
-      } else {
-        const response = await fetch("/api/quote-request", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
-        });
 
-        if (response.ok) {
-          setIsSubmitted(true);
-          setTimeout(() => {
-            setIsOpen(false);
-            setIsSubmitted(false);
-            setFormData({
-              name: "",
-              contactMethod: "phone",
-              contact: "",
-              product: product || "",
-              notes: "",
-            });
-          }, 2000);
-        } else {
-          throw new Error("failed to submit quote request");
-        }
+        setTimeout(() => setIsOpen(false), 1000);
       }
+      // Add API logic here if needed later
     } catch (error) {
-      console.error("Error submitting quote request:", error);
-      alert("There was an error submitting your request. Please try again.");
+      console.error(error);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleInputChange = (field: keyof QuoteFormData, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
-
   const handleOpenChange = (open: boolean) => {
     setIsOpen(open);
-    if (!open) {
-      setIsSubmitted(false);
-      setFormData({
-        name: "",
-        contactMethod: "phone",
-        contact: "",
-        product: product || "",
-        notes: "",
-      });
+    if (!open && !product) {
+      setTimeout(() => setFormData((prev) => ({ ...prev, product: "" })), 300);
     }
   };
 
-  const Form = (
-    <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
-      <div>
-        <Input
-          id="name"
-          type="text"
-          value={formData.name}
-          onChange={(e) => handleInputChange("name", e.target.value)}
-          placeholder="Your full name"
-          required
-          className={`w-full text-base sm:text-sm ${colorClass.focus}`}
-        />
+  // --- Theme Colors ---
+  const activeColor = colorScheme === "green" ? "text-green-600" : "text-blue-600";
+  const buttonColor =
+    colorScheme === "green" ? "bg-green-600 hover:bg-green-700" : "bg-blue-600 hover:bg-blue-700";
+
+  // --- Form UI ---
+  const FormContent = (
+    <form onSubmit={handleSubmit} className="space-y-5  w-full pt-2">
+      {/* Name Field */}
+      <div className="space-y-2">
+        <Label htmlFor="name">Name / Company</Label>
+        <div className="relative">
+          <User className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            id="name"
+            placeholder="John Doe"
+            className="pl-9"
+            required
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          />
+        </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-        <Select
-          value={formData.contactMethod}
-          onValueChange={(value: "phone" | "email") => handleInputChange("contactMethod", value)}
-        >
-          <SelectTrigger className="w-full sm:w-fit shadow-none border-slate-300 text-base sm:text-sm">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="phone">Phone</SelectItem>
-            <SelectItem value="email">Email</SelectItem>
-          </SelectContent>
-        </Select>
-
-        <Input
-          id="contact"
-          type={formData.contactMethod === "phone" ? "tel" : "email"}
-          value={formData.contact}
-          onChange={(e) => handleInputChange("contact", e.target.value)}
-          placeholder={formData.contactMethod === "phone" ? "+91 9876543210" : "your@email.com"}
-          required
-          className={`w-full text-base sm:text-sm ${colorClass.focus}`}
-        />
-      </div>
-
-      {!product && (
-        <div>
+      {/* Contact Field (Split) */}
+      <div className="grid grid-cols-3 gap-2">
+        <div className="col-span-1 space-y-2">
+          <Label>Type</Label>
           <Select
-            value={formData.product}
-            onValueChange={(value) => handleInputChange("product", value)}
-            disabled={!!product}
+            value={formData.contactMethod}
+            onValueChange={(val: "phone" | "email") =>
+              setFormData({ ...formData, contactMethod: val })
+            }
           >
-            <SelectTrigger className="w-full shadow-none border-slate-300 text-base sm:text-sm">
-              <SelectValue placeholder="Select a product or service" />
+            <SelectTrigger>
+              <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {PRODUCT_OPTIONS.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
+              <SelectItem value="phone">Phone</SelectItem>
+              <SelectItem value="email">Email</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="col-span-2 space-y-2">
+          <Label htmlFor="contact">Contact Details</Label>
+          <div className="relative">
+            {formData.contactMethod === "phone" ? (
+              <Phone className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+            ) : (
+              <Mail className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+            )}
+            <Input
+              id="contact"
+              type={formData.contactMethod === "phone" ? "tel" : "email"}
+              placeholder={
+                formData.contactMethod === "phone" ? "+91 98765 43210" : "john@company.com"
+              }
+              className="pl-9"
+              required
+              value={formData.contact}
+              onChange={(e) => setFormData({ ...formData, contact: e.target.value })}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Product Selector */}
+      <div className="space-y-2">
+        <Label>Interested In</Label>
+        {product ? (
+          <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-md border border-border/50 text-sm text-foreground font-medium">
+            <Package className={cn("w-4 h-4", activeColor)} />
+            {product}
+          </div>
+        ) : (
+          <Select
+            value={formData.product}
+            onValueChange={(val) => setFormData({ ...formData, product: val })}
+          >
+            <SelectTrigger className="pl-3">
+              <SelectValue placeholder="Select a product..." />
+            </SelectTrigger>
+            <SelectContent>
+              {PRODUCT_GROUPS.map((group) => (
+                <SelectGroup key={group.label}>
+                  <SelectLabel className="pl-2 py-1.5 text-xs font-bold text-muted-foreground uppercase tracking-wider bg-muted/30">
+                    {group.label}
+                  </SelectLabel>
+                  {group.items.map((item) => (
+                    <SelectItem key={item.value} value={item.value}>
+                      {item.label}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
               ))}
             </SelectContent>
           </Select>
-          {product && (
-            <p className="text-xs text-gray-500 mt-1">Pre-selected from the product page</p>
-          )}
+        )}
+      </div>
+
+      {/* Notes */}
+      <div className="space-y-2">
+        <Label htmlFor="notes">
+          Message <span className="text-muted-foreground font-normal">(Optional)</span>
+        </Label>
+        <div className="relative">
+          <MessageSquare className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+          <Textarea
+            id="notes"
+            placeholder="E.g. Quantity, delivery location..."
+            className="pl-9 min-h-[80px] resize-none"
+            value={formData.notes}
+            onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+          />
         </div>
-      )}
-
-      <div>
-        <textarea
-          id="notes"
-          value={formData.notes}
-          onChange={(e) => handleInputChange("notes", e.target.value)}
-          placeholder="Tell us about your specific requirements, quantities, timelines, etc."
-          rows={4}
-          className={`w-full rounded-md border border-slate-300 bg-background px-3 py-2.5 sm:py-2 text-base sm:text-sm transition-colors placeholder:text-muted-foreground focus:border-ring focus:outline-none focus:ring-[3px] focus:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 resize-none ${colorClass.focus}`}
-        />
       </div>
 
-      <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-3 pt-3 sm:pt-4">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => setIsOpen(false)}
-          disabled={isSubmitting}
-          className="w-full sm:w-auto touch-manipulation min-h-[44px] sm:min-h-0"
-        >
-          Cancel
-        </Button>
-        <Button
-          type="submit"
-          disabled={isSubmitting || !formData.name || !formData.contact || !formData.product}
-          className={`w-full sm:w-auto ${colorClass.button} text-white touch-manipulation min-h-[44px] sm:min-h-0`}
-        >
-          {isSubmitting ? (
-            <>
-              <Loader2 className="w-4 h-4 animate-spin" />
-              {mode === "whatsapp" ? "Opening WhatsApp..." : "Submitting..."}
-            </>
-          ) : (
-            <>
-              {mode === "whatsapp" ? "Send on WhatsApp" : "Submit Request"}
-              <ArrowRight className="w-4 h-4" />
-            </>
-          )}
-        </Button>
-      </div>
+      <Button
+        type="submit"
+        className={cn("w-full font-bold text-base h-11 mt-2", buttonColor)}
+        disabled={isSubmitting}
+      >
+        {isSubmitting ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Sending...
+          </>
+        ) : (
+          <>
+            Get Quote <ArrowRight className="ml-2 h-4 w-4" />
+          </>
+        )}
+      </Button>
     </form>
   );
 
-  if (!useModal) {
-    return (
-      <div className={className}>
-        <h3 className="text-lg font-semibold mb-2">Request a Quote</h3>
-        {isSubmitted ? (
-          <p className="text-green-600">Your quote has been submitted successfully.</p>
-        ) : (
-          Form
-        )}
-      </div>
-    );
-  }
-
-  if (isSubmitted) {
-    return (
-      <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-        <DialogTrigger asChild>
-          <div className={className}>{children}</div>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Thank You!</DialogTitle>
-            <DialogDescription>
-              Your quote request has been submitted successfully.
-            </DialogDescription>
-          </DialogHeader>
-        </DialogContent>
-      </Dialog>
-    );
-  }
+  if (!useModal) return <div className={className}>{FormContent}</div>;
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <div className={className}>{children}</div>
+        <div className={cn("cursor-pointer", className)}>{children}</div>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Request a Quote</DialogTitle>
+      <DialogContent className=" p-6 gap-0">
+        <DialogHeader className="mb-2">
+          <DialogTitle className="text-xl font-bold">Get a Quote</DialogTitle>
           <DialogDescription>
-            Tell us about your requirements and we&apos;ll get back to you with a detailed quote.
+            Fill out the form below and we'll get back to you shortly.
           </DialogDescription>
         </DialogHeader>
-        {Form}
+        {FormContent}
       </DialogContent>
     </Dialog>
   );

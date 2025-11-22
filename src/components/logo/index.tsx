@@ -100,7 +100,7 @@ export function Logo({
           className={cn(
             "font-bold transition-colors duration-300",
             textSizeClass,
-            variantClasses[variant]
+            variantClasses[variant],
           )}
           style={typeof size === "number" ? { fontSize: `${size}px` } : undefined}
         >
@@ -113,7 +113,7 @@ export function Logo({
             "text-xs font-medium px-2 py-0.5 rounded-md border",
             variant === "light"
               ? "bg-white/10 text-white border-white/20"
-              : "bg-muted text-muted-foreground border-border"
+              : "bg-muted text-muted-foreground border-border",
           )}
         >
           {NAVBAR_CONFIG.logo.badge}

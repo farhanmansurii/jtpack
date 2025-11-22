@@ -2,11 +2,12 @@ import { memo } from "react";
 import { Container } from "@/components/ui/container";
 import { SectionHeader } from "../ui/section-header";
 import { QuoteRequest } from "../quote-request";
+import { Button } from "../ui/button";
 
 function ContactSection() {
   return (
-    <section id="contact" className="pt-24 pb-16 sm:pt-28 sm:pb-24 lg:pt-32 lg:pb-28">
-      <Container>
+    <section id="contact" className="pt-24 ">
+      <Container className="flex flex-col w-full  max-w-7xl items-center">
         <SectionHeader
           badge={{
             text: "Contact",
@@ -14,19 +15,18 @@ function ContactSection() {
           }}
           title="Get in Touch"
           description="Tell us about your requirements and we'll get back soon."
-          className="mb-8"
           variant="left"
+          className="w-full"
         />
 
-        <QuoteRequest useModal={false} colorScheme="blue">
-          <div className="w-full">
-            <button
-              type="button"
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            >
-              Get a Quote
-            </button>
-          </div>
+        <QuoteRequest
+          useModal={false}
+          colorScheme="green"
+          className="flex justify-center   w-full gap-2 "
+        >
+          <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+            Get a Quote
+          </Button>
         </QuoteRequest>
       </Container>
     </section>

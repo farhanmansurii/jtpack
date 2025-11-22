@@ -1,413 +1,357 @@
 "use client";
 
-import React, { useMemo, useRef, useState, useLayoutEffect } from "react";
-import { Badge } from "@/components/ui/badge";
+import React, { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { MapPin, Share2, X } from "lucide-react";
+import { MapPin, Navigation, Building2, Crosshair, Minimize2 } from "lucide-react";
+import { Container } from "../ui/container";
+import { SectionHeader } from "../ui/section-header";
+import { cn } from "@/lib/utils";
 
-export type PresenceCategory = "plant" | "hq" | "other";
+// --- Types ---
+export type PresenceCategory = "plant" | "hq" | "office";
 
 export type PresenceLocation = {
   id: string;
   name: string;
-  state?: string;
-  leftPct: number; // 0..100
-  topPct: number; // 0..100
+  state: string;
+  top: number; // Percentage from top (0-100)
+  left: number; // Percentage from left (0-100)
   category: PresenceCategory;
   label?: string;
   address?: string;
 };
 
+// --- Config (Strictly Green/Emerald Theme as requested) ---
 const CATEGORY_META: Record<
   PresenceCategory,
-  { label: string; dot: string; pin: string; pill: string }
+  { label: string; color: string; bg: string; border: string; pinColor: string }
 > = {
   plant: {
-    label: "Plant",
-    dot: "bg-indigo-700",
-    pin: "text-indigo-700",
-    pill: "bg-indigo-700 text-white",
+    label: "Plants",
+    color: "text-blue-600",
+    bg: "bg-blue-50",
+    border: "border-blue-200",
+    pinColor: "blue", // emerald-700
   },
   hq: {
-    label: "Head Office",
-    dot: "bg-amber-500",
-    pin: "text-amber-500",
-    pill: "bg-amber-500 text-white",
+    label: "Headquarters",
+    color: "text-orange-600",
+    bg: "bg-orange-50",
+    border: "border-orange-200",
+    pinColor: "orange", // emerald-900
   },
-  other: {
-    label: "Other",
-    dot: "bg-slate-600",
-    pin: "text-slate-600",
-    pill: "bg-slate-600 text-white",
+  office: {
+    label: "Regional Hub",
+    color: "text-emerald-700",
+    bg: "bg-emerald-50",
+    border: "border-emerald-200",
+    pinColor: "#059669", // emerald-600
   },
 };
 
-function SvgPin({ kind }: { kind: PresenceCategory }) {
+// --- Map Pin Component ---
+function MapPinMarker({
+  kind,
+  label,
+  isActive,
+  onClick,
+}: {
+  kind: PresenceCategory;
+  label: string;
+  isActive: boolean;
+  onClick: () => void;
+}) {
+  const meta = CATEGORY_META[kind];
+
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      width="1em"
-      height="1em"
-      className={`h-5 w-5 ${CATEGORY_META[kind].pin}`}
-      aria-hidden
+    <div
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick();
+      }}
+      // FIX: High Z-index (50) when active prevents it from being covered by other pins
+      className={cn(
+        "absolute -translate-x-1/2 -translate-y-1/2 cursor-pointer group",
+        isActive ? "z-50" : "z-10 hover:z-40",
+      )}
     >
-      <path
-        fill="currentColor"
-        d="M12 11.5A2.5 2.5 0 0 1 9.5 9A2.5 2.5 0 0 1 12 6.5A2.5 2.5 0 0 1 14.5 9a2.5 2.5 0 0 1-2.5 2.5M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7"
-      ></path>
-    </svg>
+      {/* Pulse Ring */}
+      <div
+        className={cn(
+          "absolute inset-0 rounded-full opacity-20 animate-ping",
+          isActive ? "bg-current" : "hidden",
+        )}
+        style={{ color: meta.pinColor, width: "250%", height: "250%", margin: "-75%" }}
+      />
+
+      {/* Pin Body */}
+      <div
+        className={cn(
+          "relative flex items-center justify-center transition-all duration-300 shadow-md",
+          isActive ? "w-8 h-8 scale-110" : "w-4 h-4 hover:w-6 hover:h-6",
+        )}
+      >
+        <div
+          className="w-full h-full rounded-full border-2 border-white transition-colors"
+          style={{ backgroundColor: meta.pinColor }}
+        />
+        {isActive && <div className="absolute w-2.5 h-2.5 bg-white rounded-full" />}
+      </div>
+
+      {/* Tooltip Label */}
+      <div
+        className={cn(
+          "absolute left-1/2 -translate-x-1/2 mt-2 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide rounded shadow-sm pointer-events-none transition-all whitespace-nowrap border backdrop-blur-sm",
+          isActive
+            ? "opacity-100 translate-y-0"
+            : "opacity-0 -translate-y-2 group-hover:opacity-100 group-hover:translate-y-0",
+          meta.bg,
+          meta.color,
+          meta.border,
+        )}
+      >
+        {label}
+      </div>
+    </div>
   );
 }
 
+// --- Main Component ---
 type PresenceMapProps = {
-  title?: string;
   backgroundSrc: string;
   locations: PresenceLocation[];
-  className?: string;
-  mapTintClass?: string;
-  /** Zoom factor when a plant is active */
-  zoomScale?: number; // default 2
+  debug?: boolean;
 };
 
-export function PresenceMap({
-  title = "Our Presence",
-  backgroundSrc,
-  locations,
-  className,
-  mapTintClass = "bg-blue-200 dark:bg-slate-300",
-  zoomScale = 2,
-}: PresenceMapProps) {
-  const [activeId, setActiveId] = useState<string | null>(null);
-  const [isClient, setIsClient] = useState(false);
-  const active = locations.find((l) => l.id === activeId) ?? null;
+export function PresenceMap({ backgroundSrc, locations, debug = false }: PresenceMapProps) {
+  const [activeId, setActiveId] = useState<string>(locations[0]?.id);
+  const [isZoomed, setIsZoomed] = useState(false); // New state for zoom
+  const mapRef = useRef<HTMLDivElement>(null);
 
-  // Container for the map viewport (the element with fixed aspect ratio)
-  const viewportRef = useRef<HTMLDivElement | null>(null);
+  const active = locations.find((l) => l.id === activeId) || locations[0];
 
-  // Set client-side flag
-  useLayoutEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  // Compute transform to center the active location and zoom.
-  const transformStyle = useMemo(() => {
-    if (!active || !viewportRef.current || !isClient) {
-      return {
-        transform: "translate3d(0,0,0) scale(1)",
-      } as React.CSSProperties;
-    }
-    const el = viewportRef.current;
-    const rect = el.getBoundingClientRect();
-    const vw = rect.width;
-    const vh = rect.height;
-
-    // Account for padding in the inner content (p-4 md:p-6)
-    const padding = window.innerWidth >= 768 ? 24 : 16; // 6 * 4px = 24px, 4 * 4px = 16px
-    const contentWidth = vw - padding * 2;
-    const contentHeight = vh - padding * 2;
-
-    // Target position of the pin anchor (in px) inside the inner content
-    const targetX = (active.leftPct / 100) * contentWidth + padding;
-    const targetY = (active.topPct / 100) * contentHeight + padding;
-
-    // We scale the entire content around the origin (0,0). To keep the target
-    // centered after scaling, compute translation so that the scaled point lands at viewport center.
-    const s = zoomScale;
-    const centerX = vw;
-    const centerY = vh;
-
-    // After scaling, the point moves to (targetX*s, targetY*s).
-    // We need translation (tx, ty) so that: targetX*s + tx = centerX, same for Y.
-    const tx = centerX - targetX * s;
-    const ty = centerY - targetY * s;
-
-    return {
-      transform: `translate3d(${tx}px, ${ty}px, 0) scale(${s})`,
-    } as React.CSSProperties;
-  }, [active, zoomScale, isClient]);
-
-  // Ensure transform recalculates on resize
-  useLayoutEffect(() => {
-    if (!isClient) return;
-
-    const onResize = () => {
-      // Trigger recompute by updating state via a no-op (force re-render)
-      setActiveId((prev) => (prev === null ? null : prev));
-    };
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, [isClient]);
-
-  const toggleActive = (id: string) => setActiveId((prev) => (prev === id ? null : id));
-
-  // Format address to sentence case
-  const formatAddress = (address: string): string => {
-    return address
-      .toLowerCase()
-      .split(/[,\s]+/)
-      .map((word) => {
-        // Capitalize first letter of each word, but handle special cases
-        if (word === "no" || word === "no.") return word.toUpperCase();
-        if (word === "opp" || word === "p.o") return word.toUpperCase();
-        if (word.match(/^\d+[a-z]?$/)) return word.toUpperCase(); // Plot numbers
-        if (word.match(/^\d+$/)) return word; // PIN codes stay as is
-        return word.charAt(0).toUpperCase() + word.slice(1);
-      })
-      .join(" ")
-      .replace(/\s+/g, " ")
-      .replace(/,\s*/g, ", ")
-      .trim();
+  const handlePinClick = (id: string) => {
+    setActiveId(id);
+    setIsZoomed(true); // Trigger zoom when a pin is clicked
+    const el = document.getElementById(`loc-item-${id}`);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "nearest" });
   };
 
-  // Generate Google Maps URL
-  const getGoogleMapsUrl = (location: PresenceLocation): string => {
-    const query = location.address
-      ? encodeURIComponent(`${location.address}, ${location.state || ""}`)
-      : encodeURIComponent(`${location.name}, ${location.state || ""}`);
-    return `https://www.google.com/maps/search/?api=1&query=${query}`;
+  // Reset zoom when clicking outside or on button
+  const handleResetView = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    setIsZoomed(false);
   };
 
-  // Share location
-  const handleShare = async (location: PresenceLocation) => {
-    const shareData = {
-      title: `${location.name} - ${location.state || ""}`,
-      text: location.address || `${location.name}, ${location.state || ""}`,
-      url: getGoogleMapsUrl(location),
-    };
-
-    try {
-      if (navigator.share && navigator.canShare(shareData)) {
-        await navigator.share(shareData);
-      } else {
-        // Fallback: copy to clipboard
-        await navigator.clipboard.writeText(
-          `${shareData.title}\n${shareData.text}\n${shareData.url}`
-        );
-        // You could show a toast notification here
-      }
-    } catch (error) {
-      // User cancelled or error occurred
-      console.error("Error sharing:", error);
-    }
+  const handleMapClick = (e: React.MouseEvent) => {
+    // If already zoomed, reset view on map click? Optional.
+    // For now, let's keep debug logic
+    if (!debug || !mapRef.current) return;
+    const rect = mapRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const leftPct = (x / rect.width) * 100;
+    const topPct = (y / rect.height) * 100;
+    const coordsText = `top: ${topPct.toFixed(1)}, left: ${leftPct.toFixed(1)}`;
+    navigator.clipboard.writeText(coordsText);
+    alert(`Copied: ${coordsText}`);
   };
 
   return (
-    <section className={`w-full ${className ?? ""}`}>
-      <div className="text-center mb-10">
-        <span className="inline-flex items-center rounded-full bg-amber-100 text-amber-800 px-3 py-1 text-xs font-medium">
-          Our Reach
-        </span>
-        <h2 className="mt-4 text-2xl sm:text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl">{title}</h2>
-        <p className="mt-2 sm:mt-3 text-sm sm:text-base text-muted-foreground">
-          Explore our locations across the country, from headquarters to manufacturing plants and
-          regional hubs.
-        </p>
-      </div>
+    <section className="bg-background py-16 lg:py-24">
+      <Container>
+        <SectionHeader
+          badge={{
+            text: "Our Reach",
+            className: "bg-emerald-100 text-emerald-800 border-emerald-200",
+          }}
+          title="Strategic Industrial Footprint"
+          description="Our integrated manufacturing and logistics network ensures rapid delivery across the country."
+        />
 
-      <div className="grid gap-4 sm:gap-6 lg:grid-cols-[1fr_300px]">
-        {/* Map panel */}
-        <div className="relative w-full">
-          <div
-            ref={viewportRef}
-            className="relative w-full overflow-hidden rounded-xl sm:rounded-2xl bg-slate-50 shadow-lg border border-slate-200 aspect-[16/10] sm:aspect-[16/10]"
-            aria-label="Presence map"
-            onClick={(e) => {
-              // Only clear selection if clicking on the background container itself
-              if (e.target === e.currentTarget) {
-                setActiveId(null);
-              }
-            }}
-          >
-            {/* Inner content that gets translated + scaled */}
+        {/* Layout:
+           On Desktop: Grid 1fr (Map) _ 380px (List)
+           On Mobile: Flex Col.
+           The height is controlled to ensure map isn't tiny.
+        */}
+        <div className="grid lg:grid-cols-[1fr_380px] gap-0 rounded-2xl border border-emerald-100/50 bg-white shadow-xl overflow-hidden">
+          {/* ==================== LEFT: MAP VIEW ==================== */}
+          <div className="relative bg-slate-50/30 overflow-hidden flex items-center justify-center group border-b lg:border-b-0 lg:border-r border-emerald-100 min-h-[400px] lg:min-h-[600px]">
+            {/* Tech Grid Background */}
             <div
-              className="absolute inset-0 will-change-transform transition-transform duration-500 ease-out"
-              style={transformStyle}
+              className="absolute inset-0 opacity-[0.3] pointer-events-none"
+              style={{
+                backgroundImage: `radial-gradient(#065f46 1px, transparent 1px)`,
+                backgroundSize: "30px 30px",
+              }}
+            />
+
+            {/* Reset Zoom Button (Visible when zoomed) */}
+            <div
+              className={cn(
+                "absolute top-4 right-4 z-[60] transition-opacity duration-300",
+                isZoomed ? "opacity-100" : "opacity-0 pointer-events-none",
+              )}
             >
-              {/* Masked background */}
-              <div className="absolute inset-0 p-4 md:p-6">
+              <Button
+                size="sm"
+                variant="secondary"
+                className="bg-white/90 shadow-sm text-xs border border-emerald-100 text-emerald-800 hover:bg-emerald-50"
+                onClick={handleResetView}
+              >
+                <Minimize2 className="w-3 h-3 mr-1" /> Reset View
+              </Button>
+            </div>
+
+            {/* MAP WRAPPER
+               1. Uses aspect-ratio to ensure coordinates (top/left %) NEVER shift regardless of screen size.
+               2. Handles the 3x Scale Transform.
+               3. Transforms origin based on the ACTIVE PIN location.
+            */}
+            <div
+              ref={mapRef}
+              className="relative w-full max-w-[800px] aspect-[1.4/1] transition-transform duration-700 ease-in-out will-change-transform"
+              onClick={handleMapClick}
+              style={{
+                transform: isZoomed ? "scale(1.5)" : "scale(1)",
+                // Crucial: This centers the zoom exactly on the active pin
+                transformOrigin: `${active.left}% ${active.top}%`,
+              }}
+            >
+              <img
+                src={backgroundSrc}
+                alt="Map"
+                className="w-full h-full object-contain"
+                style={{ color: "#1F4FE0" }}
+              />
+
+              {locations.map((loc) => (
                 <div
-                  className={`h-full w-full ${mapTintClass}`}
-                  style={{
-                    WebkitMaskImage: `url(${backgroundSrc})`,
-                    maskImage: `url(${backgroundSrc})`,
-                    WebkitMaskRepeat: "no-repeat",
-                    maskRepeat: "no-repeat",
-                    WebkitMaskSize: "contain",
-                    maskSize: "contain",
-                    WebkitMaskPosition: "center",
-                    maskPosition: "center",
-                  }}
-                />
-              </div>
+                  key={loc.id}
+                  style={{ top: `${loc.top}%`, left: `${loc.left}%` }}
+                  className="absolute w-0 h-0"
+                >
+                  <MapPinMarker
+                    kind={loc.category}
+                    label={loc.name}
+                    isActive={activeId === loc.id}
+                    onClick={() => handlePinClick(loc.id)}
+                  />
+                </div>
+              ))}
 
-              {/* Pins + labels */}
+              {/* Debug Overlay */}
+              {debug && (
+                <div className="absolute top-4 left-4 bg-red-100 text-red-600 px-2 py-1 text-xs font-mono border border-red-200 rounded z-50">
+                  <Crosshair className="w-3 h-3 inline mr-1" /> Debug Mode
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* ==================== RIGHT: LIST VIEW ==================== */}
+          <div className="flex flex-col bg-white h-[400px] lg:h-auto">
+            {/* Header */}
+            <div className="p-5 border-b border-emerald-100 bg-emerald-50/30">
+              <h3 className="text-xs font-bold text-emerald-800 uppercase tracking-widest flex items-center gap-2">
+                <Navigation className="w-3.5 h-3.5" /> Locations ({locations.length})
+              </h3>
+            </div>
+
+            {/* List */}
+            <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-emerald-100">
               {locations.map((loc) => {
-                const left = `${loc.leftPct}%`;
-                const top = `${loc.topPct}%`;
-                return (
-                  <div key={loc.id} className="absolute" style={{ left, top }}>
-                    <button
-                      onClick={() => toggleActive(loc.id)}
-                      className="absolute top-0 left-0 -translate-x-1/2 -translate-y-full touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center p-2 -m-2 focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2 focus-visible:z-30"
-                      aria-label={loc.name}
-                    >
-                      <SvgPin kind={loc.category} />
-                    </button>
+                const isActive = activeId === loc.id;
+                const meta = CATEGORY_META[loc.category];
 
-                    {/* label to the right of the anchor, not affecting pin */}
-                    <Badge
-                      className={`absolute top-0 left-0 -translate-y-full translate-x-3 text-xs ${
-                        CATEGORY_META[loc.category].dot
-                      } px-2 rounded-md pointer-events-none whitespace-nowrap`}
+                return (
+                  <div
+                    key={loc.id}
+                    id={`loc-item-${loc.id}`}
+                    onClick={() => handlePinClick(loc.id)}
+                    className={cn(
+                      "px-5 py-4 cursor-pointer border-b border-slate-50 transition-all duration-200 group",
+                      isActive
+                        ? "bg-emerald-50/60 border-l-4 border-l-emerald-600"
+                        : "hover:bg-slate-50 border-l-4 border-l-transparent",
+                    )}
+                  >
+                    <div className="flex justify-between items-start mb-1">
+                      <div className="flex items-center gap-2">
+                        <h4
+                          className={cn(
+                            "font-bold text-sm",
+                            isActive ? "text-emerald-900" : "text-slate-700",
+                          )}
+                        >
+                          {loc.name}
+                        </h4>
+                        <span
+                          className={cn(
+                            "text-[9px] px-1.5 py-0.5 rounded font-medium uppercase tracking-wide border",
+                            meta.bg,
+                            meta.color,
+                            meta.border,
+                          )}
+                        >
+                          {meta.label}
+                        </span>
+                      </div>
+                    </div>
+
+                    <p className="text-xs text-slate-500 font-medium mb-2 ml-0.5">
+                      {loc.state}, India
+                    </p>
+
+                    <div
+                      className={cn(
+                        "grid transition-all duration-300 ease-in-out overflow-hidden",
+                        isActive ? "grid-rows-[1fr] opacity-100 mt-2" : "grid-rows-[0fr] opacity-0",
+                      )}
                     >
-                      {loc.name}
-                    </Badge>
+                      <div className="min-h-0 space-y-3">
+                        <div className="flex gap-3 items-start p-3 rounded-lg bg-white border border-emerald-100/50 shadow-sm">
+                          <Building2 className="w-3.5 h-3.5 text-emerald-600 mt-0.5 shrink-0" />
+                          <p className="text-[11px] text-slate-600 leading-relaxed">
+                            {loc.address || "Address details available on request."}
+                          </p>
+                        </div>
+
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            className="w-full h-8 text-xs bg-emerald-700 hover:bg-emerald-800 text-white shadow-sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              window.open(
+                                `http://googleusercontent.com/maps.google.com/2{loc.address}`,
+                                "_blank",
+                              );
+                            }}
+                          >
+                            <MapPin className="w-3 h-3 mr-1.5" /> Get Directions
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 );
               })}
             </div>
           </div>
         </div>
-
-        {/* Sidebar */}
-        <aside className="self-start order-first lg:order-last">
-          <div className="space-y-4 sm:space-y-5 rounded-xl sm:rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-sm bg-white">
-            {/* Legend */}
-            <div>
-              <div className="text-xs uppercase tracking-wider text-slate-500 mb-3 font-semibold">
-                Legend
-              </div>
-              <div className="flex flex-wrap gap-2 sm:gap-3">
-                {(["plant", "hq", "other"] as PresenceCategory[]).map((category) => (
-                  <div key={category} className="flex items-center gap-1.5 sm:gap-2">
-                    <span
-                      className={`inline-block h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-sm ${CATEGORY_META[category].dot}`}
-                    />
-                    <span className="text-xs sm:text-sm font-medium text-slate-700">
-                      {CATEGORY_META[category].label}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Details */}
-            <div>
-              <div className="text-xs uppercase tracking-wider text-slate-500 mb-3 font-semibold">
-                Details
-              </div>
-              {active ? (
-                <div className="space-y-3">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex-1 space-y-1.5">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <Badge className={CATEGORY_META[active.category].pill}>
-                          {CATEGORY_META[active.category].label}
-                        </Badge>
-                        <span className="text-base font-semibold text-slate-900">{active.name}</span>
-                      </div>
-                      {active.label && (
-                        <div className="text-sm font-medium text-slate-700">{active.label}</div>
-                      )}
-                      {active.state && (
-                        <div className="flex items-center gap-1.5 text-sm text-slate-600">
-                          <MapPin className="h-3.5 w-3.5" />
-                          <span>{active.state}</span>
-                        </div>
-                      )}
-                      {active.address && (
-                        <div className="text-sm text-slate-600 leading-relaxed pt-1 border-t border-slate-100">
-                          {formatAddress(active.address)}
-                        </div>
-                      )}
-                    </div>
-                    <button
-                      onClick={() => setActiveId(null)}
-                      className="p-2 sm:p-1.5 hover:bg-slate-100 active:bg-slate-200 rounded-md transition-colors touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
-                      aria-label="Close details"
-                    >
-                      <X className="h-4 w-4 sm:h-4 sm:w-4 text-slate-500" />
-                    </button>
-                  </div>
-                  <div className="flex gap-2 sm:gap-2 pt-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="flex-1 text-xs sm:text-xs touch-manipulation min-h-[44px]"
-                      onClick={() => window.open(getGoogleMapsUrl(active), "_blank")}
-                    >
-                      <MapPin className="h-3.5 w-3.5 sm:h-3.5 sm:w-3.5" />
-                      <span className="hidden sm:inline">View on Maps</span>
-                      <span className="sm:hidden">Maps</span>
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="text-xs touch-manipulation min-w-[44px] min-h-[44px]"
-                      onClick={() => handleShare(active)}
-                      aria-label="Share location"
-                    >
-                      <Share2 className="h-3.5 w-3.5 sm:h-3.5 sm:w-3.5" />
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <div className="text-sm text-slate-500 italic py-2">
-                  Select a marker to view details.
-                </div>
-              )}
-            </div>
-
-            {/* List */}
-            <div>
-              <div className="text-xs uppercase tracking-wider text-slate-500 mb-3 font-semibold">
-                All Locations
-              </div>
-              <div className="space-y-2 sm:space-y-2">
-                {locations.map((location) => (
-                  <button
-                    key={location.id}
-                    onClick={() => toggleActive(location.id)}
-                    className={`w-full text-left rounded-lg sm:rounded-xl border px-3 sm:px-3 py-3 sm:py-2.5 transition-all touch-manipulation min-h-[56px] sm:min-h-0 focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2 ${
-                      activeId === location.id
-                        ? "border-indigo-600 bg-indigo-50 shadow-sm"
-                        : "border-slate-200 hover:bg-slate-50 active:bg-slate-100 hover:border-slate-300"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="flex-1 min-w-0">
-                        <div className="font-semibold text-sm sm:text-sm text-slate-900">{location.name}</div>
-                        {location.state && (
-                          <div className="text-xs text-slate-600 mt-0.5">{location.state}</div>
-                        )}
-                      </div>
-                      <Badge
-                        className={`${CATEGORY_META[location.category].pill} border-none shrink-0 text-xs`}
-                      >
-                        {CATEGORY_META[location.category].label}
-                      </Badge>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        </aside>
-      </div>
+      </Container>
     </section>
   );
 }
-
-/** Example page */
 export default function PresencePage() {
   const locations: PresenceLocation[] = [
     {
       id: "vapi-hq",
       name: "Vapi",
       state: "Gujarat",
-      leftPct: 33.6,
-      topPct: 56.3,
+      top: 56.9,
+      left: 31.4,
       category: "hq",
       label: "Corporate HQ",
       address: "Plot No. 57/A/1 & 2, 1st Phase Industrial Road, G.I.D.C., Vapi - 396 195, Gujarat",
@@ -416,8 +360,8 @@ export default function PresencePage() {
       id: "nadiad",
       name: "Nadiad",
       state: "Gujarat",
-      leftPct: 34.1,
-      topPct: 49.6,
+      top: 49.9,
+      left: 30.6,
       category: "plant",
       label: "Formulations",
       address: "R. S. No 139 NA, B/h ITC Limited Silod, Nadiad, Kheda-387320, Gujarat",
@@ -426,8 +370,8 @@ export default function PresencePage() {
       id: "goa",
       name: "Goa",
       state: "Goa",
-      leftPct: 35.2,
-      topPct: 71,
+      top: 71.4,
+      left: 32.4,
       category: "plant",
       label: "APIs & Intermediates",
       address: "Plot No. 51 A, Kundaim Industrial Estate, Kundaim, North Goa, Goa 403115",
@@ -436,18 +380,19 @@ export default function PresencePage() {
       id: "guwahati",
       name: "Guwahati",
       state: "Assam",
-      leftPct: 67.4,
-      topPct: 40,
+      top: 38.3,
+      left: 70.4,
       category: "plant",
       label: "Northeast Hub",
-      address: "Plot No. 25/26, AIIDC IGC Phase 1, Chattabari Chaygoan, P.O. Bipra, Kamrup, Assam 781123",
+      address:
+        "Plot No. 25/26, AIIDC IGC Phase 1, Chattabari Chaygoan, P.O. Bipra, Kamrup, Assam 781123",
     },
     {
       id: "tamil-nadu",
       name: "Tiruvallur",
       state: "Tamil Nadu",
-      leftPct: 38.5,
-      topPct: 75.2,
+      top: 82.1,
+      left: 43.0,
       category: "plant",
       label: "Manufacturing Plant",
       address: "Plot No. 116 & 117, Sri Saibaba Nagar, Vengal, Tiruvallur, Tamil Nadu 601103",
@@ -456,12 +401,7 @@ export default function PresencePage() {
 
   return (
     <main className="mx-auto max-w-7xl pt-24 pb-16 px-4 md:pt-28 md:pb-24 md:px-8">
-      <PresenceMap
-        title="Our Presence"
-        backgroundSrc="/hero/india.svg"
-        locations={locations}
-        zoomScale={2}
-      />
+      <PresenceMap backgroundSrc="/hero/india.svg" locations={locations} />
     </main>
   );
 }

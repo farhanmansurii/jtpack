@@ -1,45 +1,52 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
+
 import { notFound } from "next/navigation";
 import Navbar from "@/components/navbar";
 import FooterSection from "@/components/footer-section";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { getCatalogProductBySlug, type CatalogDivision } from "@/lib/catalog";
-import { type ProductImage } from "@/lib/config";
-import { ChevronLeft, ChevronRight, CheckCircle2, Package, Zap } from "lucide-react";
-import { useState, use } from "react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Box,
+  Layers,
+  ShieldCheck,
+  Globe,
+  ArrowRight,
+  Factory,
+  Tag,
+} from "lucide-react";
+import { useState, use, useCallback, useMemo } from "react";
 import Link from "next/link";
+import { QuoteRequest } from "@/components/quote-request";
+import { cn } from "@/lib/utils";
 
-interface PageParams {
-  params: Promise<{ category: CatalogDivision; slug: string }>;
-}
-
-function ProductJSONLD({
-  product,
-}: {
-  product: { title: string; subtitle?: string; image: string | ProductImage[] };
-}) {
-  // Extract first image URL for JSON-LD
-  let imageUrl: string;
-  if (Array.isArray(product.image)) {
-    // If it's an array, check if it's ProductImage[] or string[]
-    if (product.image.length > 0) {
-      imageUrl = typeof product.image[0] === "string" ? product.image[0] : product.image[0].url;
-    } else {
-      imageUrl = "";
+// --- SEO Component ---
+function ProductJSONLD({ product }: { product: any }) {
+  // Helper to extract single image URL
+  const getImageUrl = (imgData: any) => {
+    if (Array.isArray(imgData)) {
+      return imgData.length > 0
+        ? typeof imgData[0] === "string"
+          ? imgData[0]
+          : imgData[0].url
+        : "";
     }
-  } else {
-    imageUrl = product.image;
-  }
+    return imgData;
+  };
 
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
     name: product.title,
     description: product.subtitle,
-    image: imageUrl,
+    image: getImageUrl(product.image),
+    brand: { "@type": "Brand", name: "JTPack" },
+    offers: { "@type": "Offer", availability: "https://schema.org/InStock" },
   };
+
   return (
     <script
       type="application/ld+json"
@@ -48,112 +55,90 @@ function ProductJSONLD({
   );
 }
 
-function ImageGallery({ images }: { images: ProductImage[] | string[] | string }) {
+// --- Gallery Component ---
+function ImageGallery({ images }: { images: any[] }) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
 
-  const normalizedImages: ProductImage[] = (Array.isArray(images) ? images : [images]).map(
-    (img) => {
-      if (typeof img === "string") {
-        return { url: img, description: `Product image` };
-      }
-      return img;
-    },
+  const normalizedImages = useMemo(() => {
+    return (Array.isArray(images) ? images : [images]).map((img) =>
+      typeof img === "string" ? { url: img, description: "Product View" } : img,
+    );
+  }, [images]);
+
+  const nextImage = useCallback(
+    () => setCurrentIndex((p) => (p + 1) % normalizedImages.length),
+    [normalizedImages.length],
+  );
+  const prevImage = useCallback(
+    () => setCurrentIndex((p) => (p - 1 + normalizedImages.length) % normalizedImages.length),
+    [normalizedImages.length],
   );
 
-  const nextImage = () => {
-    setCurrentIndex((prev: number) => (prev + 1) % normalizedImages.length);
+  // Touch logic
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
   };
-
-  const prevImage = () => {
-    setCurrentIndex(
-      (prev: number) => (prev - 1 + normalizedImages.length) % normalizedImages.length,
-    );
+  const onTouchMove = (e: React.TouchEvent) => setTouchEnd(e.targetTouches[0].clientX);
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    if (touchStart - touchEnd > 50) nextImage();
+    if (touchStart - touchEnd < -50) prevImage();
   };
-
-  const currentImage = normalizedImages[currentIndex];
 
   return (
     <div className="space-y-4">
-      {/* Main Image */}
-      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-gradient-to-br from-slate-100 to-slate-50 shadow-2xl group">
+      <div
+        className="relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-muted border border-border shadow-sm select-none touch-pan-y"
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+      >
         <img
-          src={currentImage.url}
-          alt={currentImage.description}
-          loading="eager"
-          decoding="async"
-          fetchPriority="high"
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          src={normalizedImages[currentIndex].url}
+          alt={normalizedImages[currentIndex].description}
+          className="w-full h-full object-cover"
         />
-
         {normalizedImages.length > 1 && (
           <>
             <button
               onClick={prevImage}
-              className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/95 backdrop-blur-sm p-3 rounded-full shadow-xl hover:bg-white hover:scale-110 transition-all opacity-0 group-hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2"
-              aria-label="Previous image"
+              className="absolute left-4 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur p-2 rounded-md border shadow-sm hover:bg-background transition-all"
             >
-              <ChevronLeft className="w-6 h-6 text-slate-700" />
+              <ChevronLeft className="w-5 h-5" />
             </button>
             <button
               onClick={nextImage}
-              className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/95 backdrop-blur-sm p-3 rounded-full shadow-xl hover:bg-white hover:scale-110 transition-all opacity-0 group-hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2"
-              aria-label="Next image"
+              className="absolute right-4 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur p-2 rounded-md border shadow-sm hover:bg-background transition-all"
             >
-              <ChevronRight className="w-6 h-6 text-slate-700" />
+              <ChevronRight className="w-5 h-5" />
             </button>
-
-            <div
-              className={`absolute left-1/2 -translate-x-1/2 flex space-x-2 z-10 px-4 py-2 rounded-full bg-gradient-to-t from-black/60 via-black/40 to-black/20 ${
-                currentImage.description && currentImage.description !== "Product image"
-                  ? "bottom-10"
-                  : "bottom-6"
-              }`}
-            >
-              {normalizedImages.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentIndex(index)}
-                  className={`transition-all focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 ${
-                    index === currentIndex
-                      ? "bg-white w-8 h-2.5"
-                      : "bg-white/60 border border-slate-200 hover:bg-white/90 w-2.5 h-2.5"
-                  } rounded-full`}
-                  aria-label={`Go to image ${index + 1}`}
-                />
-              ))}
-            </div>
           </>
         )}
-
-        {/* Image Description Caption */}
-        {currentImage.description && currentImage.description !== "Product image" && (
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/60 to-transparent px-4 py-3 text-white text-sm z-0">
-            {currentImage.description}
+        {normalizedImages[currentIndex].description && (
+          <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-sm px-4 py-3">
+            <p className="text-white text-sm font-medium">
+              {normalizedImages[currentIndex].description}
+            </p>
           </div>
         )}
       </div>
-
-      {/* Thumbnail Grid */}
       {normalizedImages.length > 1 && (
-        <div className="grid grid-cols-4 gap-3">
-          {normalizedImages.map((image, index) => (
+        <div className="grid grid-cols-5 gap-2">
+          {normalizedImages.map((img, idx) => (
             <button
-              key={index}
-              onClick={() => setCurrentIndex(index)}
-              className={`aspect-[4/3] rounded-lg overflow-hidden border-2 transition-all focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2 ${
-                index === currentIndex
-                  ? "border-primary shadow-lg scale-105"
-                  : "border-slate-200 hover:border-primary/50 opacity-60 hover:opacity-100"
-              }`}
-              aria-label={`View image ${index + 1}`}
+              key={idx}
+              onClick={() => setCurrentIndex(idx)}
+              className={cn(
+                "aspect-square rounded-md overflow-hidden border-2 transition-all",
+                idx === currentIndex
+                  ? "border-primary ring-2 ring-primary/20"
+                  : "border-transparent opacity-60 hover:opacity-100",
+              )}
             >
-              <img
-                src={image.url}
-                alt={image.description}
-                loading="lazy"
-                decoding="async"
-                className="w-full h-full object-cover"
-              />
+              <img src={img.url} className="w-full h-full object-cover" alt="thumbnail" />
             </button>
           ))}
         </div>
@@ -162,129 +147,190 @@ function ImageGallery({ images }: { images: ProductImage[] | string[] | string }
   );
 }
 
-export default function ProductPage({ params }: PageParams) {
+export default function ProductPage({
+  params,
+}: {
+  params: Promise<{ category: CatalogDivision; slug: string }>;
+}) {
   const { category, slug } = use(params);
   const product = getCatalogProductBySlug(category, slug);
   if (!product) return notFound();
 
-  // Support both single image (string) and array of images (ProductImage[] or string[])
-  // Preserve the ProductImage[] type if it's already an array of ProductImage
-  const images: ProductImage[] | string[] | string = Array.isArray(product.image)
-    ? product.image
-    : product.image;
+  // Determine Theme based on category (Scrap = Green, Packaging = Blue)
+  // Note: CatalogDivision type usually helps here. Assuming 'scrap-materials' vs 'packaging-products'
+  const isRecycling = category === "scrap";
+  const accentColor = isRecycling ? "text-green-600" : "text-blue-600";
+  const badgeColor = isRecycling
+    ? "bg-green-100 text-green-800 border-green-200"
+    : "bg-blue-100 text-blue-800 border-blue-200";
+
+  const images = Array.isArray(product.image) ? product.image : [product.image];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50/50">
+    <div className="min-h-screen bg-background">
       <Navbar />
-      <main className="pt-24 pb-16 lg:pt-28 lg:pb-24">
-        <Container>
-          <ProductJSONLD product={product} />
+      <Container className="pt-[150px]">
+        <ProductJSONLD product={product} />
 
-          {/* Breadcrumb */}
-          <nav
-            className="flex items-center space-x-2 text-sm text-muted-foreground mb-8 lg:mb-12"
-            aria-label="Breadcrumb"
+        {/* Breadcrumbs */}
+        <nav className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground mb-8">
+          <Link href="/products" className="hover:text-foreground transition-colors">
+            Products
+          </Link>
+          <ChevronRight className="w-4 h-4" />
+          <Link
+            href={`/products/${category}`}
+            className="hover:text-foreground transition-colors capitalize"
           >
-            <Link href="/products" className="hover:text-primary transition-colors">
-              Products
-            </Link>
-            <ChevronRight className="w-4 h-4" />
-            <Link
-              href={`/products/${category}`}
-              className="hover:text-primary transition-colors capitalize"
-            >
-              {category}
-            </Link>
-            <ChevronRight className="w-4 h-4" />
-            <span className="text-foreground font-medium">{product.title}</span>
-          </nav>
+            {category.replace("-", " ")}
+          </Link>
+          <ChevronRight className="w-4 h-4" />
+          <span className="text-foreground font-medium truncate max-w-[200px] sm:max-w-none">
+            {product.title}
+          </span>
+        </nav>
 
-          <article className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
-            {/* Left Column - Image Gallery */}
-            <div className="order-2 lg:order-1">
-              <ImageGallery images={images} />
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+          {/* Gallery Section */}
+          <div className="lg:col-span-5 lg:sticky lg:top-32">
+            <ImageGallery images={images} />
+          </div>
+
+          {/* Content Section */}
+          <div className="lg:col-span-7 flex flex-col h-full">
+            <div className="mb-8 border-b border-border pb-8">
+              <div
+                className={cn(
+                  "inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider border mb-4",
+                  badgeColor,
+                )}
+              >
+                <Box className="w-3.5 h-3.5" />
+                {isRecycling ? "Recycling Division" : "Manufacturing Division"}
+              </div>
+              <h1 className="text-3xl sm:text-4xl font-bold text-foreground tracking-tight mb-3">
+                {product.title}
+              </h1>
+              {product.subtitle && (
+                <p className="text-lg text-muted-foreground leading-relaxed">{product.subtitle}</p>
+              )}
             </div>
 
-            {/* Right Column - Product Details */}
-            <div className="order-1 lg:order-2 space-y-8">
-              {/* Badge */}
-              <div className="inline-flex items-center px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium">
-                <Package className="w-4 h-4 mr-2" />
-                Premium Quality
-              </div>
-
-              {/* Title & Subtitle */}
-              <div className="space-y-4">
-                <h1 className="text-2xl sm:text-4xl font-bold text-foreground leading-tight tracking-tight">
-                  {product.title}
-                </h1>
-                {product.subtitle && (
-                  <p className="text-base text-muted-foreground leading-relaxed">
-                    {product.subtitle}
-                  </p>
-                )}
-              </div>
-
-              {/* Features Section */}
-              {product.features?.length ? (
-                <div className="bg-gradient-to-br from-slate-50 to-primary/5 rounded-2xl p-4 border border-slate-200 shadow-sm">
-                  <h2 className="text-lg font-semibold text-foreground mb-6 flex items-center">
-                    <Zap className="w-5 h-5 mr-2 text-primary" />
-                    What We Offer
-                  </h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {/* Product Grades / Variants */}
+            {product.features?.length ? (
+              <div className=" border-b border-border pb-8">
+                <div className="flex items-center gap-2 mb-4">
+                  <Layers className={cn("w-5 h-5", accentColor)} />
+                  <h3 className="text-sm font-bold text-foreground uppercase tracking-widest">
+                    Available Grades & Variants
+                  </h3>
+                </div>
+                <div className="bg-card border border-border rounded-xl overflow-hidden">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-border">
                     {product.features.map((feature, idx) => (
                       <div
                         key={idx}
-                        className="flex items-start space-x-3 bg-white rounded-xl p-2 shadow-sm hover:shadow-md transition-shadow"
+                        className="p-4 flex items-start gap-3 hover:bg-muted/30 transition-colors border-b border-border sm:border-b-0 last:border-0"
                       >
-                        <CheckCircle2 className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
-                        <span className="text-foreground font-medium text-sm">{feature}</span>
+                        <div
+                          className={cn(
+                            "mt-1.5 w-2 h-2 rounded-full shrink-0",
+                            isRecycling ? "bg-green-500" : "bg-blue-500",
+                          )}
+                        />
+                        <span className="text-sm font-medium text-foreground">{feature}</span>
                       </div>
                     ))}
                   </div>
                 </div>
-              ) : null}
-
-              {/* CTA Buttons */}
-              <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                <Link href="#contact" className="flex-1">
-                  <Button className="w-full text-base font-semibold shadow-lg hover:shadow-xl transition-all">
-                    Request a quote
-                  </Button>
-                </Link>
-                <Link href="/contact" className="flex-1">
-                  <Button
-                    variant="outline"
-                    className="w-full text-base font-semibold shadow-lg hover:shadow-xl transition-all"
-                  >
-                    Contact Sales
-                  </Button>
-                </Link>
               </div>
-            </div>
-          </article>
+            ) : null}
 
-          {/* Additional Product Information */}
-          <div className="mt-20 lg:mt-32 bg-white rounded-2xl shadow-lg border border-slate-200 p-8 lg:p-12">
-            <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-6">
-              About This Product
+            {/* CTAs */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-auto ">
+              <QuoteRequest product={product.title} colorScheme={isRecycling ? "green" : "blue"}>
+                <Button
+                  size="lg"
+                  className={cn(
+                    "w-full text-base font-bold h-12 shadow-md",
+                    isRecycling
+                      ? "bg-green-600 hover:bg-green-700 text-white"
+                      : "bg-blue-600 hover:bg-blue-700 text-white",
+                  )}
+                >
+                  Get Bulk Quote
+                </Button>
+              </QuoteRequest>
+              <Link href="/contact" className="w-full">
+                <Button variant="outline" size="lg" className="w-full text-base font-semibold h-12">
+                  Talk to Expert
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Info Section */}
+        <div className="mt-20 lg:mt-32 grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 bg-card rounded-xl border border-border p-8 shadow-sm">
+            <h2 className="text-2xl font-bold text-foreground mb-4">
+              Why choose our {product.title}?
             </h2>
-            <div className="prose prose-slate max-w-none">
-              <p className="text-muted-foreground leading-relaxed text-lg">
-                Our {product.title.toLowerCase()} represents the pinnacle of quality and innovation
-                in the packaging industry. Designed with precision and built to last, this solution
-                meets the demanding requirements of modern logistics and supply chain operations.
-              </p>
-              <p className="text-muted-foreground leading-relaxed text-lg mt-4">
-                With years of expertise in the import-export sector, we ensure that every product
-                meets international standards and exceeds customer expectations. Our commitment to
-                sustainability and excellence drives everything we do.
+            <div className="prose prose-slate dark:prose-invert max-w-none">
+              <p className="text-muted-foreground text-lg">
+                Our {product.title.toLowerCase()} meets rigorous industrial standards for
+                {isRecycling
+                  ? " purity, melt-flow consistency, and sustainability"
+                  : " durability, stack-strength, and thermal protection"}
+                . Whether you are looking for export-grade materials or domestic supply chain
+                solutions, JTPack ensures quality assurance with every batch.
               </p>
             </div>
           </div>
-        </Container>
-      </main>
+          <div className="lg:col-span-1 space-y-4">
+            <div
+              className={cn(
+                "rounded-xl p-6 border",
+                isRecycling ? "bg-green-50/50 border-green-100" : "bg-blue-50/50 border-blue-100",
+              )}
+            >
+              <h3 className="font-bold text-foreground mb-4 flex items-center gap-2">
+                <ShieldCheck className={cn("w-5 h-5", accentColor)} />
+                JTPack Promise
+              </h3>
+              <ul className="space-y-3">
+                <li className="text-sm text-muted-foreground flex gap-2">
+                  <div
+                    className={cn(
+                      "w-1.5 h-1.5 rounded-full mt-2 shrink-0",
+                      isRecycling ? "bg-green-500" : "bg-blue-500",
+                    )}
+                  />
+                  Verified Quality
+                </li>
+                <li className="text-sm text-muted-foreground flex gap-2">
+                  <div
+                    className={cn(
+                      "w-1.5 h-1.5 rounded-full mt-2 shrink-0",
+                      isRecycling ? "bg-green-500" : "bg-blue-500",
+                    )}
+                  />
+                  Bulk Volume Support
+                </li>
+                <li className="text-sm text-muted-foreground flex gap-2">
+                  <div
+                    className={cn(
+                      "w-1.5 h-1.5 rounded-full mt-2 shrink-0",
+                      isRecycling ? "bg-green-500" : "bg-blue-500",
+                    )}
+                  />
+                  Global Export Ready
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </Container>
       <FooterSection />
     </div>
   );

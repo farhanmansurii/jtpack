@@ -8,6 +8,8 @@ import { SvgPin } from "./SvgPin";
 import { Button } from "@/components/ui/button";
 import { Edit, Eye } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Container } from "@/components/ui/container";
+import { SectionHeader } from "@/components/ui/section-header";
 
 interface PresenceMapProps {
   locations: Location[];
@@ -22,7 +24,7 @@ export const PresenceMap = ({ locations, editable = false }: PresenceMapProps) =
   const [editingLocations, setEditingLocations] = useState<Location[]>(locations);
 
   const SVG_WIDTH = 611.86;
-  const SVG_HEIGHT = 695.70;
+  const SVG_HEIGHT = 695.7;
 
   // Convert percentage coordinates to pixel coordinates
   const convertToPixelCoords = (location: Location) => {
@@ -98,13 +100,21 @@ export const PresenceMap = ({ locations, editable = false }: PresenceMapProps) =
   return (
     <div className="min-h-screen bg-background p-4 md:p-8">
       <div className="w-full space-y-6">
-        <div className="flex items-center justify-between mb-8 max-w-7xl mx-auto">
-          <div className="space-y-2">
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight">Our Presence</h1>
-            <p className="text-lg text-muted-foreground">
-              {isEditMode ? "Click on the map to add locations" : "Discover our locations across India"}
-            </p>
-          </div>
+        <Container className="flex items-center justify-between mb-8 max-w-7xl mx-auto">
+          <SectionHeader
+            badge={{
+              text: "Our Presenssce",
+              className: "bg-blue-100 text-blue-800",
+            }}
+            title="Our Presesssnce"
+            description={
+              isEditMode
+                ? "Click on the map to add locations"
+                : "Discover our locations across India"
+            }
+            className="mb-8"
+            variant="left"
+          />
           <Button
             onClick={() => {
               setIsEditMode(!isEditMode);
@@ -128,12 +138,15 @@ export const PresenceMap = ({ locations, editable = false }: PresenceMapProps) =
               </>
             )}
           </Button>
-        </div>
+        </Container>
 
         <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-6 w-full lg:max-w-none">
           {/* Map Section */}
           <div className="flex flex-col w-full">
-            <div className="relative w-full bg-slate-50 rounded-2xl shadow-2xl overflow-hidden border border-slate-200" style={{ aspectRatio: "16 / 9" }}>
+            <div
+              className="relative w-full bg-slate-50 rounded-2xl shadow-2xl overflow-hidden border border-slate-200"
+              style={{ aspectRatio: "16 / 9" }}
+            >
               <div className="absolute inset-0 " />
               <div className="relative w-full h-full p-2 md:p-4">
                 <svg
@@ -142,17 +155,18 @@ export const PresenceMap = ({ locations, editable = false }: PresenceMapProps) =
                   className={cn(
                     "w-full h-full min-h-0 transition-all duration-700 ease-in-out",
                     zoomLocation && !isEditMode && "scale-110",
-                    isEditMode && "cursor-crosshair"
+                    isEditMode && "cursor-crosshair",
                   )}
                   style={{
                     filter: "drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1))",
                     transformOrigin: zoomLocation
-                      ? `${convertToPixelCoords(zoomLocation).x}px ${convertToPixelCoords(zoomLocation).y}px`
+                      ? `${convertToPixelCoords(zoomLocation).x}px ${
+                          convertToPixelCoords(zoomLocation).y
+                        }px`
                       : "center",
                   }}
                   onClick={handleMapClick}
                 >
-
                   {/* India Map Background */}
 
                   <image
@@ -187,7 +201,7 @@ export const PresenceMap = ({ locations, editable = false }: PresenceMapProps) =
                           height="24"
                           className={cn(
                             "transition-all duration-300",
-                            selectedLocation?.id === location.id && "scale-110"
+                            selectedLocation?.id === location.id && "scale-110",
                           )}
                         >
                           <div className="w-full h-full flex items-center justify-center">
@@ -196,10 +210,14 @@ export const PresenceMap = ({ locations, editable = false }: PresenceMapProps) =
                         </foreignObject>
 
                         {/* Label */}
-                        <g className={cn(
-                          "transition-opacity duration-300",
-                          selectedLocation?.id === location.id ? "opacity-100" : "opacity-0 hover:opacity-100"
-                        )}>
+                        <g
+                          className={cn(
+                            "transition-opacity duration-300",
+                            selectedLocation?.id === location.id
+                              ? "opacity-100"
+                              : "opacity-0 hover:opacity-100",
+                          )}
+                        >
                           <rect
                             x="-30"
                             y="-50"
@@ -209,7 +227,7 @@ export const PresenceMap = ({ locations, editable = false }: PresenceMapProps) =
                             className={cn(
                               location.category === "plant" && "fill-map-plant",
                               location.category === "hq" && "fill-map-hq",
-                              location.category === "other" && "fill-map-other"
+                              location.category === "other" && "fill-map-other",
                             )}
                             style={{ filter: "drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2))" }}
                           />
@@ -221,7 +239,7 @@ export const PresenceMap = ({ locations, editable = false }: PresenceMapProps) =
                               "text-xs font-medium pointer-events-none",
                               location.category === "plant" && "fill-map-plant-foreground",
                               location.category === "hq" && "fill-map-hq-foreground",
-                              location.category === "other" && "fill-map-other-foreground"
+                              location.category === "other" && "fill-map-other-foreground",
                             )}
                           >
                             {location.label}
@@ -231,26 +249,26 @@ export const PresenceMap = ({ locations, editable = false }: PresenceMapProps) =
                     );
                   })}
 
-                {/* Temporary Pin */}
-                {tempLocation && (
-                  <g transform={`translate(${tempLocation.x}, ${tempLocation.y})`}>
-                    <circle
-                      cx="0"
-                      cy="-15"
-                      r="12"
-                      className="fill-primary animate-pulse"
-                      style={{ filter: "drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3))" }}
-                    />
-                    <text
-                      x="0"
-                      y="-10"
-                      textAnchor="middle"
-                      className="text-lg pointer-events-none"
-                    >
-                      📍
-                    </text>
-                  </g>
-                )}
+                  {/* Temporary Pin */}
+                  {tempLocation && (
+                    <g transform={`translate(${tempLocation.x}, ${tempLocation.y})`}>
+                      <circle
+                        cx="0"
+                        cy="-15"
+                        r="12"
+                        className="fill-primary animate-pulse"
+                        style={{ filter: "drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3))" }}
+                      />
+                      <text
+                        x="0"
+                        y="-10"
+                        textAnchor="middle"
+                        className="text-lg pointer-events-none"
+                      >
+                        📍
+                      </text>
+                    </g>
+                  )}
                 </svg>
               </div>
             </div>

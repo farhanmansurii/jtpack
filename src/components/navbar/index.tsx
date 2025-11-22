@@ -1,261 +1,336 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
-import { Button } from "@/components/ui/button";
-import { Container } from "@/components/ui/container";
-import { Menu, X } from "lucide-react";
+import React, { useState, useEffect, useMemo } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Menu, X, Phone, Mail, Globe, ArrowRight, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { NAVBAR_CONFIG } from "@/lib/config";
+import { NAVBAR_CONFIG, FOOTER_CONFIG } from "@/lib/config";
 import { QuoteRequest } from "@/components/quote-request";
 import { Logo } from "@/components/logo";
-import { usePathname } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Container } from "@/components/ui/container";
 
-export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const [activeSection, setActiveSection] = useState<string>("");
-  const pathname = usePathname();
-  const isHomePage = pathname === "/";
+function useMediaQuery(query: string) {
+  const [matches, setMatches] = useState(false);
 
   useEffect(() => {
-    let ticking = false;
+    const media = window.matchMedia(query);
+    if (media.matches !== matches) {
+      setMatches(media.matches);
+    }
 
+    const listener = () => setMatches(media.matches);
+    media.addEventListener("change", listener);
+    return () => media.removeEventListener("change", listener);
+  }, [matches, query]);
+
+  return matches;
+}
+
+export default function Navbar({ isOnPage = false }: { isOnPage?: boolean }) {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
+  const isHomePage = pathname === "/";
+  const isMobile = useMediaQuery("(max-width: 768px)");
+  // --- Scroll Logic ---
+  useEffect(() => {
     const handleScroll = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          const newScrolled = window.scrollY > 10;
-          setScrolled((prev) => {
-            if (prev !== newScrolled) {
-              return newScrolled;
-            }
-            return prev;
-          });
-
-          // Scroll spy - detect active section
-          if (isHomePage) {
-            const sections = ["home", "about", "services", "products", "contact"];
-            const navbarHeight = 64;
-
-            for (let i = sections.length - 1; i >= 0; i--) {
-              const section = sections[i];
-              const element = document.getElementById(section);
-              if (element) {
-                const rect = element.getBoundingClientRect();
-                const elementTop = rect.top + window.pageYOffset;
-                const scrollPosition = window.pageYOffset + navbarHeight + 100;
-
-                if (scrollPosition >= elementTop) {
-                  setActiveSection((prev) => {
-                    if (prev !== section) {
-                      return section;
-                    }
-                    return prev;
-                  });
-                  break;
-                }
-              }
-            }
-          }
-
-          ticking = false;
-        });
-        ticking = true;
-      }
+      setIsScrolled(window.scrollY > 20);
     };
-
     window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [isHomePage]);
+  }, []);
 
-  const scrollToSection = useCallback(
-    (href: string) => {
-      if (href.startsWith("#")) {
-        // If we're on the home page, try to scroll to the section
-        if (isHomePage) {
-          const element = document.querySelector(href);
-          if (element) {
-            const navbarHeight = 64;
-            const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
-            const offsetPosition = elementPosition - navbarHeight;
+  const logoSizeForMobile = useMemo(() => {
+    return isScrolled ? (isMobile ? 80 : 64) : isMobile ? 90 : 128;
+  }, [isMobile, isScrolled]);
+  // --- Lock Body Scroll on Mobile Menu ---
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+  }, [mobileMenuOpen]);
 
-            window.scrollTo({
-              top: offsetPosition,
-              behavior: "smooth",
-            });
-            setIsOpen(false);
-            return;
-          }
-        } else {
-          // If we're not on the home page, navigate to home page with hash
-          setIsOpen(false);
-          const url = `${window.location.origin}/${href}`;
-          window.location.href = url;
-          return;
-        }
-      }
-      if (href.startsWith("/")) {
-        if (isHomePage) {
-          const sectionMap: Record<string, string> = {
-            "/about": "#about",
-            "/products": "#products",
-          };
+  // --- Navigation Handler ---
+  const handleNavClick = (href: string) => {
+    setMobileMenuOpen(false);
 
-          if (sectionMap[href]) {
-            const element = document.querySelector(sectionMap[href]);
-            if (element) {
-              const navbarHeight = 64;
-              const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
-              const offsetPosition = elementPosition - navbarHeight;
-              window.scrollTo({
-                top: offsetPosition,
-                behavior: "smooth",
-              });
-              setIsOpen(false);
-              return;
-            }
-          }
-        }
-        window.location.href = href;
-        setIsOpen(false);
-        return;
-      }
+    // Handle smooth scroll for hash links on homepage
+    if (href.startsWith("#") && isHomePage) {
       const element = document.querySelector(href);
       if (element) {
-        const navbarHeight = 64;
-        const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
-        const offsetPosition = elementPosition - navbarHeight;
+        const offset = 100;
+        const bodyRect = document.body.getBoundingClientRect().top;
+        const elementRect = element.getBoundingClientRect().top;
+        const elementPosition = elementRect - bodyRect;
+        const offsetPosition = elementPosition - offset;
+
         window.scrollTo({
           top: offsetPosition,
           behavior: "smooth",
         });
       }
-      setIsOpen(false);
-    },
-    [isHomePage],
-  );
-  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+    }
+  };
+
+  // --- Visual State Variables ---
+  const isTransparent = isHomePage && !isScrolled;
+  const textColorClass = isTransparent ? "text-white" : "text-slate-900";
+  const hoverColorClass = isTransparent ? "hover:bg-white/10" : "hover:bg-slate-100";
 
   return (
-    <nav
-      className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        scrolled || !isHomePage
-          ? "bg-background/95 backdrop-blur-sm border-b shadow-sm"
-          : "bg-transparent",
-      )}
-    >
-      <Container>
-        <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
-          <Logo variant={scrolled && isMobile ? "dark" : "light"} size={isMobile ? 100 : "xl"} showBadge={false} />
-
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-4">
-            {NAVBAR_CONFIG.navigation.map((item) => {
-              const isActive =
-                isHomePage &&
-                ((item.href === "/" && activeSection === "home") ||
-                  (item.href === "/about" && activeSection === "about") ||
-                  (item.href === "#services" && activeSection === "services") ||
-                  (item.href === "/products" && activeSection === "products"));
-
-              return (
-                <Button
-                  key={item.name}
-                  variant="link"
-                  onClick={() => scrollToSection(item.href)}
-                  className={cn(
-                    "transition-colors duration-300",
-                    scrolled || !isHomePage
-                      ? isActive
-                        ? "text-primary font-semibold"
-                        : "text-foreground hover:text-primary"
-                      : isActive
-                      ? "text-white font-semibold"
-                      : "text-white hover:text-white/80",
-                  )}
-                >
-                  {item.name}
-                </Button>
-              );
-            })}
-          </div>
-
-          {/* CTA Buttons */}
-          <div className="hidden md:flex items-center space-x-3">
-            <QuoteRequest colorScheme="blue">
-              <Button
-                size="sm"
-                className={cn(
-                  "transition-colors duration-300",
-                  scrolled || !isHomePage ? "" : "bg-white text-black hover:bg-white/90",
-                )}
+    <>
+      {/* ==================== 1. Utility Top Bar (Desktop Only) ==================== */}
+      {/* High-value trust signals (Phone/Email) - Disappears on scroll */}
+      <div
+        className={cn(
+          "hidden lg:block fixed top-0 w-full z-[60] transition-transform duration-500 ease-in-out",
+          isScrolled ? "-translate-y-full" : "translate-y-0",
+          isHomePage ? "bg-transparent border-b border-white/10" : "bg-slate-900 text-white",
+        )}
+      >
+        <Container className="py-2.5">
+          <div
+            className={cn(
+              "flex justify-between items-center text-xs font-medium tracking-wide",
+              isHomePage ? "text-white/90" : "text-slate-300",
+            )}
+          >
+            <div className="flex items-center gap-6">
+              <span className="flex items-center gap-2">
+                <Globe className="w-3.5 h-3.5 opacity-70" />
+                Global Import/Export Certified
+              </span>
+            </div>
+            <div className="flex items-center gap-6">
+              <a
+                href={`mailto:${FOOTER_CONFIG.contact.email}`}
+                className="flex items-center gap-2 hover:text-white transition-colors"
               >
-                {NAVBAR_CONFIG.cta.primary.text}
-              </Button>
-            </QuoteRequest>
-          </div>
-
-          {/* Mobile menu button */}
-          <div className="md:hidden">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsOpen(!isOpen)}
-              className={cn(
-                "transition-colors duration-300",
-                scrolled || !isHomePage ? "text-foreground" : "text-white",
-              )}
-            >
-              {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </Button>
-          </div>
-        </div>
-
-        {/* Mobile Navigation */}
-        {isOpen && (
-          <div className="md:hidden">
-            <div
-              className={cn(
-                "px-2 pt-2 pb-3 space-y-1 border-t transition-colors duration-300",
-                scrolled || !isHomePage
-                  ? "bg-background/95 backdrop-blur-sm"
-                  : "bg-black/95 backdrop-blur-sm",
-              )}
-            >
-              {NAVBAR_CONFIG.navigation.map((item) => (
-                <Button
-                  key={item.name}
-                  variant="ghost"
-                  onClick={() => scrollToSection(item.href)}
-                  className={cn(
-                    "w-full justify-start transition-colors duration-300",
-                    scrolled
-                      ? "text-foreground hover:text-primary"
-                      : "text-white hover:text-white/80",
-                  )}
-                >
-                  {item.name}
-                </Button>
-              ))}
-              <div className="pt-4 space-y-2">
-                <QuoteRequest colorScheme="blue">
-                  <Button
-                    size="sm"
-                    className={cn(
-                      "w-full transition-colors duration-300",
-                      scrolled || !isHomePage ? "" : "bg-white text-black hover:bg-white/90",
-                    )}
-                  >
-                    {NAVBAR_CONFIG.cta.primary.text}
-                  </Button>
-                </QuoteRequest>
-              </div>
+                <Mail className="w-3.5 h-3.5 opacity-70" />
+                {FOOTER_CONFIG.contact.email}
+              </a>
+              <span className="w-px h-3 bg-current opacity-20" />
+              <a
+                href={`tel:${FOOTER_CONFIG.contact.phone}`}
+                className="flex items-center gap-2 hover:text-white transition-colors"
+              >
+                <Phone className="w-3.5 h-3.5 opacity-70" />
+                {FOOTER_CONFIG.contact.phone}
+              </a>
             </div>
           </div>
+        </Container>
+      </div>
+
+      {/* ==================== 2. Main Navbar ==================== */}
+      <header
+        className={cn(
+          "fixed left-0 right-0 z-50 transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]",
+          // Layout Positioning based on scroll and top bar presence
+          isScrolled ? "top-0 py-3" : "top-0 lg:top-10 py-4 lg:py-5",
         )}
-      </Container>
-    </nav>
+      >
+        <div className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+          <nav
+            className={cn(
+              "flex items-center justify-between rounded-2xl px-4 pr-2 py-2.5 transition-all duration-500",
+              // Glassmorphism Logic
+              isScrolled
+                ? "bg-white/90 backdrop-blur-md shadow-lg shadow-slate-200/20 border border-white/20"
+                : isHomePage
+                ? "bg-transparent border border-transparent"
+                : "bg-white/90 backdrop-blur-md border border-slate-200 shadow-sm",
+            )}
+          >
+            {/* --- Logo Section --- */}
+
+            <Logo
+              variant={isTransparent ? "light" : "dark"}
+              size={logoSizeForMobile}
+              showBadge={false}
+            />
+
+            {/* --- Desktop Links --- */}
+            <div className="hidden md:flex items-center gap-1 absolute left-1/2 -translate-x-1/2">
+              {NAVBAR_CONFIG.navigation.map((item) => (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  onClick={(e) => {
+                    if (item.href.startsWith("#") && isHomePage) {
+                      e.preventDefault();
+                      handleNavClick(item.href);
+                    }
+                  }}
+                  className={cn(
+                    "px-4 py-2 rounded-full text-sm font-medium transition-all duration-300",
+                    textColorClass,
+                    hoverColorClass,
+                    "hover:scale-105 active:scale-95",
+                  )}
+                >
+                  {item.name}
+                </Link>
+              ))}
+            </div>
+
+            {/* --- Right Actions --- */}
+            <div className="flex items-center gap-2 md:gap-3">
+              {/* Phone Number Icon (Visible on Tablet/Desktop) */}
+              <a
+                href={`tel:${FOOTER_CONFIG.contact.phone}`}
+                className={cn(
+                  "hidden lg:flex items-center gap-2 text-sm font-semibold px-3 py-2 rounded-full transition-colors mr-1",
+                  isTransparent
+                    ? "text-white hover:bg-white/10"
+                    : "text-slate-600 hover:bg-slate-100",
+                )}
+                title="Call Us"
+              >
+                <Phone className="w-4 h-4" />
+                <span className="hidden ">{FOOTER_CONFIG.contact.phone}</span>
+              </a>
+
+              {/* Quote Button */}
+              <QuoteRequest colorScheme="green">
+                <Button
+                  size={isScrolled ? "sm" : "default"}
+                  className={cn(
+                    "font-bold shadow-lg transition-all duration-300",
+                    isTransparent
+                      ? "bg-white text-slate-900 hover:bg-blue-50 border-none"
+                      : "bg-slate-900 text-white hover:bg-slate-800",
+                  )}
+                >
+                  {NAVBAR_CONFIG.cta.primary.text}
+                </Button>
+              </QuoteRequest>
+
+              {/* Mobile Toggle */}
+              <button
+                onClick={() => setMobileMenuOpen(true)}
+                className={cn(
+                  "md:hidden p-2 rounded-full transition-colors",
+                  isTransparent
+                    ? "text-white hover:bg-white/20"
+                    : "text-slate-900 hover:bg-slate-100",
+                )}
+                aria-label="Open Menu"
+              >
+                <Menu className="w-6 h-6" />
+              </button>
+            </div>
+          </nav>
+        </div>
+      </header>
+
+      {/* ==================== 3. Mobile Menu Drawer (Right Side) ==================== */}
+      <div
+        className={cn(
+          "fixed inset-0 z-[100] md:hidden transition-visibility duration-300",
+          mobileMenuOpen ? "visible" : "invisible delay-300",
+        )}
+      >
+        {/* Backdrop */}
+        <div
+          className={cn(
+            "absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity duration-300",
+            mobileMenuOpen ? "opacity-100" : "opacity-0",
+          )}
+          onClick={() => setMobileMenuOpen(false)}
+        />
+
+        {/* Sidebar Content */}
+        <div
+          className={cn(
+            "absolute right-0 top-0 bottom-0 w-[85%] max-w-sm bg-white shadow-2xl transition-transform duration-300 ease-out transform flex flex-col",
+            mobileMenuOpen ? "translate-x-0" : "translate-x-full",
+          )}
+        >
+          {/* Drawer Header */}
+          <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+            <Logo variant="dark" size={50} showBadge={false} />
+            <button
+              onClick={() => setMobileMenuOpen(false)}
+              className="p-2 rounded-full bg-white border border-slate-200 text-slate-500 hover:text-red-500 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Drawer Links */}
+          <div className="flex-1 overflow-y-auto p-6 space-y-2">
+            <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">
+              Navigation
+            </div>
+            {NAVBAR_CONFIG.navigation.map((item) => (
+              <Link
+                key={item.name}
+                href={item.href}
+                onClick={(e) => {
+                  if (item.href.startsWith("#") && isHomePage) {
+                    e.preventDefault();
+                    handleNavClick(item.href);
+                  } else {
+                    setMobileMenuOpen(false);
+                  }
+                }}
+                className="group flex items-center justify-between p-4 rounded-xl hover:bg-slate-50 transition-all border border-transparent hover:border-slate-200"
+              >
+                <span className="text-lg font-medium text-slate-700 group-hover:text-slate-900">
+                  {item.name}
+                </span>
+                <ChevronRight className="w-5 h-5 text-slate-300 group-hover:text-blue-600 transition-colors" />
+              </Link>
+            ))}
+          </div>
+
+          {/* Drawer Footer */}
+          <div className="p-6 border-t border-slate-100 bg-slate-50">
+            <QuoteRequest colorScheme="green">
+              <Button className="w-full h-12 text-base font-bold bg-blue-600 hover:bg-blue-700 shadow-blue-200 shadow-lg mb-4">
+                {NAVBAR_CONFIG.cta.primary.text} <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            </QuoteRequest>
+
+            <div className="grid grid-cols-1 gap-3">
+              <a
+                href={`tel:${FOOTER_CONFIG.contact.phone}`}
+                className="flex items-center gap-3 p-3 rounded-lg bg-white border border-slate-200 text-slate-600 hover:border-blue-300 transition-colors"
+              >
+                <div className="p-2 bg-blue-50 text-blue-600 rounded-md">
+                  <Phone className="w-4 h-4" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[10px] font-bold uppercase text-slate-400">Call Us</span>
+                  <span className="text-sm font-semibold text-slate-900">
+                    {FOOTER_CONFIG.contact.phone}
+                  </span>
+                </div>
+              </a>
+              <a
+                href={`mailto:${FOOTER_CONFIG.contact.email}`}
+                className="flex items-center gap-3 p-3 rounded-lg bg-white border border-slate-200 text-slate-600 hover:border-blue-300 transition-colors"
+              >
+                <div className="p-2 bg-blue-50 text-blue-600 rounded-md">
+                  <Mail className="w-4 h-4" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[10px] font-bold uppercase text-slate-400">Email Us</span>
+                  <span className="text-sm font-semibold text-slate-900">
+                    {FOOTER_CONFIG.contact.email}
+                  </span>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
   );
 }
