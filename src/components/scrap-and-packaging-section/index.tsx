@@ -56,13 +56,13 @@ const scrapMaterials = SCRAP_AND_PACKAGING_CONFIG.scrapMaterials.products.map((p
 
 const colors = {
   blue: {
-    badge: "bg-blue-100 text-blue-800",
-    button: "bg-blue-600 hover:bg-blue-700",
+    badge: "bg-secondary-100 text-secondary-800",
+    button: "bg-secondary-600 hover:bg-secondary-700",
     buttonSecondary: "bg-white hover:bg-gray-50 text-gray-900 border border-gray-300",
   },
   green: {
-    badge: "bg-green-100 text-green-800",
-    button: "bg-green-600 hover:bg-green-700",
+    badge: "bg-primary-100 text-primary-800",
+    button: "bg-primary-600 hover:bg-primary-700",
     buttonSecondary: "bg-white hover:bg-gray-50 text-gray-900 border border-gray-300",
   },
 };

@@ -157,9 +157,9 @@ export default function AboutPage() {
           <section className="mb-24">
             <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
               {cfg.mission && (
-                <Card className="bg-gradient-to-br from-green-50/50 to-transparent dark:from-green-950/10 border-green-100/50 dark:border-green-900/50">
+                <Card className="bg-gradient-to-br from-primary-50/50 to-transparent dark:from-primary-950/10 border-primary-100/50 dark:border-primary-900/50">
                   <CardContent className="p-8 sm:p-10 flex flex-col h-full">
-                    <div className="w-12 h-12 rounded-xl bg-green-100 text-green-600 flex items-center justify-center mb-6">
+                    <div className="w-12 h-12 rounded-xl bg-primary-100 text-primary-600 flex items-center justify-center mb-6">
                       <Target className="w-6 h-6" />
                     </div>
                     <h3 className="text-2xl font-bold mb-4 text-foreground">Our Mission</h3>
@@ -171,9 +171,9 @@ export default function AboutPage() {
               )}
 
               {cfg.vision && (
-                <Card className="bg-gradient-to-br from-blue-50/50 to-transparent dark:from-blue-950/10 border-blue-100/50 dark:border-blue-900/50">
+                <Card className="bg-gradient-to-br from-secondary-50/50 to-transparent dark:from-secondary-950/10 border-secondary-100/50 dark:border-secondary-900/50">
                   <CardContent className="p-8 sm:p-10 flex flex-col h-full">
-                    <div className="w-12 h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center mb-6">
+                    <div className="w-12 h-12 rounded-xl bg-secondary-100 text-secondary-600 flex items-center justify-center mb-6">
                       <Lightbulb className="w-6 h-6" />
                     </div>
                     <h3 className="text-2xl font-bold mb-4 text-foreground">Our Vision</h3>

@@ -28,24 +28,24 @@ const CATEGORY_META: Record<
 > = {
   plant: {
     label: "Plants",
-    color: "text-blue-600",
-    bg: "bg-blue-50",
-    border: "border-blue-200",
-    pinColor: "blue", // emerald-700
+    color: "text-primary-600",
+    bg: "bg-primary-50",
+    border: "border-primary-200",
+    pinColor: "#10b981", // primary-500
   },
   hq: {
     label: "Headquarters",
-    color: "text-orange-600",
-    bg: "bg-orange-50",
-    border: "border-orange-200",
-    pinColor: "orange", // emerald-900
+    color: "text-secondary-600",
+    bg: "bg-secondary-50",
+    border: "border-secondary-200",
+    pinColor: "#3b82f6", // secondary-500
   },
   office: {
     label: "Regional Hub",
-    color: "text-emerald-700",
-    bg: "bg-emerald-50",
-    border: "border-emerald-200",
-    pinColor: "#059669", // emerald-600
+    color: "text-primary-700",
+    bg: "bg-primary-50",
+    border: "border-primary-200",
+    pinColor: "#059669", // primary-600
   },
 };
 
@@ -163,7 +163,7 @@ export function PresenceMap({ backgroundSrc, locations, debug = false }: Presenc
         <SectionHeader
           badge={{
             text: "Our Reach",
-            className: "bg-emerald-100 text-emerald-800 border-emerald-200",
+            className: "bg-primary-100 text-primary-800 border-primary-200",
           }}
           title="Strategic Industrial Footprint"
           description="Our integrated manufacturing and logistics network ensures rapid delivery across the country."
@@ -174,9 +174,9 @@ export function PresenceMap({ backgroundSrc, locations, debug = false }: Presenc
            On Mobile: Flex Col.
            The height is controlled to ensure map isn't tiny.
         */}
-        <div className="grid lg:grid-cols-[1fr_380px] gap-0 rounded-2xl border border-emerald-100/50 bg-white shadow-xl overflow-hidden">
+        <div className="grid lg:grid-cols-[1fr_380px] gap-0 rounded-2xl border border-primary-100/50 bg-white shadow-xl overflow-hidden">
           {/* ==================== LEFT: MAP VIEW ==================== */}
-          <div className="relative bg-slate-50/30 overflow-hidden flex items-center justify-center group border-b lg:border-b-0 lg:border-r border-emerald-100 min-h-[400px] lg:min-h-[600px]">
+          <div className="relative bg-slate-50/30 overflow-hidden flex items-center justify-center group border-b lg:border-b-0 lg:border-r border-primary-100 min-h-[400px] lg:min-h-[600px]">
             {/* Tech Grid Background */}
             <div
               className="absolute inset-0 opacity-[0.3] pointer-events-none"
@@ -196,7 +196,7 @@ export function PresenceMap({ backgroundSrc, locations, debug = false }: Presenc
               <Button
                 size="sm"
                 variant="secondary"
-                className="bg-white/90 shadow-sm text-xs border border-emerald-100 text-emerald-800 hover:bg-emerald-50"
+                className="bg-white/90 shadow-sm text-xs border border-primary-100 text-primary-800 hover:bg-primary-50"
                 onClick={handleResetView}
               >
                 <Minimize2 className="w-3 h-3 mr-1" /> Reset View
@@ -252,14 +252,14 @@ export function PresenceMap({ backgroundSrc, locations, debug = false }: Presenc
           {/* ==================== RIGHT: LIST VIEW ==================== */}
           <div className="flex flex-col bg-white h-[400px] lg:h-auto">
             {/* Header */}
-            <div className="p-5 border-b border-emerald-100 bg-emerald-50/30">
-              <h3 className="text-xs font-bold text-emerald-800 uppercase tracking-widest flex items-center gap-2">
+            <div className="p-5 border-b border-primary-100 bg-primary-50/30">
+              <h3 className="text-xs font-bold text-primary-800 uppercase tracking-widest flex items-center gap-2">
                 <Navigation className="w-3.5 h-3.5" /> Locations ({locations.length})
               </h3>
             </div>
 
             {/* List */}
-            <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-emerald-100">
+            <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-primary-100">
               {locations.map((loc) => {
                 const isActive = activeId === loc.id;
                 const meta = CATEGORY_META[loc.category];
@@ -272,7 +272,7 @@ export function PresenceMap({ backgroundSrc, locations, debug = false }: Presenc
                     className={cn(
                       "px-5 py-4 cursor-pointer border-b border-slate-50 transition-all duration-200 group",
                       isActive
-                        ? "bg-emerald-50/60 border-l-4 border-l-emerald-600"
+                        ? "bg-primary-50/60 border-l-4 border-l-primary-600"
                         : "hover:bg-slate-50 border-l-4 border-l-transparent",
                     )}
                   >
@@ -281,7 +281,7 @@ export function PresenceMap({ backgroundSrc, locations, debug = false }: Presenc
                         <h4
                           className={cn(
                             "font-bold text-sm",
-                            isActive ? "text-emerald-900" : "text-slate-700",
+                            isActive ? "text-primary-900" : "text-slate-700",
                           )}
                         >
                           {loc.name}
@@ -310,8 +310,8 @@ export function PresenceMap({ backgroundSrc, locations, debug = false }: Presenc
                       )}
                     >
                       <div className="min-h-0 space-y-3">
-                        <div className="flex gap-3 items-start p-3 rounded-lg bg-white border border-emerald-100/50 shadow-sm">
-                          <Building2 className="w-3.5 h-3.5 text-emerald-600 mt-0.5 shrink-0" />
+                        <div className="flex gap-3 items-start p-3 rounded-lg bg-white border border-primary-100/50 shadow-sm">
+                          <Building2 className="w-3.5 h-3.5 text-primary-600 mt-0.5 shrink-0" />
                           <p className="text-[11px] text-slate-600 leading-relaxed">
                             {loc.address || "Address details available on request."}
                           </p>
@@ -320,7 +320,7 @@ export function PresenceMap({ backgroundSrc, locations, debug = false }: Presenc
                         <div className="flex gap-2">
                           <Button
                             size="sm"
-                            className="w-full h-8 text-xs bg-emerald-700 hover:bg-emerald-800 text-white shadow-sm"
+                            className="w-full h-8 text-xs bg-primary-700 hover:bg-primary-800 text-white shadow-sm"
                             onClick={(e) => {
                               e.stopPropagation();
                               window.open(

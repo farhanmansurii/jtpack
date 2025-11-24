@@ -159,10 +159,10 @@ export default function ProductPage({
   // Determine Theme based on category (Scrap = Green, Packaging = Blue)
   // Note: CatalogDivision type usually helps here. Assuming 'scrap-materials' vs 'packaging-products'
   const isRecycling = category === "scrap";
-  const accentColor = isRecycling ? "text-green-600" : "text-blue-600";
+  const accentColor = isRecycling ? "text-primary-600" : "text-secondary-600";
   const badgeColor = isRecycling
-    ? "bg-green-100 text-green-800 border-green-200"
-    : "bg-blue-100 text-blue-800 border-blue-200";
+    ? "bg-primary-100 text-primary-800 border-primary-200"
+    : "bg-secondary-100 text-secondary-800 border-secondary-200";
 
   const images = Array.isArray(product.image) ? product.image : [product.image];
 
@@ -235,7 +235,7 @@ export default function ProductPage({
                         <div
                           className={cn(
                             "mt-1.5 w-2 h-2 rounded-full shrink-0",
-                            isRecycling ? "bg-green-500" : "bg-blue-500",
+                            isRecycling ? "bg-primary-500" : "bg-secondary-500",
                           )}
                         />
                         <span className="text-sm font-medium text-foreground">{feature}</span>
@@ -254,8 +254,8 @@ export default function ProductPage({
                   className={cn(
                     "w-full text-base font-bold h-12 shadow-md",
                     isRecycling
-                      ? "bg-green-600 hover:bg-green-700 text-white"
-                      : "bg-blue-600 hover:bg-blue-700 text-white",
+                      ? "bg-primary-600 hover:bg-primary-700 text-white"
+                      : "bg-secondary-600 hover:bg-secondary-700 text-white",
                   )}
                 >
                   Get Bulk Quote
@@ -291,7 +291,9 @@ export default function ProductPage({
             <div
               className={cn(
                 "rounded-xl p-6 border",
-                isRecycling ? "bg-green-50/50 border-green-100" : "bg-blue-50/50 border-blue-100",
+                isRecycling
+                  ? "bg-primary-50/50 border-primary-100"
+                  : "bg-secondary-50/50 border-secondary-100",
               )}
             >
               <h3 className="font-bold text-foreground mb-4 flex items-center gap-2">
@@ -303,7 +305,7 @@ export default function ProductPage({
                   <div
                     className={cn(
                       "w-1.5 h-1.5 rounded-full mt-2 shrink-0",
-                      isRecycling ? "bg-green-500" : "bg-blue-500",
+                      isRecycling ? "bg-primary-500" : "bg-secondary-500",
                     )}
                   />
                   Verified Quality
@@ -312,7 +314,7 @@ export default function ProductPage({
                   <div
                     className={cn(
                       "w-1.5 h-1.5 rounded-full mt-2 shrink-0",
-                      isRecycling ? "bg-green-500" : "bg-blue-500",
+                      isRecycling ? "bg-primary-500" : "bg-secondary-500",
                     )}
                   />
                   Bulk Volume Support
@@ -321,7 +323,7 @@ export default function ProductPage({
                   <div
                     className={cn(
                       "w-1.5 h-1.5 rounded-full mt-2 shrink-0",
-                      isRecycling ? "bg-green-500" : "bg-blue-500",
+                      isRecycling ? "bg-primary-500" : "bg-secondary-500",
                     )}
                   />
                   Global Export Ready

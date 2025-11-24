@@ -87,9 +87,9 @@ function DualBusinessOverview() {
                 "group relative flex flex-col rounded-xl border transition-all duration-300 hover:shadow-lg bg-gradient-to-br",
                 // Theme-specific borders and gradient backgrounds
                 b.isGreen
-                  ? "border-green-200/60 hover:border-green-300"
-                  : "border-blue-200/60 hover:border-blue-300",
-                b.gradient, // Applies: from-green-500/10 via-white to-green-500/5
+                  ? "border-primary-200/60 hover:border-primary-300"
+                  : "border-secondary-200/60 hover:border-secondary-300",
+                b.gradient, // Applies: from-primary-500/10 via-white to-primary-500/5
               )}
             >
               <div className="p-6 sm:p-8 flex flex-col h-full">
@@ -99,8 +99,8 @@ function DualBusinessOverview() {
                     className={cn(
                       "p-3 rounded-lg border bg-white shadow-sm",
                       b.isGreen
-                        ? "border-green-100 text-green-600"
-                        : "border-blue-100 text-blue-600",
+                        ? "border-primary-100 text-primary-600"
+                        : "border-secondary-100 text-secondary-600",
                     )}
                   >
                     {b.icon}
@@ -109,8 +109,8 @@ function DualBusinessOverview() {
                     className={cn(
                       "px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider border bg-white/80 backdrop-blur",
                       b.isGreen
-                        ? "text-green-700 border-green-200"
-                        : "text-blue-700 border-blue-200",
+                        ? "text-primary-700 border-primary-200"
+                        : "text-secondary-700 border-secondary-200",
                     )}
                   >
                     {b.badge}
@@ -138,7 +138,7 @@ function DualBusinessOverview() {
                         <div
                           className={cn(
                             "mt-1.5 w-1.5 h-1.5 rounded-full shrink-0",
-                            b.isGreen ? "bg-green-500" : "bg-blue-500",
+                            b.isGreen ? "bg-primary-500" : "bg-secondary-500",
                           )}
                         />
                         {h}
@@ -194,7 +194,7 @@ function DualBusinessOverview() {
                       className={cn(
                         "w-full sm:w-auto h-12 px-6 font-bold shadow-lg border transition-all",
                         button.variant === "green"
-                          ? "bg-emerald-600 hover:bg-emerald-700 border-emerald-500 text-white"
+                          ? "bg-primary-600 hover:bg-primary-700 border-primary-500 text-white"
                           : "bg-white text-slate-900 hover:bg-slate-100 border-white",
                       )}
                     >

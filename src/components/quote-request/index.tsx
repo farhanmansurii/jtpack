@@ -129,9 +129,11 @@ export function QuoteRequest({
   };
 
   // --- Theme Colors ---
-  const activeColor = colorScheme === "green" ? "text-green-600" : "text-blue-600";
+  const activeColor = colorScheme === "green" ? "text-primary-600" : "text-secondary-600";
   const buttonColor =
-    colorScheme === "green" ? "bg-green-600 hover:bg-green-700" : "bg-blue-600 hover:bg-blue-700";
+    colorScheme === "green"
+      ? "bg-primary-600 hover:bg-primary-700"
+      : "bg-secondary-600 hover:bg-secondary-700";
 
   // --- Form UI ---
   const FormContent = (

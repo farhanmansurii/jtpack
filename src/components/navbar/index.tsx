@@ -90,7 +90,7 @@ export default function Navbar({ isOnPage = false }: { isOnPage?: boolean }) {
         className={cn(
           "hidden lg:block fixed top-0 w-full z-[60] transition-transform duration-500 ease-in-out",
           isScrolled ? "-translate-y-full" : "translate-y-0",
-          isHomePage ? "bg-transparent border-b border-white/10" : "bg-slate-900 text-white",
+          isHomePage ? "bg-transparent border-b border-white/10" : "bg-secondary-800 text-white",
         )}
       >
         <Container className="py-2.5">
@@ -203,8 +203,8 @@ export default function Navbar({ isOnPage = false }: { isOnPage?: boolean }) {
                   className={cn(
                     "font-bold shadow-lg transition-all duration-300",
                     isTransparent
-                      ? "bg-white text-slate-900 hover:bg-blue-50 border-none"
-                      : "bg-slate-900 text-white hover:bg-slate-800",
+                      ? "bg-white text-slate-900 hover:bg-primary-50 border-none"
+                      : "text-white hover:bg-slate-800",
                   )}
                 >
                   {NAVBAR_CONFIG.cta.primary.text}
@@ -285,7 +285,7 @@ export default function Navbar({ isOnPage = false }: { isOnPage?: boolean }) {
                 <span className="text-lg font-medium text-slate-700 group-hover:text-slate-900">
                   {item.name}
                 </span>
-                <ChevronRight className="w-5 h-5 text-slate-300 group-hover:text-blue-600 transition-colors" />
+                <ChevronRight className="w-5 h-5 text-slate-300 group-hover:text-primary-600 transition-colors" />
               </Link>
             ))}
           </div>
@@ -293,7 +293,7 @@ export default function Navbar({ isOnPage = false }: { isOnPage?: boolean }) {
           {/* Drawer Footer */}
           <div className="p-6 border-t border-slate-100 bg-slate-50">
             <QuoteRequest colorScheme="green">
-              <Button className="w-full h-12 text-base font-bold bg-blue-600 hover:bg-blue-700 shadow-blue-200 shadow-lg mb-4">
+              <Button className="w-full h-12 text-base font-bold bg-primary-600 hover:bg-primary-700 shadow-primary-200 shadow-lg mb-4">
                 {NAVBAR_CONFIG.cta.primary.text} <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </QuoteRequest>
@@ -301,9 +301,9 @@ export default function Navbar({ isOnPage = false }: { isOnPage?: boolean }) {
             <div className="grid grid-cols-1 gap-3">
               <a
                 href={`tel:${FOOTER_CONFIG.contact.phone}`}
-                className="flex items-center gap-3 p-3 rounded-lg bg-white border border-slate-200 text-slate-600 hover:border-blue-300 transition-colors"
+                className="flex items-center gap-3 p-3 rounded-lg bg-white border border-slate-200 text-slate-600 hover:border-primary-300 transition-colors"
               >
-                <div className="p-2 bg-blue-50 text-blue-600 rounded-md">
+                <div className="p-2 bg-primary-50 text-primary-600 rounded-md">
                   <Phone className="w-4 h-4" />
                 </div>
                 <div className="flex flex-col">
@@ -315,9 +315,9 @@ export default function Navbar({ isOnPage = false }: { isOnPage?: boolean }) {
               </a>
               <a
                 href={`mailto:${FOOTER_CONFIG.contact.email}`}
-                className="flex items-center gap-3 p-3 rounded-lg bg-white border border-slate-200 text-slate-600 hover:border-blue-300 transition-colors"
+                className="flex items-center gap-3 p-3 rounded-lg bg-white border border-slate-200 text-slate-600 hover:border-primary-300 transition-colors"
               >
-                <div className="p-2 bg-blue-50 text-blue-600 rounded-md">
+                <div className="p-2 bg-primary-50 text-primary-600 rounded-md">
                   <Mail className="w-4 h-4" />
                 </div>
                 <div className="flex flex-col">

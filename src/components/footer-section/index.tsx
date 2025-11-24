@@ -6,15 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Logo } from "@/components/logo";
-import {
-  Mail,
-  Phone,
-  MapPin,
-  Facebook,
-  Twitter,
-  Instagram,
-  Linkedin,
-} from "lucide-react";
+import { Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
 import { FOOTER_CONFIG } from "@/lib/config";
 import { usePathname } from "next/navigation";
 
@@ -63,9 +55,9 @@ function FooterSection() {
   const getQuickLinkHref = (link: string): string => {
     const linkMap: Record<string, string> = {
       "About Us": "/about",
-      "Services": "#services",
-      "Products": "/products",
-      "Contact": "#contact",
+      Services: "#services",
+      Products: "/products",
+      Contact: "#contact",
     };
     return linkMap[link] || "#";
   };
@@ -76,7 +68,7 @@ function FooterSection() {
       "Scrap Trading": "#products",
       "Packaging Solutions": "#products",
       "Metal Processing": "#products",
-      "Recycling": "#products",
+      Recycling: "#products",
     };
     return serviceMap[service] || "#";
   };
@@ -86,13 +78,13 @@ function FooterSection() {
     const socialMap: Record<string, string> = {
       Facebook: "https://facebook.com/jtpack",
       Twitter: "https://twitter.com/jtpack",
-      Instagram: "https://instagram.com/jtpack",
-      LinkedIn: "https://linkedin.com/company/jtpack",
+      Instagram: "https://www.instagram.com/aymaaan.in",
+      LinkedIn: "https://www.linkedin.com/in/aymaan-siddiqui-a760851b2",
     };
     return socialMap[platform] || "#";
   };
 
-  return (
+  https: return (
     <footer id="contact" className="bg-background border-t">
       <Container className="py-16 space-y-12">
         {/* Main Footer Content */}

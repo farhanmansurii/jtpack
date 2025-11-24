@@ -11,7 +11,7 @@ function ContactSection() {
         <SectionHeader
           badge={{
             text: "Contact",
-            className: "bg-blue-100 text-blue-800",
+            className: "bg-secondary-100 text-secondary-800",
           }}
           title="Get in Touch"
           description="Tell us about your requirements and we'll get back soon."
@@ -24,7 +24,7 @@ function ContactSection() {
           colorScheme="green"
           className="flex justify-center   w-full gap-2 "
         >
-          <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+          <Button className="w-full bg-secondary-600 hover:bg-secondary-700 text-white font-medium py-3 px-6 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-secondary-500 focus:ring-offset-2">
             Get a Quote
           </Button>
         </QuoteRequest>

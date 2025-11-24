@@ -104,7 +104,7 @@ export const PresenceMap = ({ locations, editable = false }: PresenceMapProps) =
           <SectionHeader
             badge={{
               text: "Our Presenssce",
-              className: "bg-blue-100 text-blue-800",
+              className: "bg-secondary-100 text-secondary-800",
             }}
             title="Our Presesssnce"
             description={

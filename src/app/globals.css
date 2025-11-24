@@ -4,6 +4,37 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  /* Semantic colors for Tailwind utilities */
+  --color-primary-50: var(--primary-50);
+  --color-primary-100: var(--primary-100);
+  --color-primary-200: var(--primary-200);
+  --color-primary-300: var(--primary-300);
+  --color-primary-500: var(--primary-500);
+  --color-primary-600: var(--primary-600);
+  --color-primary-700: var(--primary-700);
+  --color-primary-800: var(--primary-800);
+  --color-primary-900: var(--primary-900);
+
+  --color-secondary-50: var(--secondary-50);
+  --color-secondary-100: var(--secondary-100);
+  --color-secondary-200: var(--secondary-200);
+  --color-secondary-300: var(--secondary-300);
+  --color-secondary-500: var(--secondary-500);
+  --color-secondary-600: var(--secondary-600);
+  --color-secondary-700: var(--secondary-700);
+  --color-secondary-800: var(--secondary-800);
+
+  --color-neutral-50: var(--neutral-50);
+  --color-neutral-100: var(--neutral-100);
+  --color-neutral-200: var(--neutral-200);
+  --color-neutral-300: var(--neutral-300);
+  --color-neutral-400: var(--neutral-400);
+  --color-neutral-500: var(--neutral-500);
+  --color-neutral-600: var(--neutral-600);
+  --color-neutral-700: var(--neutral-700);
+  --color-neutral-800: var(--neutral-800);
+  --color-neutral-900: var(--neutral-900);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -43,6 +74,40 @@
 :root {
   --radius: 0.625rem;
 
+  /* ==================== SEMANTIC COLORS (Use these in your code!) ==================== */
+  /* Primary (Green) - Main brand, sustainability, recycling, primary CTAs */
+  --primary-50: #f0fdf4;
+  --primary-100: #dcfce7;
+  --primary-200: #bbf7d0;
+  --primary-300: #86efac;
+  --primary-500: #10b981;
+  --primary-600: #16a34a;
+  --primary-700: #15803d;
+  --primary-800: #166534;
+  --primary-900: #14532d;
+
+  /* Secondary (Blue) - Packaging, manufacturing, secondary CTAs */
+  --secondary-50: #eff6ff;
+  --secondary-100: #dbeafe;
+  --secondary-200: #bfdbfe;
+  --secondary-300: #93c5fd;
+  --secondary-500: #3b82f6;
+  --secondary-600: #2563eb;
+  --secondary-700: #1d4ed8;
+  --secondary-800: #1e40af;
+
+  /* Neutral (Slate) - Text, borders, backgrounds, UI elements */
+  --neutral-50: #f8fafc;
+  --neutral-100: #f1f5f9;
+  --neutral-200: #e2e8f0;
+  --neutral-300: #cbd5e1;
+  --neutral-400: #94a3b8;
+  --neutral-500: #64748b;
+  --neutral-600: #475569;
+  --neutral-700: #334155;
+  --neutral-800: #1e293b;
+  --neutral-900: #0f172a;
+
   /* Base colors */
   --background: oklch(0.98 0.002 106.99); /* Subtle warm white */
   --foreground: oklch(0.15 0.004 285.82); /* Deep navy text */
@@ -55,17 +120,16 @@
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.15 0.004 285.82);
 
-  /* Primary - Green for recycling/sustainability */
-  --primary: oklch(0.45 0.15 142.5); /* Forest green */
-  --primary-foreground: oklch(0.98 0.002 106.99);
+  /* Shadcn component colors (maps to semantic colors) */
+  --primary: var(--primary-600);
+  --primary-foreground: white;
 
-  /* Secondary - Blue for manufacturing/packaging */
-  --secondary: oklch(0.92 0.02 220); /* Light blue-gray */
-  --secondary-foreground: oklch(0.25 0.08 220); /* Navy blue */
+  --secondary: var(--secondary-100);
+  --secondary-foreground: var(--secondary-800);
 
   /* Muted colors */
-  --muted: oklch(0.95 0.01 106.99); /* Warm gray */
-  --muted-foreground: oklch(0.5 0.02 285.82); /* Medium gray */
+  --muted: var(--neutral-100);
+  --muted-foreground: var(--neutral-600);
 
   /* Accent - Orange for industrial/energy */
   --accent: oklch(0.93 0.04 75); /* Light orange tint */
@@ -75,36 +139,35 @@
   --destructive: oklch(0.577 0.245 27.325);
 
   /* Border and input */
-  --border: oklch(0.88 0.01 106.99); /* Subtle warm border */
-  --input: oklch(0.96 0.01 106.99); /* Input background */
-  --ring: oklch(0.45 0.15 142.5); /* Green focus ring */
+  --border: var(--neutral-200);
+  --input: var(--neutral-100);
+  --ring: var(--primary-600); /* Primary focus ring */
 
-  /* Chart colors - Industrial palette */
-  --chart-1: oklch(0.55 0.18 142.5); /* Green */
-  --chart-2: oklch(0.5 0.15 220); /* Blue */
-  --chart-3: oklch(0.45 0.12 65); /* Orange */
-  --chart-4: oklch(0.4 0.1 285); /* Purple */
-  --chart-5: oklch(0.6 0.08 180); /* Teal */
+  /* Chart colors - Streamlined palette */
+  --chart-1: var(--primary-500);
+  --chart-2: var(--secondary-500);
+  --chart-3: var(--primary-700);
+  --chart-4: var(--secondary-700);
+  --chart-5: var(--neutral-600);
 
   /* Sidebar colors */
-  --sidebar: oklch(0.96 0.01 106.99);
-  --sidebar-foreground: oklch(0.15 0.004 285.82);
-  --sidebar-primary: oklch(0.45 0.15 142.5);
-  --sidebar-primary-foreground: oklch(0.98 0.002 106.99);
-  --sidebar-accent: oklch(0.92 0.02 220);
-  --sidebar-accent-foreground: oklch(0.25 0.08 220);
-  --sidebar-border: oklch(0.88 0.01 106.99);
-  --sidebar-ring: oklch(0.45 0.15 142.5);
+  --sidebar: var(--neutral-50);
+  --sidebar-foreground: var(--neutral-900);
+  --sidebar-primary: var(--primary-600);
+  --sidebar-primary-foreground: white;
+  --sidebar-accent: var(--secondary-100);
+  --sidebar-accent-foreground: var(--secondary-800);
+  --sidebar-border: var(--neutral-200);
+  --sidebar-ring: var(--primary-600);
 
-  /* Map location colors */
-  --map-plant: oklch(0.55 0.18 240); /* Indigo for plants */
-  --map-plant-foreground: oklch(0.98 0.002 106.99);
-  --map-hq: oklch(0.65 0.15 75); /* Amber for headquarters */
-  --map-hq-foreground: oklch(0.98 0.002 106.99);
-  --map-other: oklch(0.5 0.02 285.82); /* Slate for other */
-  --map-other-foreground: oklch(0.98 0.002 106.99);
+  /* Map location colors - Streamlined */
+  --map-plant: var(--primary-500); /* Primary for plants */
+  --map-plant-foreground: white;
+  --map-hq: var(--secondary-600); /* Secondary for headquarters */
+  --map-hq-foreground: white;
+  --map-other: var(--primary-600); /* Primary for offices */
+  --map-other-foreground: white;
 }
-
 
 .dark {
   --background: oklch(0.145 0 0);
@@ -140,12 +203,12 @@
   --sidebar-ring: oklch(0.556 0 0);
 
   /* Map location colors - dark mode */
-  --map-plant: oklch(0.6 0.18 240);
-  --map-plant-foreground: oklch(0.98 0.002 106.99);
-  --map-hq: oklch(0.7 0.15 75);
-  --map-hq-foreground: oklch(0.98 0.002 106.99);
-  --map-other: oklch(0.55 0.02 285.82);
-  --map-other-foreground: oklch(0.98 0.002 106.99);
+  --map-plant: var(--primary-500);
+  --map-plant-foreground: white;
+  --map-hq: var(--secondary-500);
+  --map-hq-foreground: white;
+  --map-other: var(--primary-600);
+  --map-other-foreground: white;
 }
 
 @layer base {
@@ -165,26 +228,64 @@
     --font-mono: var(--font-jetbrains-mono);
     --font-title: var(--font-title);
   }
-  h1 { font-family: var(--font-title), var(--font-heading), var(--font-sans); }
-  h2, h3, h4, h5, h6 { font-family: var(--font-heading), var(--font-sans); }
+  h1 {
+    font-family: var(--font-title), var(--font-heading), var(--font-sans);
+  }
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-heading), var(--font-sans);
+  }
 }
 
 @layer utilities {
-  .font-title { font-family: var(--font-title), var(--font-sans); }
+  .font-title {
+    font-family: var(--font-title), var(--font-sans);
+  }
+
+  /* ==================== SEMANTIC COLOR QUICK ACCESS ==================== */
+  /* Tailwind already provides primary-600, secondary-700, neutral-500 etc.
+     These are just shortcuts if you want cleaner class names */
 
   /* Map location color utilities */
-  .bg-map-plant { background-color: var(--map-plant); }
-  .text-map-plant-foreground { color: var(--map-plant-foreground); }
-  .fill-map-plant { fill: var(--map-plant); }
-  .stroke-map-plant-foreground { stroke: var(--map-plant-foreground); }
+  .bg-map-plant {
+    background-color: var(--map-plant);
+  }
+  .text-map-plant-foreground {
+    color: var(--map-plant-foreground);
+  }
+  .fill-map-plant {
+    fill: var(--map-plant);
+  }
+  .stroke-map-plant-foreground {
+    stroke: var(--map-plant-foreground);
+  }
 
-  .bg-map-hq { background-color: var(--map-hq); }
-  .text-map-hq-foreground { color: var(--map-hq-foreground); }
-  .fill-map-hq { fill: var(--map-hq); }
-  .stroke-map-hq-foreground { stroke: var(--map-hq-foreground); }
+  .bg-map-hq {
+    background-color: var(--map-hq);
+  }
+  .text-map-hq-foreground {
+    color: var(--map-hq-foreground);
+  }
+  .fill-map-hq {
+    fill: var(--map-hq);
+  }
+  .stroke-map-hq-foreground {
+    stroke: var(--map-hq-foreground);
+  }
 
-  .bg-map-other { background-color: var(--map-other); }
-  .text-map-other-foreground { color: var(--map-other-foreground); }
-  .fill-map-other { fill: var(--map-other); }
-  .stroke-map-other-foreground { stroke: var(--map-other-foreground); }
+  .bg-map-other {
+    background-color: var(--map-other);
+  }
+  .text-map-other-foreground {
+    color: var(--map-other-foreground);
+  }
+  .fill-map-other {
+    fill: var(--map-other);
+  }
+  .stroke-map-other-foreground {
+    stroke: var(--map-other-foreground);
+  }
 }

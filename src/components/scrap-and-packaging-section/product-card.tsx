@@ -37,18 +37,18 @@ const getTheme = (scheme: ColorScheme) => {
   // Using specific colors for branding, but shadcn utilities for structure
   const themes = {
     blue: {
-      badge: "bg-blue-100 text-blue-800 border-blue-200",
-      icon: "text-blue-600",
-      softBg: "bg-blue-50/50",
-      primaryBtn: "bg-blue-600 hover:bg-blue-700 text-white shadow-sm",
-      hoverBorder: "hover:border-blue-300",
+      badge: "bg-secondary-100 text-secondary-800 border-secondary-200",
+      icon: "text-secondary-600",
+      softBg: "bg-secondary-50/50",
+      primaryBtn: "bg-secondary-600 hover:bg-secondary-700 text-white shadow-sm",
+      hoverBorder: "hover:border-secondary-300",
     },
     green: {
-      badge: "bg-green-100 text-green-800 border-green-200",
-      icon: "text-green-600",
-      softBg: "bg-green-50/50",
-      primaryBtn: "bg-green-600 hover:bg-green-700 text-white shadow-sm",
-      hoverBorder: "hover:border-green-300",
+      badge: "bg-primary-100 text-primary-800 border-primary-200",
+      icon: "text-primary-600",
+      softBg: "bg-primary-50/50",
+      primaryBtn: "bg-primary-600 hover:bg-primary-700 text-white shadow-sm",
+      hoverBorder: "hover:border-primary-300",
     },
     slate: {
       badge: "bg-secondary text-secondary-foreground border-border",

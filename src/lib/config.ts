@@ -165,7 +165,7 @@ export const ABOUT_US_CONFIG = {
 export const DUAL_BUSINESS_CONFIG = {
   badge: {
     text: "Our Expertise",
-    className: "bg-green-100 text-green-800",
+    className: "bg-primary-100 text-primary-800",
   },
   title: "Dual Business Strengths",
   description:
@@ -184,7 +184,7 @@ export const DUAL_BUSINESS_CONFIG = {
         "Custom additive formulations",
       ],
       badge: "Polymer Manufacturing",
-      gradient: "from-green-500/10 via-white to-green-500/5",
+      gradient: "from-primary-500/10 via-white to-primary-500/5",
       image: "/products/granules.webp",
     },
     {
@@ -194,7 +194,7 @@ export const DUAL_BUSINESS_CONFIG = {
         "Our CFC boxes deliver unmatched protection with 3, 5, and 7 PLY options. Designed with eco-conscious precision, they’re trusted across industries",
       highlights: ["3 PLY", "5 PLY", "7 PLY"],
       badge: "CFC Packaging",
-      gradient: "from-blue-500/10 via-white to-blue-500/5",
+      gradient: "from-secondary-500/10 via-white to-secondary-500/5",
       image:
         "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=800&h=400&fit=crop&auto=format",
     },
@@ -216,7 +216,7 @@ export const SCRAP_AND_PACKAGING_CONFIG = {
   scrapMaterials: {
     badge: {
       text: "Recycling Division",
-      className: "bg-green-100 text-green-800",
+      className: "bg-primary-100 text-primary-800",
     },
     title: "Waste Materials Trading",
     description: null,
@@ -338,7 +338,7 @@ export const SCRAP_AND_PACKAGING_CONFIG = {
   packagingProducts: {
     badge: {
       text: "Manufacturing Division",
-      className: "bg-blue-100 text-blue-800",
+      className: "bg-secondary-100 text-secondary-800",
     },
     title: "Packaging Manufacturing",
     description:
@@ -481,12 +481,10 @@ export const FOOTER_CONFIG = {
     title: "Get in Touch",
     description: "Ready to start your project?",
     phone: "+91 9930496506",
-    email: "info@jtpack.com",
+    email: "jtpackprivatelimited@gmail.com", // make this  lowercase
     address: "Plot No. 57/A/1 & 2, 1st Phase Industrial Road, G.I.D.C., Vapi - 396 195, Gujarat",
   },
   socialLinks: [
-    { icon: "Facebook" as SocialIcon, label: "Facebook" },
-    { icon: "Twitter" as SocialIcon, label: "Twitter" },
     { icon: "Instagram" as SocialIcon, label: "Instagram" },
     { icon: "Linkedin" as SocialIcon, label: "LinkedIn" },
   ],

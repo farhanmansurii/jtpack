@@ -113,19 +113,19 @@ export default function PinPositionFinder() {
 
         {/* Instructions */}
         <div className="grid md:grid-cols-2 gap-4 mb-6">
-          <div className="bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-200 rounded-xl p-5">
+          <div className="bg-gradient-to-br from-secondary-50 to-secondary-100 border-2 border-secondary-200 rounded-xl p-5">
             <div className="flex items-center gap-3 mb-2">
-              <span className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
+              <span className="w-8 h-8 bg-secondary-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
                 1
               </span>
-              <h3 className="font-bold text-blue-900">Enter Location Name</h3>
+              <h3 className="font-bold text-secondary-900">Enter Location Name</h3>
             </div>
             <input
               type="text"
               value={currentName}
               onChange={(e) => setCurrentName(e.target.value)}
               placeholder="e.g., Mumbai, Delhi, Bangalore..."
-              className="w-full px-4 py-3 border-2 border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
+              className="w-full px-4 py-3 border-2 border-secondary-300 rounded-lg focus:ring-2 focus:ring-secondary-500 focus:border-secondary-500 outline-none text-sm"
               onKeyPress={(e) => e.key === "Enter" && currentName && setShowCoords(true)}
             />
           </div>
@@ -177,7 +177,7 @@ export default function PinPositionFinder() {
               {/* The actual map rendering area with padding */}
               <div className="absolute inset-0 p-6 z-0">
                 <div
-                  className="h-full w-full bg-blue-200 dark:bg-slate-300"
+                  className="h-full w-full bg-secondary-200 dark:bg-slate-300"
                   style={{
                     minHeight: "100%",
                     minWidth: "100%",
@@ -222,9 +222,7 @@ export default function PinPositionFinder() {
                       strokeWidth="1.5"
                     />
                   </svg>
-                  <div
-                    className="absolute top-full left-0 translate-x-3 mt-1 bg-slate-900 text-white px-2.5 py-1 rounded-md text-xs font-medium whitespace-nowrap shadow-lg"
-                  >
+                  <div className="absolute top-full left-0 translate-x-3 mt-1 bg-slate-900 text-white px-2.5 py-1 rounded-md text-xs font-medium whitespace-nowrap shadow-lg">
                     {pos.name}
                   </div>
                 </div>
@@ -252,8 +250,8 @@ export default function PinPositionFinder() {
               )}
             </div>
 
-            <div className="mt-4 bg-amber-50 border border-amber-200 rounded-lg p-3">
-              <div className="flex gap-2 text-xs text-amber-900">
+            <div className="mt-4 bg-slate-50 border border-slate-200 rounded-lg p-3">
+              <div className="flex gap-2 text-xs text-slate-900">
                 <Info className="w-4 h-4 shrink-0 mt-0.5" />
                 <p>
                   <strong>Important:</strong> Pins are positioned relative to the entire container
@@ -346,7 +344,7 @@ export default function PinPositionFinder() {
                   </button>
                 </div>
                 <div className="bg-slate-900 rounded-lg p-4 overflow-x-auto max-h-[280px] overflow-y-auto shadow-inner">
-                  <pre className="text-xs text-green-400 font-mono leading-relaxed">
+                  <pre className="text-xs text-primary-400 font-mono leading-relaxed">
                     {positions
                       .map(
                         (p) =>
@@ -370,26 +368,26 @@ export default function PinPositionFinder() {
         </div>
 
         {/* Tips */}
-        <div className="mt-6 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl p-6">
-          <h3 className="font-bold text-green-900 mb-3 flex items-center gap-2">
+        <div className="mt-6 bg-gradient-to-r from-primary-50 to-primary-50 border-2 border-primary-200 rounded-xl p-6">
+          <h3 className="font-bold text-primary-900 mb-3 flex items-center gap-2">
             <span className="text-xl">💡</span>
             Pro Tips for Accurate Placement
           </h3>
-          <ul className="text-sm text-green-800 space-y-2 grid md:grid-cols-2 gap-x-8">
+          <ul className="text-sm text-primary-800 space-y-2 grid md:grid-cols-2 gap-x-8">
             <li className="flex gap-2">
-              <span className="text-green-600 font-bold">•</span>
+              <span className="text-primary-600 font-bold">•</span>
               <span>Coordinates include the padding area automatically</span>
             </li>
             <li className="flex gap-2">
-              <span className="text-green-600 font-bold">•</span>
+              <span className="text-primary-600 font-bold">•</span>
               <span>Hover with "Show Coords" to preview before clicking</span>
             </li>
             <li className="flex gap-2">
-              <span className="text-green-600 font-bold">•</span>
+              <span className="text-primary-600 font-bold">•</span>
               <span>Click precisely on the city/state location</span>
             </li>
             <li className="flex gap-2">
-              <span className="text-green-600 font-bold">•</span>
+              <span className="text-primary-600 font-bold">•</span>
               <span>Copy and paste directly into your locations array</span>
             </li>
           </ul>

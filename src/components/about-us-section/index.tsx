@@ -50,11 +50,11 @@ function AboutUsSection() {
               <div className="inline-flex items-center gap-2 mb-6">
                 <Badge
                   variant="outline"
-                  className="px-3 py-1 text-xs font-bold uppercase tracking-widest border-green-200 text-green-700 bg-green-50"
+                  className="px-3 py-1 text-xs font-bold uppercase tracking-widest border-primary-200 text-primary-700 bg-primary-50"
                 >
                   {badge.text}
                 </Badge>
-                <span className="h-px w-8 bg-green-200" />
+                <span className="h-px w-8 bg-primary-200" />
               </div>
 
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-foreground mb-6 leading-tight">

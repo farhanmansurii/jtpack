@@ -9,7 +9,7 @@ export default function TestimonialsSection() {
         <SectionHeader
           badge={{
             text: "What clients say",
-            className: "bg-amber-100 text-amber-800",
+            className: "bg-primary-100 text-primary-800",
           }}
           title="Testimonials"
           description="Trusted by partners across recycling and packaging industries."
