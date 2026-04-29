@@ -73,7 +73,10 @@ export default function HeroSection({ interval = 10000 }: Props) {
   const hasMultipleSlides = slideCount > 1;
 
   useEffect(() => {
-    setIsMounted(true);
+    const animationFrame = window.requestAnimationFrame(() => {
+      setIsMounted(true);
+    });
+    return () => window.cancelAnimationFrame(animationFrame);
   }, []);
 
   useEffect(() => {
@@ -192,7 +195,14 @@ export default function HeroSection({ interval = 10000 }: Props) {
           >
             <motion.div
               className="mb-4 flex items-center gap-3"
-              variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } } }}
+              variants={{
+                hidden: { opacity: 0, y: 16 },
+                visible: {
+                  opacity: 1,
+                  y: 0,
+                  transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
+                },
+              }}
             >
               <Badge variant={currentConfig.badge.variant ?? "outline"}>
                 {currentConfig.badge.text}
@@ -202,21 +212,42 @@ export default function HeroSection({ interval = 10000 }: Props) {
 
             <motion.h1
               className="max-w-3xl text-2xl font-semibold leading-tight tracking-tight text-white sm:text-3xl md:text-4xl lg:text-5xl"
-              variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } } }}
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                visible: {
+                  opacity: 1,
+                  y: 0,
+                  transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] },
+                },
+              }}
             >
               {currentConfig.title}
             </motion.h1>
 
             <motion.p
               className="mt-3 sm:mt-4 max-w-2xl text-sm sm:text-base text-slate-200"
-              variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] } } }}
+              variants={{
+                hidden: { opacity: 0, y: 16 },
+                visible: {
+                  opacity: 1,
+                  y: 0,
+                  transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] },
+                },
+              }}
             >
               {currentConfig.subtitle}
             </motion.p>
 
             <motion.ul
               className="mt-4 sm:mt-6 grid max-w-2xl grid-cols-1 gap-2 sm:gap-3 sm:grid-cols-2"
-              variants={{ hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } } }}
+              variants={{
+                hidden: { opacity: 0, y: 12 },
+                visible: {
+                  opacity: 1,
+                  y: 0,
+                  transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
+                },
+              }}
             >
               {currentConfig.features.map((item) => {
                 const IconComponent = getIcon(item.icon);
@@ -237,7 +268,14 @@ export default function HeroSection({ interval = 10000 }: Props) {
 
             <motion.div
               className="mt-6 sm:mt-8 flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2 sm:gap-3"
-              variants={{ hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } } }}
+              variants={{
+                hidden: { opacity: 0, y: 12 },
+                visible: {
+                  opacity: 1,
+                  y: 0,
+                  transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
+                },
+              }}
             >
               <Button size="lg" variant="secondary" asChild className="w-full sm:w-auto">
                 <Link href={currentConfig.cta.primary.href}>{currentConfig.cta.primary.text}</Link>

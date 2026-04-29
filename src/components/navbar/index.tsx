@@ -12,18 +12,17 @@ import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 
 function useMediaQuery(query: string) {
-  const [matches, setMatches] = useState(false);
+  const [matches, setMatches] = useState(() => {
+    return typeof window !== "undefined" ? window.matchMedia(query).matches : false;
+  });
 
   useEffect(() => {
     const media = window.matchMedia(query);
-    if (media.matches !== matches) {
-      setMatches(media.matches);
-    }
 
-    const listener = () => setMatches(media.matches);
+    const listener = (event: MediaQueryListEvent) => setMatches(event.matches);
     media.addEventListener("change", listener);
     return () => media.removeEventListener("change", listener);
-  }, [matches, query]);
+  }, [query]);
 
   return matches;
 }
