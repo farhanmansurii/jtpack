@@ -220,10 +220,13 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+  /* Map loaded font variables to semantic aliases */
+  :root {
     --font-heading: var(--font-barlow);
     --font-sans: var(--font-barlow);
     --font-mono: var(--font-jetbrains-mono);
-    font-family: var(--font-barlow), ui-sans-serif, system-ui, sans-serif;
+    --font-title: var(--font-barlow);
   }
   h1 {
     font-family: var(--font-title), var(--font-heading), var(--font-sans);

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Barlow, JetBrains_Mono, League_Spartan } from "next/font/google";
+import { Barlow, JetBrains_Mono } from "next/font/google";
 import { FOOTER_CONFIG, DUAL_BUSINESS_CONFIG } from "@/lib/config";
 import { ServiceWorkerRegister } from "@/components/pwa/service-worker-register";
 import "./globals.css";
@@ -14,11 +14,6 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
 });
 
-const leagueSpartan = League_Spartan({
-  variable: "--font-title",
-  subsets: ["latin"],
-  weight: ["500", "600", "700"],
-});
 // Base URL for absolute image URLs in social sharing
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://jtpack.com";
 
@@ -120,7 +115,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${barlow.className} ${barlow.variable} ${jetbrainsMono.variable} ${leagueSpartan.variable} antialiased`}
+        className={`${barlow.variable} ${jetbrainsMono.variable} antialiased`}
         suppressHydrationWarning
       >
         <ServiceWorkerRegister />

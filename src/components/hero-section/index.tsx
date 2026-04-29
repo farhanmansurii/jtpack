@@ -144,7 +144,10 @@ export default function HeroSection({ interval = 10000 }: Props) {
   }, []);
 
   return (
-    <section id="home" className="relative h-[83vh] w-full overflow-hidden">
+    <section
+      id="home"
+      className="relative min-h-[680px] w-full overflow-hidden h-[90vh] sm:h-[93vh] sm:min-h-[640px]"
+    >
       {/* Background video with crossfade */}
       <div className="absolute inset-0 -z-10">
         {HERO_SLIDES.map((slide, index) => {
@@ -180,7 +183,7 @@ export default function HeroSection({ interval = 10000 }: Props) {
       </div>
 
       {/* Foreground content */}
-      <div className="flex flex-col justify-center h-full py-16 sm:py-20 lg:py-28">
+      <div className="flex min-h-[680px] flex-col justify-center py-24 h-full sm:h-[93vh] sm:min-h-0 sm:py-20 lg:py-28">
         <Container className="flex flex-col justify-center h-full">
           <motion.div
             className={`transition-opacity duration-500 ${
@@ -194,7 +197,7 @@ export default function HeroSection({ interval = 10000 }: Props) {
             }}
           >
             <motion.div
-              className="mb-4 flex items-center gap-3"
+              className="mb-4 flex items-center gap-3 sm:mb-5"
               variants={{
                 hidden: { opacity: 0, y: 16 },
                 visible: {
@@ -211,7 +214,7 @@ export default function HeroSection({ interval = 10000 }: Props) {
             </motion.div>
 
             <motion.h1
-              className="max-w-3xl text-2xl font-semibold leading-tight tracking-tight text-white sm:text-3xl md:text-4xl lg:text-5xl"
+              className="max-w-[11ch] text-[clamp(3rem,11vw,3.5rem)] font-semibold leading-[0.93] md:tracking-[-0.045em] text-white sm:max-w-3xl sm:text-4xl sm:leading-[0.98] md:text-5xl lg:text-6xl"
               variants={{
                 hidden: { opacity: 0, y: 20 },
                 visible: {
@@ -225,7 +228,7 @@ export default function HeroSection({ interval = 10000 }: Props) {
             </motion.h1>
 
             <motion.p
-              className="mt-3 sm:mt-4 max-w-2xl text-sm sm:text-base text-slate-200"
+              className="mt-4 max-w-[31ch] text-[0.95rem] leading-6 text-slate-200 sm:mt-5 sm:max-w-2xl sm:text-base sm:leading-7"
               variants={{
                 hidden: { opacity: 0, y: 16 },
                 visible: {
@@ -239,7 +242,7 @@ export default function HeroSection({ interval = 10000 }: Props) {
             </motion.p>
 
             <motion.ul
-              className="mt-4 sm:mt-6 grid max-w-2xl grid-cols-1 gap-2 sm:gap-3 sm:grid-cols-2"
+              className="mt-5 grid max-w-[32ch] grid-cols-1 gap-2.5 sm:mt-6 sm:max-w-2xl sm:grid-cols-2 sm:gap-3"
               variants={{
                 hidden: { opacity: 0, y: 12 },
                 visible: {
@@ -254,7 +257,7 @@ export default function HeroSection({ interval = 10000 }: Props) {
                 return (
                   <li
                     key={item.label}
-                    className="flex items-center gap-2 text-xs sm:text-sm text-white"
+                    className="flex items-center gap-2 text-[0.8rem] leading-5 text-white sm:text-sm"
                   >
                     <IconComponent
                       className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-accent flex-shrink-0"
@@ -267,7 +270,7 @@ export default function HeroSection({ interval = 10000 }: Props) {
             </motion.ul>
 
             <motion.div
-              className="mt-6 sm:mt-8 flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2 sm:gap-3"
+              className="mt-7 flex flex-col items-stretch gap-2.5 sm:mt-8 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3"
               variants={{
                 hidden: { opacity: 0, y: 12 },
                 visible: {
@@ -277,11 +280,16 @@ export default function HeroSection({ interval = 10000 }: Props) {
                 },
               }}
             >
-              <Button size="lg" variant="secondary" asChild className="w-full sm:w-auto">
+              <Button
+                size="lg"
+                variant="secondary"
+                asChild
+                className="h-11 w-full sm:h-12 sm:w-auto"
+              >
                 <Link href={currentConfig.cta.primary.href}>{currentConfig.cta.primary.text}</Link>
               </Button>
 
-              <Button size="lg" asChild className="w-full sm:w-auto">
+              <Button size="lg" asChild className="h-11 w-full sm:h-12 sm:w-auto">
                 <Link href={currentConfig.cta.secondary.href}>
                   {currentConfig.cta.secondary.text}
                 </Link>
