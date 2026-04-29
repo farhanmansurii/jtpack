@@ -120,7 +120,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${barlow.variable} ${jetbrainsMono.variable} ${leagueSpartan.variable} antialiased`}
+        className={`${barlow.className} ${barlow.variable} ${jetbrainsMono.variable} ${leagueSpartan.variable} antialiased`}
         suppressHydrationWarning
       >
         <ServiceWorkerRegister />
