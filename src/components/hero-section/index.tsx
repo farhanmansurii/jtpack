@@ -3,8 +3,9 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Container } from "@/components/ui/container";
-import { CheckCircle2, Leaf, Recycle, PackageSearch } from "lucide-react";
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import { CheckCircle2, Factory, Recycle, PackageSearch } from "lucide-react";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { motion } from "framer-motion";
 
 type BadgeVariant = "default" | "secondary" | "destructive" | "outline";
 
@@ -23,18 +24,19 @@ const HERO_SLIDES: {
   {
     videoSrc: "/hero/hero-video.webp",
     posterSrc: "/hero/hero-video.webp",
-    badge: { variant: "default", text: "Eco-Friendly" },
-    title: "Sustainable Solutions for a Greener Tomorrow",
-    subtitle: "Join us in making a positive impact on the environment",
+    badge: { variant: "default", text: "Vapi, Gujarat · Est. 2009" },
+    title: "Industrial Scrap Trading & Corrugated Packaging",
+    subtitle:
+      "Supplying paper, plastic, and metal scrap to processors across India — and manufacturing export-grade CFC boxes, polymer granules, and packaging solutions at scale.",
     features: [
-      { icon: "Leaf", label: "100% Organic Materials" },
-      { icon: "PackageSearch", label: "Transparent Sourcing" },
-      { icon: "Recycle", label: "Zero Waste Process" },
-      { icon: "CheckCircle2", label: "Certified Green" },
+      { icon: "Factory", label: "Manufacturing unit in Vapi" },
+      { icon: "PackageSearch", label: "Verified scrap grades, bulk lots" },
+      { icon: "Recycle", label: "Closed-loop material recovery" },
+      { icon: "CheckCircle2", label: "ISO-compliant quality checks" },
     ],
     cta: {
-      primary: { text: "Our Services", href: "#services" },
-      secondary: { text: "Learn More", href: "#about" },
+      primary: { text: "View Products", href: "#products" },
+      secondary: { text: "Request a Quote", href: "#contact" },
     },
   },
   // {
@@ -125,8 +127,8 @@ export default function HeroSection({ interval = 10000 }: Props) {
 
   const getIcon = useCallback((iconName: string) => {
     switch (iconName) {
-      case "Leaf":
-        return Leaf;
+      case "Factory":
+        return Factory;
       case "PackageSearch":
         return PackageSearch;
       case "Recycle":
@@ -134,7 +136,7 @@ export default function HeroSection({ interval = 10000 }: Props) {
       case "CheckCircle2":
         return CheckCircle2;
       default:
-        return Leaf;
+        return Factory;
     }
   }, []);
 
@@ -171,33 +173,51 @@ export default function HeroSection({ interval = 10000 }: Props) {
           );
         })}
         {/* Overlays for readability */}
-        <div className="pointer-events-none absolute inset-0 bg-black/60 mix-blend-multiply" />
+        <div className="pointer-events-none absolute inset-0 bg-black/50 mix-blend-multiply" />
       </div>
 
       {/* Foreground content */}
       <div className="flex flex-col justify-center h-full py-16 sm:py-20 lg:py-28">
         <Container className="flex flex-col justify-center h-full">
-          <div
+          <motion.div
             className={`transition-opacity duration-500 ${
               isTransitioning ? "opacity-0" : "opacity-100"
             }`}
+            initial="hidden"
+            animate="visible"
+            variants={{
+              hidden: {},
+              visible: { transition: { staggerChildren: 0.12, delayChildren: 0.1 } },
+            }}
           >
-            <div className="mb-4 flex items-center gap-3">
+            <motion.div
+              className="mb-4 flex items-center gap-3"
+              variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } } }}
+            >
               <Badge variant={currentConfig.badge.variant ?? "outline"}>
                 {currentConfig.badge.text}
               </Badge>
               <div className="hidden h-px flex-1 bg-white/30 sm:block" aria-hidden="true" />
-            </div>
+            </motion.div>
 
-            <h1 className="max-w-3xl text-2xl font-semibold leading-tight tracking-tight text-white sm:text-3xl md:text-4xl lg:text-5xl">
+            <motion.h1
+              className="max-w-3xl text-2xl font-semibold leading-tight tracking-tight text-white sm:text-3xl md:text-4xl lg:text-5xl"
+              variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } } }}
+            >
               {currentConfig.title}
-            </h1>
+            </motion.h1>
 
-            <p className="mt-3 sm:mt-4 max-w-2xl text-sm sm:text-base text-slate-200">
+            <motion.p
+              className="mt-3 sm:mt-4 max-w-2xl text-sm sm:text-base text-slate-200"
+              variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] } } }}
+            >
               {currentConfig.subtitle}
-            </p>
+            </motion.p>
 
-            <ul className="mt-4 sm:mt-6 grid max-w-2xl grid-cols-1 gap-2 sm:gap-3 sm:grid-cols-2">
+            <motion.ul
+              className="mt-4 sm:mt-6 grid max-w-2xl grid-cols-1 gap-2 sm:gap-3 sm:grid-cols-2"
+              variants={{ hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } } }}
+            >
               {currentConfig.features.map((item) => {
                 const IconComponent = getIcon(item.icon);
                 return (
@@ -213,9 +233,12 @@ export default function HeroSection({ interval = 10000 }: Props) {
                   </li>
                 );
               })}
-            </ul>
+            </motion.ul>
 
-            <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2 sm:gap-3">
+            <motion.div
+              className="mt-6 sm:mt-8 flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2 sm:gap-3"
+              variants={{ hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } } }}
+            >
               <Button size="lg" variant="secondary" asChild className="w-full sm:w-auto">
                 <Link href={currentConfig.cta.primary.href}>{currentConfig.cta.primary.text}</Link>
               </Button>
@@ -225,8 +248,8 @@ export default function HeroSection({ interval = 10000 }: Props) {
                   {currentConfig.cta.secondary.text}
                 </Link>
               </Button>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
           {/* Slide indicators */}
           {hasMultipleSlides && (

@@ -481,7 +481,7 @@ export const FOOTER_CONFIG = {
     title: "Get in Touch",
     description: "Ready to start your project?",
     phone: "+91 9930496506",
-    email: "jtpackprivatelimited@gmail.com", // make this  lowercase
+    email: "jtpackprivatelimited@gmail.com",
     address: "Plot No. 57/A/1 & 2, 1st Phase Industrial Road, G.I.D.C., Vapi - 396 195, Gujarat",
   },
   socialLinks: [

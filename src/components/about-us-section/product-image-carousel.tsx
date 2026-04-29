@@ -1,16 +1,18 @@
 "use client";
 
-import React, { memo, useEffect, useMemo, useState, type JSX } from "react";
+import { memo, useEffect, useMemo, useState, type JSX } from "react";
 import Image from "next/image";
 
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { ABOUT_US_CONFIG, SCRAP_AND_PACKAGING_CONFIG } from "@/lib/config";
+import { SCRAP_AND_PACKAGING_CONFIG } from "@/lib/config";
 
 type ProductImageCarouselProps = {
   className?: string;
   kpiLabel?: string;
   kpiValue?: string;
+  fillHeight?: boolean;
+  imageFit?: "cover" | "contain";
 };
 
 type CarouselImage = {
@@ -18,7 +20,11 @@ type CarouselImage = {
   alt: string;
 };
 
-function ProductImageCarouselComponent({ className }: ProductImageCarouselProps): JSX.Element {
+function ProductImageCarouselComponent({
+  className,
+  fillHeight = false,
+  imageFit = "cover",
+}: ProductImageCarouselProps): JSX.Element {
   const productImages = useMemo<CarouselImage[]>(() => buildCarouselImages(), []);
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -36,11 +42,12 @@ function ProductImageCarouselComponent({ className }: ProductImageCarouselProps)
     return (
       <Card
         className={cn(
-          "relative overflow-hidden rounded-2xl border-0 p-0 shadow-lg bg-background",
+          "relative overflow-hidden border-0 p-0 bg-background",
+          fillHeight ? "h-full rounded-none" : "rounded-2xl shadow-lg",
           className,
         )}
       >
-        <div className="aspect-video bg-muted flex items-center justify-center rounded-t-2xl">
+        <div className={cn("bg-muted flex items-center justify-center", fillHeight ? "h-full" : "aspect-video rounded-t-2xl")}>
           <span className="text-sm text-muted-foreground">Product visuals coming soon</span>
         </div>
       </Card>
@@ -50,12 +57,13 @@ function ProductImageCarouselComponent({ className }: ProductImageCarouselProps)
   return (
     <Card
       className={cn(
-        "relative overflow-hidden rounded-2xl border-0 p-0 shadow-lg bg-background",
+        "relative overflow-hidden border-0 p-0 bg-background",
+        fillHeight ? "h-full rounded-none" : "rounded-2xl shadow-lg",
         className,
       )}
     >
       <div
-        className="relative aspect-video bg-muted rounded-t-2xl overflow-hidden"
+        className={cn("relative bg-muted overflow-hidden", fillHeight ? "h-full" : "aspect-video rounded-t-2xl")}
         role="group"
         aria-roledescription="carousel"
         aria-label="Product imagery"
@@ -68,9 +76,11 @@ function ProductImageCarouselComponent({ className }: ProductImageCarouselProps)
             fill
             sizes="(min-width: 1024px) 480px, 100vw"
             priority={index === 0}
-            className={`object-cover transition-opacity duration-700 ${
-              index === activeIndex ? "opacity-100" : "opacity-0"
-            }`}
+            className={cn(
+              imageFit === "contain" ? "object-contain" : "object-cover",
+              "transition-opacity duration-700",
+              index === activeIndex ? "opacity-100" : "opacity-0",
+            )}
           />
         ))}
 

@@ -88,10 +88,10 @@ export function Logo({
           <Image
             src="/logo/jtpack-logo.svg"
             alt={NAVBAR_CONFIG.logo.text}
-            width={imageSize}
-            height={imageSize}
+            width={1440}
+            height={408}
             className="object-contain"
-            style={{ width: `${imageSize}px` }}
+            style={{ width: `${imageSize}px`, height: "auto" }}
             priority
           />
         </div>

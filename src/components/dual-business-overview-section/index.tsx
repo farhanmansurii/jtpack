@@ -1,210 +1,197 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @next/next/no-img-element */
-import React, { useMemo, memo } from "react";
+"use client";
+
+import { useMemo, memo } from "react";
 import { DUAL_BUSINESS_CONFIG } from "@/lib/config";
 import { Container } from "@/components/ui/container";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { QuoteRequest } from "@/components/quote-request";
 import { cn } from "@/lib/utils";
-import {
-  Recycle,
-  Package,
-  Shield,
-  Zap,
-  Globe,
-  Award,
-  TrendingUp,
-  Users,
-  PackageSearch,
-  Leaf,
-  CheckCircle2,
-  FileText,
-  ArrowRight,
-  Factory,
-  Layers,
-} from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
 
-const iconMap = {
-  Recycle,
-  Package,
-  Shield,
-  Zap,
-  Globe,
-  Award,
-  TrendingUp,
-  Users,
-  PackageSearch,
-  Leaf,
-  CheckCircle2,
-  FileText,
-} as const;
+const ease = [0.16, 1, 0.3, 1] as [number, number, number, number];
 
-function getIconComponent(icon: string) {
-  const Icon = (iconMap as Record<string, any>)[icon] ?? Package;
-  return <Icon className="h-5 w-5" />;
-}
+const fadeUp = {
+  hidden: { opacity: 0, y: 20 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease, delay: i * 0.07 },
+  }),
+};
 
 function DualBusinessOverview() {
   const businesses = useMemo(
     () =>
       DUAL_BUSINESS_CONFIG.businesses.map((b) => ({
         ...b,
-        icon: getIconComponent(b.icon),
-        // Helper: Identify theme based on content
         isGreen: b.badge.includes("Polymer") || b.title.includes("Granule"),
       })),
     [],
   );
 
   return (
-    <section id="services" className="relative py-24 lg:py-32 bg-background border-t border-border">
+    <section id="services" className="relative bg-background border-t border-neutral-200">
       <Container>
-        {/* --- Section Header --- */}
-        <div className="max-w-3xl mx-auto text-center mb-16">
-          <Badge
-            variant="outline"
-            className="mb-4 px-3 py-1 text-xs font-bold uppercase tracking-widest border-primary/20 text-primary bg-primary/5"
-          >
-            {DUAL_BUSINESS_CONFIG.badge.text}
-          </Badge>
-
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-foreground mb-6">
-            {DUAL_BUSINESS_CONFIG.title}
-          </h2>
-
-          <p className="text-lg text-muted-foreground leading-relaxed">
-            {DUAL_BUSINESS_CONFIG.description}
-          </p>
-        </div>
-
-        {/* --- Industrial Cards Grid --- */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
-          {businesses.map((b, i) => (
-            <div
-              key={i}
-              className={cn(
-                "group relative flex flex-col rounded-xl border transition-all duration-300 hover:shadow-lg bg-gradient-to-br",
-                // Theme-specific borders and gradient backgrounds
-                b.isGreen
-                  ? "border-primary-200/60 hover:border-primary-300"
-                  : "border-secondary-200/60 hover:border-secondary-300",
-                b.gradient, // Applies: from-primary-500/10 via-white to-primary-500/5
-              )}
+        {/* Header — matches about-us style */}
+        <motion.div
+          className="py-10 lg:py-12 border-b border-neutral-200"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-80px" }}
+        >
+          <motion.div custom={0} variants={fadeUp} className="flex items-center gap-3 mb-4">
+            <Badge
+              variant="outline"
+              className="px-3 py-1 text-[0.65rem] font-bold uppercase tracking-[0.18em] border-primary-200 text-primary-700 bg-primary-50"
             >
-              <div className="p-6 sm:p-8 flex flex-col h-full">
-                {/* Card Header: Icon + Badge */}
-                <div className="flex justify-between items-start mb-6">
-                  <div
-                    className={cn(
-                      "p-3 rounded-lg border bg-white shadow-sm",
-                      b.isGreen
-                        ? "border-primary-100 text-primary-600"
-                        : "border-secondary-100 text-secondary-600",
-                    )}
-                  >
-                    {b.icon}
-                  </div>
+              {DUAL_BUSINESS_CONFIG.badge.text}
+            </Badge>
+            <span className="h-px w-8 bg-primary-200" aria-hidden />
+          </motion.div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-12">
+            <motion.h2
+              custom={1}
+              variants={fadeUp}
+              className="text-3xl sm:text-4xl lg:text-[2.5rem] font-bold tracking-tight text-foreground leading-[1.12]"
+            >
+              {DUAL_BUSINESS_CONFIG.title}
+            </motion.h2>
+            <motion.p
+              custom={2}
+              variants={fadeUp}
+              className="text-sm text-neutral-600 leading-relaxed self-end"
+            >
+              {DUAL_BUSINESS_CONFIG.description}
+            </motion.p>
+          </div>
+        </motion.div>
+
+        {/* Division cards — inside container, respects gutter */}
+        <div className="py-10 lg:py-12 grid grid-cols-1 lg:grid-cols-2 gap-6 border-b border-neutral-200">
+          {businesses.map((b, i) => (
+            <motion.div
+              key={i}
+              className="flex flex-col border border-neutral-200 overflow-hidden"
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.5, ease, delay: i * 0.1 }}
+            >
+              {/* Image */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <div className="relative overflow-hidden h-44 flex-shrink-0">
+                <img
+                  src={b.image}
+                  alt={b.title}
+                  loading="lazy"
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute bottom-0 left-0 right-0 px-5 py-2.5 bg-gradient-to-t from-black/45 to-transparent pointer-events-none">
                   <span
                     className={cn(
-                      "px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider border bg-white/80 backdrop-blur",
-                      b.isGreen
-                        ? "text-primary-700 border-primary-200"
-                        : "text-secondary-700 border-secondary-200",
+                      "text-[0.55rem] font-bold uppercase tracking-[0.22em]",
+                      b.isGreen ? "text-primary-300" : "text-secondary-300",
                     )}
                   >
-                    {b.badge}
+                    Division {String(i + 1).padStart(2, "0")}
                   </span>
                 </div>
+              </div>
 
-                {/* Text Content */}
-                <h3 className="text-2xl font-bold text-foreground mb-3">{b.title}</h3>
-                <p className="text-muted-foreground leading-relaxed mb-8">{b.description}</p>
+              {/* Content */}
+              <div className="p-6 flex flex-col flex-1">
+                <span
+                  className={cn(
+                    "text-[0.6rem] font-bold uppercase tracking-[0.18em] mb-2 block",
+                    b.isGreen ? "text-primary-600" : "text-secondary-600",
+                  )}
+                >
+                  {b.badge}
+                </span>
 
-                {/* "Spec Sheet" Highlights Box */}
-                <div className="bg-white/60 border border-black/5 rounded-lg p-5 mb-8 backdrop-blur-sm">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Layers className="w-4 h-4 text-muted-foreground/70" />
-                    <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
-                      Core Capabilities
-                    </span>
-                  </div>
-                  <ul className="space-y-2.5">
-                    {b.highlights.map((h: string, j: number) => (
-                      <li
-                        key={j}
-                        className="flex items-start gap-3 text-sm font-medium text-foreground/80"
+                <h3 className="text-xl font-bold text-foreground leading-[1.2] mb-3">
+                  {b.title}
+                </h3>
+
+                <p className="text-sm text-neutral-600 leading-relaxed mb-6">{b.description}</p>
+
+                <ul className="divide-y divide-neutral-100 mb-6">
+                  {b.highlights.map((h, j) => (
+                    <li key={j} className="flex items-center gap-3 py-2.5">
+                      <span
+                        className={cn(
+                          "text-[0.6rem] font-bold tabular-nums flex-shrink-0",
+                          b.isGreen ? "text-primary-400" : "text-secondary-400",
+                        )}
                       >
-                        <div
-                          className={cn(
-                            "mt-1.5 w-1.5 h-1.5 rounded-full shrink-0",
-                            b.isGreen ? "bg-primary-500" : "bg-secondary-500",
-                          )}
-                        />
-                        {h}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                        {String(j + 1).padStart(2, "0")}
+                      </span>
+                      <span className="text-sm font-medium text-foreground">{h}</span>
+                    </li>
+                  ))}
+                </ul>
 
-                {/* Image Viewport (Engineering Style) */}
-                <div className="mt-auto rounded-lg border border-border overflow-hidden relative aspect-video bg-muted shadow-inner">
-                  <img
-                    src={b.image}
-                    alt={b.title}
-                    loading="lazy"
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                  {/* Tech Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
-                  <div className="absolute bottom-2 left-2 px-1.5 py-0.5 bg-black/70 text-white text-[9px] font-mono rounded uppercase backdrop-blur-md">
-                    Division: {b.isGreen ? "01_RECYCLE" : "02_MFG"}
-                  </div>
+                <div className="mt-auto pt-2">
+                  <QuoteRequest
+                    product={b.isGreen ? "Recycling Services" : "Packaging Solutions"}
+                    colorScheme={b.isGreen ? "green" : "blue"}
+                  >
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className={cn(
+                        "h-9 px-5 font-semibold text-sm border transition-colors",
+                        b.isGreen
+                          ? "border-primary-300 text-primary-700 hover:bg-primary-50"
+                          : "border-secondary-300 text-secondary-700 hover:bg-secondary-50",
+                      )}
+                    >
+                      {b.isGreen ? "Get Quote for Recycling" : "Request CFC Samples"}
+                      <ArrowRight className="ml-2 w-3.5 h-3.5" />
+                    </Button>
+                  </QuoteRequest>
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
 
-        {/* --- Command Bar CTA --- */}
-        <div className="mt-20 lg:mt-24">
-          <div className="relative rounded-xl bg-slate-50  p-8 sm:p-10 shadow-xl shadow-slate-200 overflow-hidden">
-            {/* Abstract Tech Background */}
-            <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent" />
-
-            <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8">
-              <div className="text-center lg:text-left max-w-2xl">
-                <h3 className="text-2xl sm:text-3xl font-bold mb-2">
-                  {DUAL_BUSINESS_CONFIG.cta.title}
-                </h3>
-                <p className="text-slate-500 text-lg">{DUAL_BUSINESS_CONFIG.cta.description}</p>
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
-                {DUAL_BUSINESS_CONFIG.cta.buttons.map((button, i) => (
-                  <QuoteRequest
-                    key={i}
-                    product={
-                      button.variant === "green" ? "Recycling Services" : "Packaging Solutions"
-                    }
-                    colorScheme={button.variant as "green" | "blue"}
-                  >
-                    <Button
-                      size="lg"
-                      className={cn(
-                        "w-full sm:w-auto h-12 px-6 font-bold shadow-lg border transition-all",
-                        button.variant === "green"
-                          ? "bg-primary-600 hover:bg-primary-700 border-primary-500 text-white"
-                          : "bg-white text-slate-900 hover:bg-slate-100 border-white",
-                      )}
-                    >
-                      {button.text}
-                      <ArrowRight className="w-4 h-4 ml-2" />
-                    </Button>
-                  </QuoteRequest>
-                ))}
-              </div>
-            </div>
+        {/* CTA strip — inside container */}
+        <div className="py-8 flex flex-col sm:flex-row items-center justify-between gap-5">
+          <div>
+            <p className="text-sm font-bold text-foreground mb-1">
+              {DUAL_BUSINESS_CONFIG.cta.title}
+            </p>
+            <p className="text-xs text-neutral-500 leading-relaxed max-w-[55ch]">
+              {DUAL_BUSINESS_CONFIG.cta.description}
+            </p>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-3 flex-shrink-0">
+            {DUAL_BUSINESS_CONFIG.cta.buttons.map((button, i) => (
+              <QuoteRequest
+                key={i}
+                product={
+                  button.variant === "green" ? "Recycling Services" : "Packaging Solutions"
+                }
+                colorScheme={button.variant as "green" | "blue"}
+              >
+                <Button
+                  size="sm"
+                  className={cn(
+                    "h-9 px-5 font-semibold text-sm",
+                    button.variant === "green"
+                      ? "bg-primary-600 hover:bg-primary-700 text-white"
+                      : "bg-neutral-900 hover:bg-neutral-800 text-white",
+                  )}
+                >
+                  {button.text}
+                  <ArrowRight className="w-3.5 h-3.5 ml-2" />
+                </Button>
+              </QuoteRequest>
+            ))}
           </div>
         </div>
       </Container>
