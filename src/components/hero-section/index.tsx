@@ -146,7 +146,7 @@ export default function HeroSection({ interval = 10000 }: Props) {
   return (
     <section
       id="home"
-      className="relative min-h-[680px] w-full overflow-hidden h-[90vh] sm:h-[93vh] sm:min-h-[640px]"
+      className="relative min-h-[680px] w-full overflow-hidden sm:h-[83vh] sm:min-h-[640px]"
     >
       {/* Background video with crossfade */}
       <div className="absolute inset-0 -z-10">
@@ -183,7 +183,7 @@ export default function HeroSection({ interval = 10000 }: Props) {
       </div>
 
       {/* Foreground content */}
-      <div className="flex min-h-[680px] flex-col justify-center py-24 h-full sm:h-[93vh] sm:min-h-0 sm:py-20 lg:py-28">
+      <div className="flex min-h-[680px] flex-col justify-center py-24 sm:h-full sm:min-h-0 sm:py-20 lg:py-28">
         <Container className="flex flex-col justify-center h-full">
           <motion.div
             className={`transition-opacity duration-500 ${
@@ -214,7 +214,7 @@ export default function HeroSection({ interval = 10000 }: Props) {
             </motion.div>
 
             <motion.h1
-              className="max-w-[11ch] text-[clamp(3rem,11vw,3.5rem)] font-semibold leading-[0.93] md:tracking-[-0.045em] text-white sm:max-w-3xl sm:text-4xl sm:leading-[0.98] md:text-5xl lg:text-6xl"
+              className="max-w-[11ch] text-[clamp(3rem,11vw,3.35rem)] font-semibold leading-[0.93] tracking-[-0.045em] text-white sm:max-w-3xl sm:text-4xl sm:leading-[0.98] md:text-5xl lg:text-6xl"
               variants={{
                 hidden: { opacity: 0, y: 20 },
                 visible: {
