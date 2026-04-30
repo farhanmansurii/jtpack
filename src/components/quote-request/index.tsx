@@ -276,7 +276,7 @@ export function QuoteRequest({
         <DialogHeader className="mb-2">
           <DialogTitle className="text-xl font-bold">Get a Quote</DialogTitle>
           <DialogDescription>
-            Fill out the form below and we'll get back to you shortly.
+            Fill out the form below and we&apos;ll get back to you shortly.
           </DialogDescription>
         </DialogHeader>
         {FormContent}

@@ -48,7 +48,7 @@ function FooterSection() {
           }
         }
       }
-      window.location.href = href;
+      window.location.assign(href);
     }
   };
 
@@ -84,7 +84,7 @@ function FooterSection() {
     return socialMap[platform] || "#";
   };
 
-  https: return (
+  return (
     <footer id="contact" className="bg-background border-t">
       <Container className="py-16 space-y-12">
         {/* Main Footer Content */}

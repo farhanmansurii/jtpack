@@ -242,7 +242,7 @@ export default function PinPositionFinder() {
                   <div className="text-center">
                     <div className="bg-indigo-600 text-white px-4 py-2 rounded-lg shadow-lg animate-pulse">
                       <p className="text-sm font-semibold">
-                        Click anywhere to place "{currentName}"
+                        Click anywhere to place &quot;{currentName}&quot;
                       </p>
                     </div>
                   </div>
@@ -380,7 +380,7 @@ export default function PinPositionFinder() {
             </li>
             <li className="flex gap-2">
               <span className="text-primary-600 font-bold">•</span>
-              <span>Hover with "Show Coords" to preview before clicking</span>
+              <span>Hover with &quot;Show Coords&quot; to preview before clicking</span>
             </li>
             <li className="flex gap-2">
               <span className="text-primary-600 font-bold">•</span>

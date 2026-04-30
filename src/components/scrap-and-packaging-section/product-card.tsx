@@ -7,16 +7,15 @@ import {
   ChevronRight,
   ChevronDown,
   ChevronUp,
-  ArrowUpRight,
+  ArrowRight,
   Box,
-  Layers,
   Info,
 } from "lucide-react";
 import Link from "next/link";
 import { QuoteRequest } from "../quote-request";
-import { cn } from "@/lib/utils"; // Assuming you have a shadcn utils helper
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
-// --- Types ---
 export type ColorScheme = "blue" | "green" | "slate";
 
 export type ProductCardProps = {
@@ -24,42 +23,40 @@ export type ProductCardProps = {
   title: string;
   subtitle?: string;
   image: string | { url: string; description?: string }[];
-  features: string[]; // These are now "Products/Grades"
+  features: string[];
   icon?: React.ReactNode;
   ctaText: string;
-  colorScheme?: ColorScheme; // Derived from your config (Recycling=Green, Packaging=Blue)
+  colorScheme?: ColorScheme;
   href?: string;
   slug?: string;
 };
 
-// --- Theme Configuration using Shadcn-like Utility Classes ---
-const getTheme = (scheme: ColorScheme) => {
-  // Using specific colors for branding, but shadcn utilities for structure
-  const themes = {
-    blue: {
-      badge: "bg-secondary-100 text-secondary-800 border-secondary-200",
-      icon: "text-secondary-600",
-      softBg: "bg-secondary-50/50",
-      primaryBtn: "bg-secondary-600 hover:bg-secondary-700 text-white shadow-sm",
-      hoverBorder: "hover:border-secondary-300",
-    },
-    green: {
-      badge: "bg-primary-100 text-primary-800 border-primary-200",
-      icon: "text-primary-600",
-      softBg: "bg-primary-50/50",
-      primaryBtn: "bg-primary-600 hover:bg-primary-700 text-white shadow-sm",
-      hoverBorder: "hover:border-primary-300",
-    },
-    slate: {
-      badge: "bg-secondary text-secondary-foreground border-border",
-      icon: "text-muted-foreground",
-      softBg: "bg-muted/30",
-      primaryBtn: "bg-primary text-primary-foreground hover:bg-primary/90",
-      hoverBorder: "hover:border-primary/30",
-    },
-  };
-  return themes[scheme] || themes.blue;
-};
+const palette = {
+  green: {
+    label: "text-primary-600",
+    divisionNum: "text-primary-400",
+    badge: "bg-primary-50 border-primary-200 text-primary-800",
+    badgeStripe: "bg-primary-500",
+    outlineBtn: "border-primary-300 text-primary-700 hover:bg-primary-50",
+    solidBtn: "bg-primary-600 hover:bg-primary-700 text-white",
+  },
+  blue: {
+    label: "text-secondary-600",
+    divisionNum: "text-secondary-400",
+    badge: "bg-secondary-50 border-secondary-200 text-secondary-800",
+    badgeStripe: "bg-secondary-500",
+    outlineBtn: "border-secondary-300 text-secondary-700 hover:bg-secondary-50",
+    solidBtn: "bg-secondary-600 hover:bg-secondary-700 text-white",
+  },
+  slate: {
+    label: "text-neutral-500",
+    divisionNum: "text-neutral-400",
+    badge: "bg-neutral-50 border-neutral-200 text-neutral-700",
+    badgeStripe: "bg-neutral-400",
+    outlineBtn: "border-neutral-300 text-neutral-700 hover:bg-neutral-50",
+    solidBtn: "bg-neutral-800 hover:bg-neutral-900 text-white",
+  },
+} as const;
 
 function ProductCard({
   category,
@@ -78,23 +75,20 @@ function ProductCard({
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
 
-  // Normalize images
   const images = useMemo(() => {
     if (!image) return [];
-    const imgArray = Array.isArray(image) ? image : [image];
-    return imgArray.map((img) => (typeof img === "string" ? img : img.url));
+    const arr = Array.isArray(image) ? image : [image];
+    return arr.map((img) => (typeof img === "string" ? img : img.url));
   }, [image]);
 
-  const theme = useMemo(() => getTheme(colorScheme), [colorScheme]);
+  const p = palette[colorScheme] ?? palette.blue;
 
-  // Show 4 items initially
-  const visibleProducts = useMemo(
-    () => (expanded ? features : features.slice(0, 4)),
+  const visibleFeatures = useMemo(
+    () => (expanded ? features : features.slice(0, 5)),
     [expanded, features],
   );
-  const hasMoreProducts = features.length > 4;
+  const hasMore = features.length > 5;
 
-  // --- Carousel Logic ---
   const nextImage = useCallback(() => {
     if (images.length > 1) setCurrentImageIndex((prev) => (prev + 1) % images.length);
   }, [images.length]);
@@ -104,7 +98,6 @@ function ProductCard({
       setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
   }, [images.length]);
 
-  // Swipe Handlers
   const onTouchStart = (e: React.TouchEvent) => {
     setTouchEnd(null);
     setTouchStart(e.targetTouches[0].clientX);
@@ -112,87 +105,94 @@ function ProductCard({
   const onTouchMove = (e: React.TouchEvent) => setTouchEnd(e.targetTouches[0].clientX);
   const onTouchEnd = () => {
     if (!touchStart || !touchEnd) return;
-    const distance = touchStart - touchEnd;
-    if (distance > 50) nextImage();
-    if (distance < -50) prevImage();
+    const d = touchStart - touchEnd;
+    if (d > 50) nextImage();
+    if (d < -50) prevImage();
   };
 
   return (
-    <div
-      className={cn(
-        "group flex flex-col h-full bg-card text-card-foreground rounded-xl border border-border shadow-sm transition-all duration-300 overflow-hidden hover:shadow-md",
-        theme.hoverBorder,
-      )}
-    >
-      {/* --- Header: Image Carousel --- */}
+    <div className="group flex flex-col h-full border border-neutral-200 overflow-hidden">
+      {/* ── Image carousel ──────────────────────────────── */}
       <div
-        className="relative aspect-[4/3] w-full overflow-hidden bg-muted touch-pan-y select-none border-b border-border"
+        className="relative aspect-[4/3] w-full overflow-hidden flex-shrink-0 touch-pan-y select-none bg-neutral-100"
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
       >
         {images.length > 0 ? (
-          images.map((img, index) => (
+          images.map((src, i) => (
             <img
-              key={index}
-              src={img}
-              alt={`${title} - View ${index + 1}`}
-              loading={index === 0 ? "eager" : "lazy"}
+              key={i}
+              src={src}
+              alt={`${title} — view ${i + 1}`}
+              loading={i === 0 ? "eager" : "lazy"}
               className={cn(
-                "absolute inset-0 w-full h-full object-cover transition-opacity duration-500 z-0",
-                index === currentImageIndex ? "opacity-100" : "opacity-0",
+                "absolute inset-0 w-full h-full object-cover transition-opacity duration-500",
+                i === currentImageIndex ? "opacity-100" : "opacity-0",
               )}
             />
           ))
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center bg-muted text-muted-foreground">
-            <Box className="w-12 h-12 opacity-20" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <Box className="w-10 h-10 text-neutral-300" />
           </div>
         )}
 
-        {/* Gradient & Badge */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none z-10" />
+        {/* Overlay gradient */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/5 to-transparent pointer-events-none" />
 
-        <div className="absolute top-3 left-3 z-20">
-          <span
-            className={cn(
-              "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wide border shadow-sm bg-white/95 backdrop-blur",
-              theme.badge,
+        {/* Category badge — bottom left, matching DualBusiness label style */}
+        <div className="absolute bottom-0 left-0 right-0 px-4 py-3">
+          <div className="flex items-center gap-2">
+            <div
+              className={cn(
+                "inline-flex items-center gap-1.5 border overflow-hidden bg-white/92 backdrop-blur-sm",
+              )}
+            >
+              <span className={cn("w-[3px] self-stretch flex-shrink-0", p.badgeStripe)} />
+              <span className={cn("flex items-center gap-1.5 px-2 py-1", p.badge)}>
+                <span className="flex-shrink-0 [&>svg]:w-3 [&>svg]:h-3">
+                  {icon ?? <Box className="w-3 h-3" />}
+                </span>
+                <span className="text-[0.55rem] font-bold uppercase tracking-[0.18em]">
+                  {category}
+                </span>
+              </span>
+            </div>
+
+            {images.length > 1 && (
+              <span className="ml-auto text-[0.55rem] font-semibold text-white/80 tabular-nums">
+                {currentImageIndex + 1}/{images.length}
+              </span>
             )}
-          >
-            {icon || <Box className="w-3.5 h-3.5" />}
-            {category}
-          </span>
+          </div>
         </div>
 
-        {/* Navigation */}
+        {/* Carousel nav */}
         {images.length > 1 && (
           <>
             <button
-              onClick={(e) => {
-                e.preventDefault();
-                prevImage();
-              }}
-              className="absolute z-20 left-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-md bg-background/90 text-foreground shadow-sm border border-border opacity-0 group-hover:opacity-100 transition-all hover:bg-background"
+              onClick={(e) => { e.preventDefault(); prevImage(); }}
+              className="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-7 h-7 flex items-center justify-center bg-white/80 backdrop-blur-sm text-neutral-700 border border-white/50 opacity-0 group-hover:opacity-100 transition-all hover:bg-white"
             >
-              <ChevronLeft className="w-5 h-5" />
+              <ChevronLeft className="w-4 h-4" />
             </button>
             <button
-              onClick={(e) => {
-                e.preventDefault();
-                nextImage();
-              }}
-              className="absolute z-20 right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-md bg-background/90 text-foreground shadow-sm border border-border opacity-0 group-hover:opacity-100 transition-all hover:bg-background"
+              onClick={(e) => { e.preventDefault(); nextImage(); }}
+              className="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-7 h-7 flex items-center justify-center bg-white/80 backdrop-blur-sm text-neutral-700 border border-white/50 opacity-0 group-hover:opacity-100 transition-all hover:bg-white"
             >
-              <ChevronRight className="w-5 h-5" />
+              <ChevronRight className="w-4 h-4" />
             </button>
-            <div className="absolute bottom-0 left-0 right-0 flex justify-center p-2 gap-1 z-20">
+
+            {/* Dot indicators */}
+            <div className="absolute top-2.5 right-2.5 flex gap-1 z-10">
               {images.map((_, idx) => (
-                <div
+                <button
                   key={idx}
+                  onClick={() => setCurrentImageIndex(idx)}
                   className={cn(
-                    "h-1 rounded-full transition-all duration-300 shadow-sm",
-                    idx === currentImageIndex ? "w-6 bg-white" : "w-2 bg-white/60",
+                    "rounded-full transition-all duration-300",
+                    idx === currentImageIndex ? "w-4 h-1 bg-white" : "w-1 h-1 bg-white/50",
                   )}
                 />
               ))}
@@ -201,97 +201,80 @@ function ProductCard({
         )}
       </div>
 
-      {/* --- Body Content --- */}
+      {/* ── Body ────────────────────────────────────────── */}
       <div className="flex flex-col flex-grow p-5">
-        <div className="mb-4">
-          <h3 className="text-lg font-bold text-foreground leading-tight tracking-tight">
-            {title}
-          </h3>
-          {subtitle && (
-            <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{subtitle}</p>
+        {/* Category label — matches DualBusiness `b.badge` pattern */}
+        <span className={cn("text-[0.6rem] font-bold uppercase tracking-[0.18em] mb-2 block", p.label)}>
+          {category}
+        </span>
+
+        <h3 className="text-[1.05rem] font-bold text-foreground leading-[1.2] mb-2">
+          {title}
+        </h3>
+
+        {subtitle && (
+          <p className="text-sm text-neutral-600 leading-relaxed mb-4">{subtitle}</p>
+        )}
+
+        {/* Features — chip badges */}
+        <div className="flex-grow mb-5">
+          <p className="text-[0.55rem] font-bold uppercase tracking-[0.18em] text-neutral-400 mb-2.5">
+            What We Offer
+          </p>
+          <div className="flex flex-wrap gap-1.5">
+            {visibleFeatures.map((item, idx) => (
+              <span
+                key={idx}
+                className={cn(
+                  "inline-flex items-center gap-1.5 px-2.5 py-1 border text-[11px] font-semibold leading-none",
+                  p.badge,
+                )}
+              >
+                <span className={cn("w-1 h-1 rounded-full flex-shrink-0", p.badgeStripe)} />
+                {item}
+              </span>
+            ))}
+          </div>
+          {hasMore && (
+            <button
+              onClick={() => setExpanded(!expanded)}
+              className="mt-2 flex items-center gap-1 text-[0.6rem] font-bold uppercase tracking-[0.12em] text-neutral-400 hover:text-neutral-600 transition-colors"
+            >
+              {expanded ? (
+                <><ChevronUp className="w-3 h-3" /> Show less</>
+              ) : (
+                <><ChevronDown className="w-3 h-3" /> +{features.length - 5} more</>
+              )}
+            </button>
           )}
         </div>
 
-        {/* --- Product Range Grid (Was Features) --- */}
-        <div className="flex-grow mb-6">
-          <div className={cn("rounded-lg p-3.5 border border-border/50", theme.softBg)}>
-            <div className="flex items-center gap-2 mb-3">
-              <Layers className="w-3.5 h-3.5 text-muted-foreground" />
-              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-                what we offer
-              </span>
-            </div>
-
-            <div
-              className={cn(
-                "grid grid-cols-2 gap-x-2 gap-y-2 transition-all duration-300",
-                expanded ? "" : "max-h-[110px] overflow-hidden",
-              )}
-            >
-              {visibleProducts.map((item, idx) => (
-                <div key={idx} className="flex items-start gap-2 min-w-0">
-                  {/* Small bullet point style instead of checkmark to imply "List of Items" */}
-                  <div
-                    className={cn(
-                      "mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0",
-                      theme.icon.replace("text-", "bg-"),
-                    )}
-                  />
-                  <span className="text-xs text-foreground/90 font-medium leading-snug break-words">
-                    {item}
-                  </span>
-                </div>
-              ))}
-            </div>
-
-            {hasMoreProducts && (
-              <button
-                onClick={() => setExpanded(!expanded)}
-                className="w-full mt-3 pt-2 border-t border-border/40 text-[11px] font-bold text-muted-foreground hover:text-foreground uppercase tracking-wide flex items-center justify-center gap-1 transition-colors"
+        {/* ── CTAs ────────────────────────────────────── */}
+        <div className="mt-auto pt-3 border-t border-neutral-100 flex items-center gap-2">
+          {href && (
+            <Link href={href} title="View product details">
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-9 px-3 font-semibold text-sm border-neutral-200 text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50"
               >
-                {expanded ? (
-                  <>
-                    Show Less <ChevronUp className="w-3 h-3" />
-                  </>
-                ) : (
-                  <>
-                    View All <ChevronDown className="w-3 h-3" />
-                  </>
-                )}
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* --- Footer Buttons --- */}
-        <div className="mt-auto grid grid-cols-[auto_1fr] gap-3">
-          {href ? (
-            <Link
-              href={href}
-              className="flex items-center justify-center px-4 py-2.5 text-sm font-semibold rounded-lg border border-border bg-background hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
-              title="View Product Details"
-            >
-              <Info className="w-4 h-4 sm:mr-2" />
-              <span className="hidden sm:inline">Details</span>
+                <Info className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline ml-1.5">Details</span>
+              </Button>
             </Link>
-          ) : (
-            <div className="hidden" />
           )}
 
           <QuoteRequest
             product={slug || title}
             colorScheme={colorScheme === "green" ? "green" : "blue"}
           >
-            <button
-              className={cn(
-                "w-full flex items-center justify-center px-4 py-2.5 text-sm font-bold rounded-lg transition-all active:scale-[0.98]",
-                theme.primaryBtn,
-                !href ? "col-span-2" : "",
-              )}
+            <Button
+              size="sm"
+              className={cn("h-9 px-4 font-semibold text-sm flex-1", p.solidBtn)}
             >
               {ctaText}
-              <ArrowUpRight className="w-4 h-4 ml-2 opacity-90" />
-            </button>
+              <ArrowRight className="w-3.5 h-3.5 ml-2" />
+            </Button>
           </QuoteRequest>
         </div>
       </div>

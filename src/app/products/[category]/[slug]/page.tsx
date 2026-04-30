@@ -6,35 +6,22 @@ import Navbar from "@/components/navbar";
 import FooterSection from "@/components/footer-section";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
-import { getCatalogProductBySlug, type CatalogDivision } from "@/lib/catalog";
-import {
-  ChevronLeft,
-  ChevronRight,
-  Box,
-  Layers,
-  ShieldCheck,
-  Globe,
-  ArrowRight,
-  Factory,
-  Tag,
-} from "lucide-react";
+import { getCatalogProductBySlug, type CatalogDivision, type CatalogProduct } from "@/lib/catalog";
+import type { ProductImage } from "@/lib/config";
+import { ChevronLeft, ChevronRight, Box, Layers, ShieldCheck } from "lucide-react";
 import { useState, use, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { QuoteRequest } from "@/components/quote-request";
 import { cn } from "@/lib/utils";
 
 // --- SEO Component ---
-function ProductJSONLD({ product }: { product: any }) {
+function ProductJSONLD({ product }: { product: CatalogProduct }) {
   // Helper to extract single image URL
-  const getImageUrl = (imgData: any) => {
-    if (Array.isArray(imgData)) {
-      return imgData.length > 0
-        ? typeof imgData[0] === "string"
-          ? imgData[0]
-          : imgData[0].url
-        : "";
+  const getImageUrl = (imageData: CatalogProduct["image"]): string => {
+    if (Array.isArray(imageData)) {
+      return imageData[0]?.url ?? "";
     }
-    return imgData;
+    return imageData;
   };
 
   const jsonLd = {
@@ -56,14 +43,14 @@ function ProductJSONLD({ product }: { product: any }) {
 }
 
 // --- Gallery Component ---
-function ImageGallery({ images }: { images: any[] }) {
+function ImageGallery({ images }: { images: Array<string | ProductImage> }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
 
   const normalizedImages = useMemo(() => {
-    return (Array.isArray(images) ? images : [images]).map((img) =>
-      typeof img === "string" ? { url: img, description: "Product View" } : img,
+    return images.map((image) =>
+      typeof image === "string" ? { url: image, description: "Product View" } : image,
     );
   }, [images]);
 
